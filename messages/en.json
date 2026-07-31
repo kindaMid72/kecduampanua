@@ -1,0 +1,104 @@
+{
+  "metadata": {
+    "siteName": "Duampanua Sub-District",
+    "siteDescription": "Official Website of Duampanua Sub-District"
+  },
+  "nav": {
+    "beranda": "Home",
+    "profil": "Profile",
+    "sejarah": "History",
+    "visiMisi": "Vision & Mission",
+    "strukturOrganisasi": "Organizational Structure",
+    "jumlahAsn": "Civil Servants",
+    "ppid": "PPID",
+    "dataStatistik": "Statistics",
+    "potensiDaerah": "Regional Potential",
+    "informasi": "Information",
+    "informasiPublik": "Public Information",
+    "galeri": "Gallery",
+    "layananPublik": "Public Services",
+    "standarPelayanan": "Service Standards",
+    "pengaduan": "Public Complaints",
+    "edaranDokumen": "Document Circulars",
+    "kontak": "Contact"
+  },
+  "common": {
+    "selengkapnya": "Read More",
+    "unduh": "Download",
+    "kembali": "Back",
+    "kirim": "Submit",
+    "simpan": "Save",
+    "batal": "Cancel",
+    "hapus": "Delete",
+    "edit": "Edit",
+    "cari": "Search...",
+    "tidakAdaData": "Data not yet available",
+    "sedangDiperbarui": "Data is being updated",
+    "memuatData": "Loading data...",
+    "terbitkan": "Publish",
+    "arsipkan": "Archive"
+  },
+  "beranda": {
+    "title": "Home",
+    "papanInformasi": "Information Board",
+    "statusKantor": "Office Status",
+    "jamLayanan": "Service Hours",
+    "aksesCepat": "Quick Access",
+    "informasiTerbaru": "Latest Information"
+  },
+  "profil": {
+    "title": "Sub-District Profile",
+    "sejarah": "History",
+    "visi": "Vision",
+    "misi": "Mission",
+    "strukturOrganisasi": "Organizational Structure",
+    "jumlahAsn": "Number of Civil Servants"
+  },
+  "standarPelayanan": {
+    "title": "Service Standards",
+    "maklumat": "Service Declaration",
+    "syaratDokumen": "Required Documents",
+    "alurProses": "Process / Procedure",
+    "estimasiWaktu": "Estimated Time",
+    "unduhFormulir": "Download Form"
+  },
+  "informasiPublik": {
+    "title": "Public Information",
+    "pengumuman": "Announcements",
+    "kegiatan": "Activities",
+    "jadwalRapat": "Meeting Schedules",
+    "tanggalAcara": "Event Date",
+    "lokasi": "Location"
+  },
+  "pengaduan": {
+    "title": "Public Complaints",
+    "formTitle": "Complaint Form",
+    "namaPelapor": "Reporter Name",
+    "kontakPelapor": "Phone Number / Email",
+    "kategori": "Complaint Category",
+    "deskripsi": "Complaint Description",
+    "lampiran": "Attachment (optional)",
+    "persetujuanData": "I consent to the use of my personal data in accordance with applicable regulations",
+    "cekStatus": "Check Complaint Status",
+    "nomorTracking": "Tracking Number",
+    "masukkanNomor": "Enter your tracking number (e.g., PGD-XXXXXXXX)",
+    "status": {
+      "baru": "New",
+      "diproses": "In Progress",
+      "selesai": "Completed"
+    },
+    "bannerLapor": "You can also report through the national channel SP4N-LAPOR!"
+  },
+  "kontak": {
+    "title": "Contact",
+    "alamat": "Address",
+    "telepon": "Phone",
+    "email": "Email",
+    "jamOperasional": "Operating Hours",
+    "peta": "Location on Map"
+  },
+  "footer": {
+    "hakCipta": "© {year} Duampanua Sub-District. All rights reserved.",
+    "dikelola": "Managed by Duampanua Sub-District"
+  }
+}
