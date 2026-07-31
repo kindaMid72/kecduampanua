@@ -10,7 +10,7 @@ const intlMiddleware = createMiddleware(routing);
  * 1. Route /admin/* → cek auth Supabase, redirect ke login kalau belum sesi
  * 2. Route publik → handle i18n (locale prefix)
  */
-export async function proxy(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   // === Admin routes: cek auth ===
