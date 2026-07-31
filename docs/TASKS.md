@@ -6,11 +6,11 @@ Update file ini setiap menyelesaikan item (centang `[x]`). Ini pengganti "ingata
 
 *Prasyarat: tidak ada — titik mulai project.*
 
-- [ ] Init Next.js (App Router, TS) + Tailwind + `next-intl`
-- [ ] Setup Vitest + Playwright, verifikasi command `npm run test` & `npm run test:e2e` di `AGENTS.md` cocok dengan `package.json`
-- [ ] Setup project Supabase, hubungkan env vars (`.env.local`, jangan commit)
-- [ ] Generate `tailwind.config.ts` dari `design/tokens.json`
-- [ ] Jalankan semua `CREATE TABLE` + RLS policy dari `docs/DATABASE_SCHEMA.md`
+- [x] Init Next.js (App Router, TS) + Tailwind + `next-intl`
+- [x] Setup Vitest + Playwright, verifikasi command `npm run test` & `npm run test:e2e` di `AGENTS.md` cocok dengan `package.json`
+- [x] Setup project Supabase, hubungkan env vars (`.env.local`, jangan commit)
+- [x] Generate CSS design tokens dari `design/tokens.json` (via Tailwind v4 `@theme`)
+- [ ] Jalankan semua `CREATE TABLE` + RLS policy dari `docs/DATABASE_SCHEMA.md` *(file SQL tersedia di `supabase/migrations/001_initial_schema.sql` — jalankan manual di Supabase SQL Editor)*
 - [ ] Seed 1 akun `super_account` pertama (email dari klien — lihat PRD §9)
 - [ ] Setup Vercel project + deploy preview pertama
 
