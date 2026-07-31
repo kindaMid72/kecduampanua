@@ -4,15 +4,6 @@
 -- Source of truth: docs/DATABASE_SCHEMA.md
 -- =============================================
 
--- === Helper function ===
-create or replace function is_staf_aktif()
-returns boolean language sql security definer stable as $$
-  select exists (
-    select 1 from profiles p
-    where p.id = auth.uid() and p.status = 'aktif'
-  );
-$$;
-
 -- === 1. profiles ===
 create table profiles (
   id uuid primary key references auth.users(id) on delete cascade,
@@ -22,6 +13,15 @@ create table profiles (
   password_set boolean not null default false,
   created_at timestamptz default now()
 );
+
+-- === Helper function ===
+create or replace function is_staf_aktif()
+returns boolean language sql security definer stable as $$
+  select exists (
+    select 1 from profiles p
+    where p.id = auth.uid() and p.status = 'aktif'
+  );
+$$;
 
 alter table profiles enable row level security;
 

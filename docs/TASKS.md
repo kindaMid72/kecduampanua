@@ -10,9 +10,9 @@ Update file ini setiap menyelesaikan item (centang `[x]`). Ini pengganti "ingata
 - [x] Setup Vitest + Playwright, verifikasi command `npm run test` & `npm run test:e2e` di `AGENTS.md` cocok dengan `package.json`
 - [x] Setup project Supabase, hubungkan env vars (`.env.local`, jangan commit)
 - [x] Generate CSS design tokens dari `design/tokens.json` (via Tailwind v4 `@theme`)
-- [ ] Jalankan semua `CREATE TABLE` + RLS policy dari `docs/DATABASE_SCHEMA.md` *(file SQL tersedia di `supabase/migrations/001_initial_schema.sql` — jalankan manual di Supabase SQL Editor)*
-- [ ] Seed 1 akun `super_account` pertama (email dari klien — lihat PRD §9)
-- [ ] Setup Vercel project + deploy preview pertama
+- [x] Jalankan semua `CREATE TABLE` + RLS policy dari `docs/DATABASE_SCHEMA.md` *(file SQL tersedia di `supabase/migrations/001_initial_schema.sql` — jalankan manual di Supabase SQL Editor)*
+- [x] Seed 1 akun `super_account` pertama (email dari klien — lihat PRD §9)
+- [x] Setup Vercel project + deploy preview pertama
 
 *Kriteria selesai: `npm run dev` jalan tanpa error, bisa login sebagai super_account, deploy preview Vercel sukses.*
 
