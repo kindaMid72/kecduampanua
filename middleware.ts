@@ -20,26 +20,29 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next();
     }
 
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+    // Jika env var belum diset di Vercel, hindari crash di Edge Runtime
+    if (!supabaseUrl || !supabaseAnonKey) {
+      console.error("Missing Supabase environment variables in Middleware");
+      return NextResponse.redirect(new URL("/admin/login", request.url));
+    }
+
     // Buat Supabase client untuk cek session
-    let response = NextResponse.next({
-      request: { headers: request.headers },
-    });
+    let response = NextResponse.next({ request });
 
     const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      supabaseUrl,
+      supabaseAnonKey,
       {
         cookies: {
           getAll() {
             return request.cookies.getAll();
           },
           setAll(cookiesToSet) {
-            cookiesToSet.forEach(({ name, value }) =>
-              request.cookies.set(name, value)
-            );
-            response = NextResponse.next({
-              request: { headers: request.headers },
-            });
+            cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
+            response = NextResponse.next({ request });
             cookiesToSet.forEach(({ name, value, options }) =>
               response.cookies.set(name, value, options)
             );
@@ -48,14 +51,17 @@ export async function middleware(request: NextRequest) {
       }
     );
 
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
 
-    if (!user) {
-      const loginUrl = new URL("/admin/login", request.url);
-      loginUrl.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(loginUrl);
+      if (!user) {
+        const loginUrl = new URL("/admin/login", request.url);
+        loginUrl.searchParams.set("redirect", pathname);
+        return NextResponse.redirect(loginUrl);
+      }
+    } catch (error) {
+      console.error("Supabase auth error in middleware:", error);
+      return NextResponse.redirect(new URL("/admin/login", request.url));
     }
 
     return response;
