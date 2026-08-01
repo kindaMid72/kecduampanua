@@ -1,6 +1,5 @@
 import createMiddleware from "next-intl/middleware";
 import { type NextRequest, NextResponse } from "next/server";
-import { createServerClient } from "@supabase/ssr";
 import { routing } from "./lib/i18n/routing";
 
 const intlMiddleware = createMiddleware(routing);
@@ -25,51 +24,21 @@ export async function middleware(request: NextRequest) {
         return NextResponse.next();
       }
 
+      // Cek cookie auth Supabase tanpa load SDK yang tidak edge-safe
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-
-      // Jika env var belum diset di Vercel, hindari crash
-      if (!supabaseUrl || !supabaseAnonKey) {
-        console.error("Missing Supabase environment variables in Middleware");
-        return NextResponse.redirect(new URL("/admin/login", request.url));
-      }
-
-      // Buat Supabase client untuk cek session
-      let response = NextResponse.next({ request });
-
-      const supabase = createServerClient(
-        supabaseUrl,
-        supabaseAnonKey,
-        {
-          cookies: {
-            getAll() {
-              return request.cookies.getAll();
-            },
-            setAll(cookiesToSet) {
-              cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value));
-              response = NextResponse.next({ request });
-              cookiesToSet.forEach(({ name, value, options }) =>
-                response.cookies.set(name, value, options)
-              );
-            },
-          },
-        }
+      
+      // Fallback cek secara generik jika env belum siap
+      const hasSession = request.cookies.getAll().some(
+        (c) => c.name.startsWith("sb-") && c.name.endsWith("-auth-token")
       );
 
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-
-        if (!user) {
-          const loginUrl = new URL("/admin/login", request.url);
-          loginUrl.searchParams.set("redirect", pathname);
-          return NextResponse.redirect(loginUrl);
-        }
-      } catch (error) {
-        console.error("Supabase auth error in middleware:", error);
-        return NextResponse.redirect(new URL("/admin/login", request.url));
+      if (!hasSession) {
+        const loginUrl = new URL("/admin/login", request.url);
+        loginUrl.searchParams.set("redirect", pathname);
+        return NextResponse.redirect(loginUrl);
       }
 
-      return response;
+      return NextResponse.next();
     }
 
     // === Public routes: i18n handling ===
