@@ -43,7 +43,15 @@ export default async function Beranda({
   const { locale } = await params;
 
   let profil = null;
-  let infos: Record<string, unknown>[] = [];
+  let infos: {
+    id: string;
+    judul: string;
+    judul_en: string | null;
+    kategori: string;
+    created_at: string;
+    gambar_cover_url: string | null;
+    slug: string;
+  }[] = [];
 
   try {
     const supabase = await createClient();

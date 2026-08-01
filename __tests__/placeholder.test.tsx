@@ -17,7 +17,6 @@ vi.mock("@/lib/supabase/server", () => ({
 }));
 
 test("ProfilPage renders placeholders when data is null/empty", async () => {
-  // @ts-expect-error Async Server Component rendering in test
   const jsx = await ProfilPage({ params: Promise.resolve({ locale: "id" }) });
   render(jsx);
 

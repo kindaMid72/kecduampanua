@@ -26,7 +26,21 @@ export default async function StandarPelayananPage({
   const isEn = locale === "en";
 
   let maklumat: string | null = null;
-  let layananList: Record<string, unknown>[] = [];
+  let layananList: {
+    id: string;
+    nama_layanan: string;
+    nama_layanan_en: string | null;
+    deskripsi: string | null;
+    deskripsi_en: string | null;
+    syarat_dokumen: string[] | null;
+    syarat_dokumen_en: string[] | null;
+    alur_proses: string | null;
+    alur_proses_en: string | null;
+    estimasi_waktu: string | null;
+    link_formulir_url: string | null;
+    dokumen_standar_pelayanan_url: string | null;
+    urutan: number;
+  }[] = [];
 
   try {
     const supabase = await createClient();

@@ -26,6 +26,14 @@ export default function PenggunaAdminPage() {
   const [isSuperAccount, setIsSuperAccount] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
+  const fetchPengguna = async () => {
+    const { data } = await supabase
+      .from("profiles")
+      .select("*")
+      .order("created_at", { ascending: false });
+    setPengguna(data || []);
+  };
+
   useEffect(() => {
     let isMounted = true;
     async function loadData() {

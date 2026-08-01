@@ -29,7 +29,13 @@ export default async function ProfilPage({
   const { locale } = await params;
 
   let profil = null;
-  let struktur: Record<string, unknown>[] = [];
+  let struktur: {
+    id: string;
+    nama_pejabat: string;
+    jabatan: string;
+    foto_url: string | null;
+    urutan: number;
+  }[] = [];
 
   try {
     const supabase = await createClient();
