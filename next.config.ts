@@ -13,6 +13,15 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  webpack: (config, { nextRuntime }) => {
+    if (nextRuntime === 'edge') {
+      config.resolve.alias = {
+        ...config.resolve.alias,
+        'node:async_hooks': false,
+      };
+    }
+    return config;
+  },
 };
 
 export default withNextIntl(nextConfig);
