@@ -60,15 +60,30 @@ export async function updateProfilAction(formData: FormData) {
     }
   }
 
-  // Karena profil_kecamatan adalah single-row (id=1), kita coba update, jika belum ada kita insert
-  const { error } = await supabase.from("profil_kecamatan").upsert({
-    id: 1,
+  // Karena profil_kecamatan adalah single-row (tapi id-nya UUID), kita cari id-nya dulu
+  const { data: existing } = await supabase.from("profil_kecamatan").select("id").limit(1).maybeSingle();
+
+  const dataToSave = {
     ...raw,
     sejarah_en,
     visi_en,
     misi_en,
     maklumat_pelayanan_en,
-  });
+  };
+
+  let error;
+  if (existing?.id) {
+    const { error: updateError } = await supabase
+      .from("profil_kecamatan")
+      .update(dataToSave)
+      .eq("id", existing.id);
+    error = updateError;
+  } else {
+    const { error: insertError } = await supabase
+      .from("profil_kecamatan")
+      .insert(dataToSave);
+    error = insertError;
+  }
 
   if (error) {
     console.error(error);

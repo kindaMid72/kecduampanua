@@ -38,8 +38,8 @@ export default function ProfilAdminPage() {
       const { data } = await supabase
         .from("profil_kecamatan")
         .select("*")
-        .eq("id", 1)
-        .single();
+        .limit(1)
+        .maybeSingle();
       
       if (data) {
         setFormData({
