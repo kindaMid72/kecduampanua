@@ -1,6 +1,7 @@
 import createMiddleware from "next-intl/middleware";
 import { type NextRequest, NextResponse } from "next/server";
 import { routing } from "./lib/i18n/routing";
+import { updateSession } from "@/lib/supabase/middleware";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -19,26 +20,8 @@ export async function middleware(request: NextRequest) {
 
     // === Admin routes: cek auth ===
     if (pathname.startsWith("/admin")) {
-      // Biarkan /admin/login lewat tanpa auth check
-      if (pathname === "/admin/login" || pathname === "/admin/atur-kata-sandi") {
-        return NextResponse.next();
-      }
-
-      // Cek cookie auth Supabase tanpa load SDK yang tidak edge-safe
-      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-      
-      // Fallback cek secara generik jika env belum siap
-      const hasSession = request.cookies.getAll().some(
-        (c) => c.name.startsWith("sb-") && c.name.endsWith("-auth-token")
-      );
-
-      if (!hasSession) {
-        const loginUrl = new URL("/admin/login", request.url);
-        loginUrl.searchParams.set("redirect", pathname);
-        return NextResponse.redirect(loginUrl);
-      }
-
-      return NextResponse.next();
+      // Gunakan helper middleware resmi dari Supabase untuk refresh session
+      return await updateSession(request);
     }
 
     // === Public routes: i18n handling ===

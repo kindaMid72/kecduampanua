@@ -3,7 +3,7 @@ import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { Inter, IBM_Plex_Mono } from "next/font/google";
 import { routing } from "@/lib/i18n/routing";
-
+import "@/app/globals.css";
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",

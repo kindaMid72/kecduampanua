@@ -195,20 +195,34 @@ create policy "Staf lihat & kelola semua" on pengaduan for all using (is_staf_ak
 
 **PENTING soal policy SELECT pengaduan:** karena Postgres RLS tidak bisa membatasi "hanya boleh query dengan WHERE tertentu", pembatasan sebenarnya ada di **application layer** — endpoint publik `/api/pengaduan/cek-status` WAJIB mewajibkan parameter `nomor_tracking` dan tidak pernah meng-expose route yang mengembalikan list. Alternatif lebih aman: buat RPC function khusus (`get_pengaduan_by_tracking(nomor text)`) yang jadi satu-satunya jalan publik mengakses tabel ini, dan revoke direct select publik. **Rekomendasi: pakai pendekatan RPC function ini saat implementasi, bukan direct table select**, supaya tidak ada risiko lupa filter di suatu tempat.
 
-## 8. `profil_kecamatan` (+ PPID, ASN, Maklumat Pelayanan)
+## 8. `profil_kecamatan` (+ PPID, ASN, Maklumat Pelayanan, Kontak Kantor)
 
 ```sql
 create table profil_kecamatan (
   id uuid primary key default gen_random_uuid(),
+
+  -- Profil kecamatan
+  nama_kecamatan text,                              -- dipakai di footer & metadata SEO
   sejarah text, sejarah_en text,
   visi text, visi_en text,
   misi text, misi_en text,
   jumlah_asn int,
   maklumat_pelayanan text, maklumat_pelayanan_en text,
+
+  -- Kontak & operasional kantor (dikelola via admin panel, bukan hardcode)
+  alamat text,                                      -- alamat lengkap kantor
+  telepon text,                                     -- nomor telepon resmi
+  email text,                                       -- email resmi
+  jam_operasional text,                             -- e.g. "Senin–Jumat, 08.00–16.00 WIB"
+  koordinat_lat float8,                             -- untuk embed peta OpenStreetMap
+  koordinat_lng float8,
+
+  -- PPID (statis — tanpa form permohonan, DECISIONS #15)
   ppid_dasar_hukum text,
   ppid_nama_petugas text,
   ppid_kontak text,
   ppid_jam_layanan text,
+
   updated_at timestamptz default now()
 );
 
@@ -253,3 +267,5 @@ create policy "Staf kelola" on data_statistik for all using (is_staf_aktif());
 - Generate `nomor_tracking`: alfanumerik 8 karakter, exclude karakter ambigu (`0/O`, `1/I`), cek `unique`, retry kalau collision.
 - Job terjadwal (Supabase Edge Function + `pg_cron`) untuk set `diarsipkan_pada` otomatis 2 tahun setelah `status = 'selesai'` (DECISIONS #12) — bukan hapus permanen, cukup flag arsip.
 - Storage bucket policy diatur terpisah dari RLS tabel: bucket gambar publik boleh dibaca umum, upload hanya via signed request dari staf yang login.
+- **`profil_kecamatan` adalah single-row** — upsert, bukan insert biasa. Seed 1 baris kosong via `001_initial_schema.sql`, lalu staf mengisi via admin panel `/admin/profil`.
+- **Kolom kontak kantor** (`alamat`, `telepon`, `email`, `jam_operasional`, `koordinat_lat/lng`, `nama_kecamatan`) di `profil_kecamatan` dikelola via admin panel — **tidak pernah hardcode di kode**. Jika sudah menjalankan `001`, jalankan juga `002_profil_kontak.sql` untuk menambah kolom ini ke environment yang sudah ada.

@@ -27,6 +27,10 @@ export async function createClient() {
           }
         },
       },
+      // Menghindari AuthRetryableFetchError akibat Next.js fetch caching
+      global: {
+        fetch: (url, options) => fetch(url, { ...options, cache: 'no-store' }),
+      },
     }
   );
 }

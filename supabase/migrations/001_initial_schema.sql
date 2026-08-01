@@ -188,15 +188,29 @@ create policy "Staf lihat & kelola semua" on pengaduan for all using (is_staf_ak
 -- === 8. profil_kecamatan & struktur_organisasi ===
 create table profil_kecamatan (
   id uuid primary key default gen_random_uuid(),
+
+  -- Profil kecamatan
+  nama_kecamatan text,                              -- dipakai di footer & metadata SEO
   sejarah text, sejarah_en text,
   visi text, visi_en text,
   misi text, misi_en text,
   jumlah_asn int,
   maklumat_pelayanan text, maklumat_pelayanan_en text,
+
+  -- Kontak & operasional kantor (dikelola via admin panel, bukan hardcode)
+  alamat text,                                      -- alamat lengkap kantor
+  telepon text,                                     -- nomor telepon resmi
+  email text,                                       -- email resmi
+  jam_operasional text,                             -- e.g. "Senin–Jumat, 08.00–16.00 WIB"
+  koordinat_lat float8,                             -- untuk embed peta OpenStreetMap
+  koordinat_lng float8,
+
+  -- PPID (statis — tanpa form permohonan, DECISIONS #15)
   ppid_dasar_hukum text,
   ppid_nama_petugas text,
   ppid_kontak text,
   ppid_jam_layanan text,
+
   updated_at timestamptz default now()
 );
 
