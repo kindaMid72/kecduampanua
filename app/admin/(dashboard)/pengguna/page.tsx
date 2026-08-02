@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { invitePenggunaAction, ubahStatusPenggunaAction } from "./actions";
+import { invitePenggunaAction, ubahStatusPenggunaAction, resetKataSandiAction } from "./actions";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { createClient } from "@/lib/supabase/client";
-import { UserPlus, ShieldAlert, CheckCircle, XCircle } from "lucide-react";
+import { UserPlus, ShieldAlert, CheckCircle, XCircle, KeyRound, Copy } from "lucide-react";
 
 interface UserProfile {
   id: string;
@@ -20,9 +20,11 @@ export default function PenggunaAdminPage() {
   const supabase = createClient();
   const [pengguna, setPengguna] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState(false);
+  const [resetLoadingId, setResetLoadingId] = useState<string | null>(null);
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [actionLink, setActionLink] = useState<string | null>(null);
   const [isSuperAccount, setIsSuperAccount] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
@@ -74,6 +76,7 @@ export default function PenggunaAdminPage() {
     setLoading(true);
     setError(null);
     setSuccess(null);
+    setActionLink(null);
 
     const formData = new FormData(e.currentTarget);
     const res = await invitePenggunaAction(formData);
@@ -81,12 +84,39 @@ export default function PenggunaAdminPage() {
     if (res?.error) {
       setError(res.error);
     } else {
-      setSuccess("Undangan berhasil dikirim. Pengguna dapat mengatur kata sandi lewat link di email.");
+      setSuccess("Pengguna berhasil ditambahkan. Silakan salin tautan di bawah ini untuk pengguna baru agar dapat mengatur kata sandi.");
+      setActionLink(res?.action_link || null);
       e.currentTarget.reset();
       await fetchPengguna();
     }
     setLoading(false);
   }
+
+  async function handleResetPassword(id: string) {
+    if (!confirm("Buat tautan reset kata sandi untuk pengguna ini?")) return;
+    
+    setError(null);
+    setSuccess(null);
+    setActionLink(null);
+    setResetLoadingId(id);
+    
+    const res = await resetKataSandiAction(id);
+    
+    if (res?.error) {
+      setError(res.error);
+    } else {
+      setSuccess("Tautan reset kata sandi berhasil dibuat. Silakan salin tautan di bawah ini.");
+      setActionLink(res?.action_link || null);
+    }
+    setResetLoadingId(null);
+  }
+
+  const copyToClipboard = () => {
+    if (actionLink) {
+      navigator.clipboard.writeText(actionLink);
+      alert("Tautan disalin ke clipboard!");
+    }
+  };
 
   async function handleToggleStatus(id: string, currentStatus: string) {
     if (!confirm(`Yakin ingin mengubah status pengguna ini menjadi ${currentStatus === "aktif" ? "nonaktif" : "aktif"}?`)) return;
@@ -133,14 +163,27 @@ export default function PenggunaAdminPage() {
       )}
       {success && (
         <div className="p-3 bg-[color:var(--color-status-success)]/10 text-[color:var(--color-status-success)] text-sm rounded border border-[color:var(--color-status-success)]/20">
-          {success}
+          <p>{success}</p>
+          {actionLink && (
+            <div className="mt-3 flex items-center gap-2">
+              <input
+                type="text"
+                readOnly
+                value={actionLink}
+                className="flex-1 bg-white/50 border border-[color:var(--color-status-success)]/30 rounded px-3 py-2 text-xs font-mono text-text outline-none"
+              />
+              <Button type="button" onClick={copyToClipboard} size="sm" variant="secondary" className="flex items-center gap-1">
+                <Copy size={14} /> Salin
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
       {/* Form Undang Pengguna */}
       <Card padding="md">
         <h2 className="text-lg font-semibold text-primary mb-4 flex items-center gap-2">
-          <UserPlus size={18} /> Undang Pengguna Baru
+          <UserPlus size={18} /> Tambah Pengguna Baru
         </h2>
         <form onSubmit={handleInvite} className="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
           <div className="sm:col-span-1">
@@ -175,7 +218,7 @@ export default function PenggunaAdminPage() {
           </div>
           <div className="sm:col-span-1">
             <Button type="submit" loading={loading} className="w-full">
-              Kirim Undangan
+              Buat Tautan Undangan
             </Button>
           </div>
         </form>
@@ -212,18 +255,27 @@ export default function PenggunaAdminPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     {p.id !== currentUserId && (
-                      <button
-                        onClick={() => handleToggleStatus(p.id, p.status)}
-                        className={`inline-flex items-center gap-1 text-xs font-medium transition-colors ${
-                          p.status === "aktif" ? "text-red-600 hover:text-red-700" : "text-green-600 hover:text-green-700"
-                        }`}
-                      >
-                        {p.status === "aktif" ? (
-                          <><XCircle size={14} /> Nonaktifkan</>
-                        ) : (
-                          <><CheckCircle size={14} /> Aktifkan</>
-                        )}
-                      </button>
+                      <div className="flex items-center justify-end gap-4">
+                        <button
+                          onClick={() => handleResetPassword(p.id)}
+                          disabled={resetLoadingId === p.id}
+                          className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors disabled:opacity-50"
+                        >
+                          <KeyRound size={14} /> {resetLoadingId === p.id ? "Memproses..." : "Reset Sandi"}
+                        </button>
+                        <button
+                          onClick={() => handleToggleStatus(p.id, p.status)}
+                          className={`inline-flex items-center gap-1 text-xs font-medium transition-colors ${
+                            p.status === "aktif" ? "text-red-600 hover:text-red-700" : "text-green-600 hover:text-green-700"
+                          }`}
+                        >
+                          {p.status === "aktif" ? (
+                            <><XCircle size={14} /> Nonaktifkan</>
+                          ) : (
+                            <><CheckCircle size={14} /> Aktifkan</>
+                          )}
+                        </button>
+                      </div>
                     )}
                   </td>
                 </tr>

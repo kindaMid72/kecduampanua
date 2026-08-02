@@ -6,6 +6,9 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { createClient } from "@/lib/supabase/client";
 import { CheckCircle } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { setPasswordSchema, type SetPasswordInput } from "@/lib/validations/auth";
 
 export default function ProfilAdminPage() {
   const supabase = createClient();
@@ -13,6 +16,18 @@ export default function ProfilAdminPage() {
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  
+  const {
+    register: registerPassword,
+    handleSubmit: handlePasswordSubmitForm,
+    reset: resetPasswordForm,
+    formState: { errors: passwordErrors },
+  } = useForm<SetPasswordInput>({
+    resolver: zodResolver(setPasswordSchema),
+  });
+  const [passwordLoading, setPasswordLoading] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
   
   const [formData, setFormData] = useState({
     nama_kecamatan: "",
@@ -68,6 +83,23 @@ export default function ProfilAdminPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
+
+  const onPasswordSubmit = async (data: SetPasswordInput) => {
+    setPasswordError(null);
+    setPasswordSuccess(false);
+    setPasswordLoading(true);
+
+    const { error: updateError } = await supabase.auth.updateUser({ password: data.password });
+    
+    if (updateError) {
+      setPasswordError("Gagal mengubah kata sandi: " + updateError.message);
+    } else {
+      setPasswordSuccess(true);
+      resetPasswordForm();
+      setTimeout(() => setPasswordSuccess(false), 3000);
+    }
+    setPasswordLoading(false);
   };
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -315,6 +347,52 @@ export default function ProfilAdminPage() {
           </Button>
         </div>
       </form>
+
+      {/* Pengaturan Akun Pribadi */}
+      <Card padding="md" className="space-y-5">
+        <h2 className="text-lg font-semibold text-primary mb-4 border-b pb-2">Ubah Kata Sandi Akun Anda</h2>
+        <form onSubmit={handlePasswordSubmitForm(onPasswordSubmit)} className="space-y-4">
+          {passwordError && (
+            <div className="p-3 bg-red-50 text-red-700 text-sm rounded border border-red-200">
+              {passwordError}
+            </div>
+          )}
+          {passwordSuccess && (
+            <div className="p-3 bg-[color:var(--color-status-success)]/10 text-[color:var(--color-status-success)] text-sm rounded border border-[color:var(--color-status-success)]/20 flex items-center gap-2">
+              <CheckCircle size={16} /> Kata sandi berhasil diubah.
+            </div>
+          )}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1.5">Kata Sandi Baru</label>
+              <input
+                type="password"
+                {...registerPassword("password")}
+                className={`w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none ${passwordErrors.password ? 'border-red-400' : ''}`}
+              />
+              {passwordErrors.password && (
+                <p className="mt-1 text-xs text-red-600">{passwordErrors.password.message}</p>
+              )}
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1.5">Konfirmasi Sandi Baru</label>
+              <input
+                type="password"
+                {...registerPassword("konfirmasi")}
+                className={`w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none ${passwordErrors.konfirmasi ? 'border-red-400' : ''}`}
+              />
+              {passwordErrors.konfirmasi && (
+                <p className="mt-1 text-xs text-red-600">{passwordErrors.konfirmasi.message}</p>
+              )}
+            </div>
+          </div>
+          <div className="flex justify-end">
+            <Button type="submit" variant="secondary" loading={passwordLoading}>
+              Ubah Kata Sandi
+            </Button>
+          </div>
+        </form>
+      </Card>
     </div>
   );
 }

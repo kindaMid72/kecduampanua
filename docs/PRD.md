@@ -21,7 +21,7 @@ Website resmi kecamatan (wilayah pesisir) untuk profil, layanan administratif, i
 
 ### Fase 1 — MVP
 - Beranda, Profil (+ struktur organisasi, jumlah ASN, PPID minimal), Standar Pelayanan (+ Maklumat Pelayanan), Kontak
-- Auth: login Staf/Super Account, alur invite & reset via link manual
+- Auth: login Staf/Super Account, alur invite & reset via single-use link manual (tanpa konfirmasi email)
 - Admin: Kelola Informasi Publik, Kelola Standar Pelayanan
 - Deploy ke domain go.id (tunduk konfirmasi hosting — lihat §8)
 

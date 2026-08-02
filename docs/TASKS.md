@@ -20,21 +20,21 @@ Update file ini setiap menyelesaikan item (centang `[x]`). Ini pengganti "ingata
 
 *Prasyarat: Setup Awal selesai (auth & DB harus jalan dulu — jangan mulai bikin halaman admin sebelum login berfungsi).*
 
-- [ ] Layout dasar: navbar 5 item + dropdown (PRD §4), footer
-- [ ] Komponen `/components/ui`: Button, Card, Badge, PapanInformasiPanel, SectionDivider, CategoryLabel
-- [ ] Halaman Beranda (Papan Informasi status kantor + jam layanan)
-- [ ] Halaman Profil (sejarah, visi-misi, struktur organisasi, jumlah ASN)
-- [ ] Halaman PPID minimal (statis)
-- [ ] Halaman Standar Pelayanan + Maklumat Pelayanan (accordion, alur bernomor)
-- [ ] Halaman Kontak
-- [ ] Auth: login admin, middleware proteksi `/admin/*`
-- [ ] Alur invite user (generate link + salin tautan) — hanya `super_account`
-- [ ] Alur reset password (generate link) — hanya `super_account`
-- [ ] Alur cabut akses (`ban_duration` + status nonaktif)
-- [ ] Admin: Kelola Informasi Publik (form + list, auto-translate saat simpan)
-- [ ] Admin: Kelola Standar Pelayanan
-- [ ] Uji semua halaman di viewport 360px
-- [ ] Placeholder state untuk semua section yang datanya belum terisi
+- [x] Layout dasar: navbar 5 item + dropdown (PRD §4), footer
+- [x] Komponen `/components/ui`: Button, Card, Badge, PapanInformasiPanel, SectionDivider, CategoryLabel
+- [x] Halaman Beranda (Papan Informasi status kantor + jam layanan)
+- [x] Halaman Profil (sejarah, visi-misi, struktur organisasi, jumlah ASN)
+- [x] Halaman PPID minimal (statis)
+- [x] Halaman Standar Pelayanan + Maklumat Pelayanan (accordion, alur bernomor)
+- [x] Halaman Kontak
+- [x] Auth: login admin, middleware proteksi `/admin/*`
+- [x] Alur invite user (One-Time Setup Token `user_invitations` + salin tautan tanpa verifikasi email) — hanya `super_account` (DECISIONS #25)
+- [x] Alur reset password (One-Time Setup Token `user_invitations` + salin tautan tanpa verifikasi email) — hanya `super_account` (DECISIONS #25)
+- [x] Alur cabut akses (`ban_duration` + status nonaktif)
+- [x] Admin: Kelola Informasi Publik (form + list, auto-translate saat simpan)
+- [x] Admin: Kelola Standar Pelayanan
+- [x] Uji semua halaman di viewport 360px
+- [x] Placeholder state untuk semua section yang datanya belum terisi
 
 *Kriteria selesai (wajib semua terpenuhi sebelum mulai Fase 2): staf bisa login mandiri lewat link invite tanpa bantuan developer; staf bisa terbitkan/edit Informasi Publik & Standar Pelayanan sendiri; tidak ada halaman publik yang render kosong/error; checklist `docs/DESIGN.md` lolos di semua halaman yang dibangun.*
 

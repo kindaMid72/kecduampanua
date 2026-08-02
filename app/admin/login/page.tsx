@@ -13,6 +13,7 @@ import { SectionDivider } from "@/components/ui/SectionDivider";
 function LoginForm() {
   const searchParams = useSearchParams();
   const urlError = searchParams.get("error");
+  const urlSukses = searchParams.get("sukses");
 
   const [state, formAction, pending] = useActionState(loginAction, null);
   const [showPassword, setShowPassword] = useState(false);
@@ -39,6 +40,8 @@ function LoginForm() {
     displayError = "Akun Anda dinonaktifkan atau belum memiliki profil. Hubungi Pengelola (atau tambahkan data ke tabel profiles jika Anda super admin).";
   }
 
+  const showSuccessBanner = !displayError && urlSukses === "kata-sandi-diset";
+
   return (
     <div className="w-full max-w-sm">
       {/* Header */}
@@ -58,6 +61,17 @@ function LoginForm() {
 
       {/* Form */}
       <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5">
+        {/* Pesan Sukses Set Kata Sandi */}
+        {showSuccessBanner && (
+          <div
+            role="status"
+            className="px-4 py-3 rounded-[var(--radius-card)] bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm leading-relaxed"
+          >
+            <p className="font-semibold text-emerald-900 mb-0.5">Kata sandi berhasil disimpan!</p>
+            Silakan masuk menggunakan email dan kata sandi baru Anda.
+          </div>
+        )}
+
         {/* Error global */}
         {displayError && (
           <div

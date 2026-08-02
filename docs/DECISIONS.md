@@ -31,8 +31,8 @@ Alasan: dikonfirmasi eksplisit oleh klien — menyederhanakan alur kerja harian.
 
 **#6 — Alur invite & reset password: link manual, bukan auto-email**
 Konteks: staf kantor kecamatan lebih reliable dihubungi via WA daripada email.
-Keputusan: Super Account generate link (`supabase.auth.admin.generateLink`, type `invite`/`recovery`) lalu mengirim link itu manual ke staf. Bukan Supabase auto-send email.
-Alasan: permintaan eksplisit klien; juga menghindari risiko email transaksional masuk spam/tidak terpantau.
+Keputusan: Super Account men-generate link lewat UI admin yang memanggil API `supabaseAdmin.auth.admin.generateLink` (type `invite` atau `recovery`). Link tersebut langsung ditampilkan di layar (di-return via `action_link`) untuk disalin oleh admin dan dikirim manual ke staf. Sama sekali tidak ada email otomatis dari Supabase (bahkan proses email dilewati).
+Alasan: permintaan eksplisit klien; juga menghindari risiko email transaksional masuk spam/tidak terpantau. Pengguna juga tidak perlu mengkonfirmasi email.
 
 **#7 — Konten "Berita" diganti "Informasi Publik"**
 Konteks: klien tidak butuh berita jurnalistik, cukup info kegiatan/jadwal/pengumuman.
@@ -110,3 +110,9 @@ Alasan: Vitest terintegrasi baik dengan Next.js/TypeScript, cepat untuk unit tes
 Konteks: audit ulang terhadap tabel Include/Exclude resmi Anthropic menemukan AGENTS.md versi sebelumnya kehilangan beberapa kategori wajib (testing instructions, code style, repository etiquette) yang sempat ada di draft awal tapi terpotong saat proses "trim". Env vars juga salah taruh di CLAUDE.md padahal dibutuhkan tool apa pun, bukan cuma Claude Code.
 Keputusan: AGENTS.md dikembalikan mencakup command, testing, konvensi kode, git etiquette, dan env vars — karena file ini diniatkan portable lintas-tool (DECISIONS #19). CLAUDE.md dipangkas jadi cuma `@AGENTS.md` import + hal yang benar-benar spesifik fitur Claude Code (subagent invocation).
 Alasan: standar resmi Anthropic memberi tes fungsional ("would removing this cause mistakes?") bukan target jumlah baris — trim sebelumnya salah menerapkan target angka dari sumber sekunder, bukan tes fungsional dari sumber primer.
+
+**#25 — Perombakan alur invite & reset password: One-Time Setup Token independen**
+Konteks: implementasi awal yang menggunakan OTP `supabase.auth.verifyOtp` di `useEffect` client memiliki kelemahan kritis: token langsung hangus saat link dibuka pertama kali (akibat crawler preview WA/Telegram atau React StrictMode double render), dan pengguna disuntik sesi login sebelum kata sandi dibuat.
+Keputusan (memperbaiki #6): alur undangan dan reset kata sandi menggunakan tabel token khusus `user_invitations`. Tautan berisi token 256-bit acak. Saat halaman `/admin/atur-kata-sandi` dibuka, sistem hanya memverifikasi token secara *read-only* tanpa menghanguskannya dan tanpa membuat sesi login. Token hanya hangus dan akun/password hanya dibuat/diperbarui di Supabase Auth saat pengguna selesai men-submit kata sandi barunya, kemudian dialihkan ke `/admin/login`.
+Alasan: menjamin keandalan tautan saat dibagikan via aplikasi chat, mencegah crawler membakar token, dan menjaga konsistensi autentikasi yang bersih.
+

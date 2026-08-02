@@ -18,9 +18,14 @@ alter table profiles enable row level security;
 
 create policy "User bisa lihat profil sendiri" on profiles for select using (auth.uid() = id);
 
+create policy "User bisa perbarui profil sendiri"
+  on profiles for update
+  using (auth.uid() = id)
+  with check (auth.uid() = id);
+
 create policy "Super account bisa lihat & kelola semua profil"
   on profiles for all
-  using (exists (select 1 from profiles p where p.id = auth.uid() and p.role = 'super_account'));
+  using (is_super_account());
 ```
 
 Helper function dipakai berulang di policy lain:
@@ -261,7 +266,34 @@ create policy "Publik lihat" on data_statistik for select using (true);
 create policy "Staf kelola" on data_statistik for all using (is_staf_aktif());
 ```
 
-## 10. Catatan Implementasi
+## 10. `user_invitations` (Alur Undangan & Setup Password One-Time Token)
+
+```sql
+create table user_invitations (
+  id uuid primary key default gen_random_uuid(),
+  email text not null,
+  nama_lengkap text not null,
+  role text not null check (role in ('super_account', 'staf')),
+  token_hash text not null unique,
+  type text not null default 'invite' check (type in ('invite', 'reset_password')),
+  user_id uuid references auth.users(id) on delete cascade,
+  expires_at timestamptz not null,
+  used_at timestamptz,
+  created_by uuid references profiles(id) on delete set null,
+  created_at timestamptz default now()
+);
+
+create index idx_user_invitations_token_hash on user_invitations(token_hash);
+create index idx_user_invitations_email on user_invitations(email);
+
+alter table user_invitations enable row level security;
+
+create policy "Super account bisa kelola user invitations"
+  on user_invitations for all
+  using (exists (select 1 from profiles p where p.id = auth.uid() and p.role = 'super_account'));
+```
+
+## 11. Catatan Implementasi
 
 - Trigger `updated_at` otomatis via extension `moddatetime` di semua tabel yang punya kolom itu.
 - Generate `nomor_tracking`: alfanumerik 8 karakter, exclude karakter ambigu (`0/O`, `1/I`), cek `unique`, retry kalau collision.
@@ -269,3 +301,4 @@ create policy "Staf kelola" on data_statistik for all using (is_staf_aktif());
 - Storage bucket policy diatur terpisah dari RLS tabel: bucket gambar publik boleh dibaca umum, upload hanya via signed request dari staf yang login.
 - **`profil_kecamatan` adalah single-row** — upsert, bukan insert biasa. Seed 1 baris kosong via `001_initial_schema.sql`, lalu staf mengisi via admin panel `/admin/profil`.
 - **Kolom kontak kantor** (`alamat`, `telepon`, `email`, `jam_operasional`, `koordinat_lat/lng`, `nama_kecamatan`) di `profil_kecamatan` dikelola via admin panel — **tidak pernah hardcode di kode**. Jika sudah menjalankan `001`, jalankan juga `002_profil_kontak.sql` untuk menambah kolom ini ke environment yang sudah ada.
+

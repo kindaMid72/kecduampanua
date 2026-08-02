@@ -35,17 +35,18 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   // Redirect ke halaman login jika user belum login dan mengakses rute /admin
-  const isAuthRoute = request.nextUrl.pathname.startsWith("/admin/login") || request.nextUrl.pathname.startsWith("/admin/atur-kata-sandi");
+  const isLoginRoute = request.nextUrl.pathname.startsWith("/admin/login");
+  const isResetRoute = request.nextUrl.pathname.startsWith("/admin/atur-kata-sandi");
   
-  if (!user && request.nextUrl.pathname.startsWith("/admin") && !isAuthRoute) {
+  if (!user && request.nextUrl.pathname.startsWith("/admin") && !isLoginRoute && !isResetRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/login";
     url.searchParams.set("redirect", request.nextUrl.pathname);
     return NextResponse.redirect(url);
   }
   
-  // Redirect ke dashboard jika sudah login tapi mengakses rute login
-  if (user && isAuthRoute) {
+  // Redirect ke dashboard jika sudah login tapi mengakses rute login saja
+  if (user && isLoginRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/dashboard";
     return NextResponse.redirect(url);
