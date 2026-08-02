@@ -37,7 +37,7 @@ export default function PenggunaAdminPage() {
   const [success, setSuccess] = useState<string | null>(null);
   const [actionLink, setActionLink] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [isSuperAccount, setIsSuperAccount] = useState(false);
+  const [isSuperAccount, setIsSuperAccount] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   // State untuk modal edit
@@ -53,42 +53,60 @@ export default function PenggunaAdminPage() {
   const [deleteError, setDeleteError] = useState<string | null>(null);
 
   const fetchPengguna = useCallback(async () => {
-    const res = await getDaftarPenggunaAction();
-    if (res.error) {
-      setError(res.error);
-    } else {
-      setPengguna(res.data || []);
+    try {
+      const res = await getDaftarPenggunaAction();
+      if (res.error) {
+        if (res.error.includes("Hanya akun Pengelola") || res.error.includes("Hanya Pengelola")) {
+          setIsSuperAccount(false);
+        } else {
+          setError(res.error);
+        }
+      } else {
+        setIsSuperAccount(true);
+        setPengguna(res.data || []);
+      }
+    } catch (err: any) {
+      setError(err?.message || "Gagal memuat data pengguna.");
     }
   }, []);
 
   useEffect(() => {
     let isMounted = true;
     async function loadData() {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user || !isMounted) return;
-      setCurrentUserId(user.id);
+      setFetching(true);
+      setError(null);
+      try {
+        // 1. Ambil info user yang login
+        const {
+          data: { user },
+        } = await supabase.auth.getUser();
+        if (user && isMounted) {
+          setCurrentUserId(user.id);
+        }
 
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role")
-        .eq("id", user.id)
-        .single();
-
-      if (profile?.role === "super_account" && isMounted) {
-        setIsSuperAccount(true);
+        // 2. Ambil data pengguna langsung dari Server Action
         const res = await getDaftarPenggunaAction();
         if (isMounted) {
           if (res.error) {
-            setError(res.error);
+            if (res.error.includes("Hanya akun Pengelola") || res.error.includes("Hanya Pengelola")) {
+              setIsSuperAccount(false);
+            } else {
+              setError(res.error);
+              setIsSuperAccount(true);
+            }
           } else {
+            setIsSuperAccount(true);
             setPengguna(res.data || []);
           }
         }
-      }
-      if (isMounted) {
-        setFetching(false);
+      } catch (err: any) {
+        if (isMounted) {
+          setError(err?.message || "Terjadi kesalahan saat memuat data pengguna.");
+        }
+      } finally {
+        if (isMounted) {
+          setFetching(false);
+        }
       }
     }
 
