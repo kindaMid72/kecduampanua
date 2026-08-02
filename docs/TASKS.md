@@ -30,6 +30,9 @@ Update file ini setiap menyelesaikan item (centang `[x]`). Ini pengganti "ingata
 - [x] Auth: login admin, middleware proteksi `/admin/*`
 - [x] Alur invite user (One-Time Setup Token `user_invitations` + salin tautan tanpa verifikasi email) — hanya `super_account` (DECISIONS #25)
 - [x] Alur reset password (One-Time Setup Token `user_invitations` + salin tautan tanpa verifikasi email) — hanya `super_account` (DECISIONS #25)
+- [x] Admin: Edit data pengguna (nama lengkap, role, email read-only, guardrail orphan & konfirmasi ubah peran sendiri)
+- [x] Admin: Hapus pengguna (dengan proteksi self-delete & FK ON DELETE SET NULL)
+- [x] Admin: Pengaturan Akun Mandiri (`/admin/pengaturan-akun`) — ubah nama lengkap & ganti password mandiri untuk semua staf
 - [x] Alur cabut akses (`ban_duration` + status nonaktif)
 - [x] Admin: Kelola Informasi Publik (form + list, auto-translate saat simpan)
 - [x] Admin: Kelola Standar Pelayanan

@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { LayoutDashboard, FileText, BookOpen, Users, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, FileText, BookOpen, Users, Settings, LogOut, UserCog } from "lucide-react";
 import { SectionDivider } from "@/components/ui/SectionDivider";
 
 interface AdminLayoutProps {
@@ -13,6 +13,7 @@ const navItems = [
   { label: "Informasi Publik", href: "/admin/informasi-publik", icon: BookOpen },
   { label: "Standar Pelayanan", href: "/admin/standar-pelayanan", icon: FileText },
   { label: "Profil & Kontak", href: "/admin/profil", icon: Settings },
+  { label: "Pengaturan Akun", href: "/admin/pengaturan-akun", icon: UserCog },
 ];
 
 export default async function AdminLayout({ children }: AdminLayoutProps) {
@@ -110,7 +111,11 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
 
           {/* User info + logout */}
           <div className="px-3 py-4 border-t border-white/10">
-            <div className="px-3 py-2 mb-2">
+            <Link
+              href="/admin/pengaturan-akun"
+              className="block px-3 py-2 mb-2 rounded-[var(--radius-button)] hover:bg-white/10 transition-colors"
+              title="Buka Pengaturan Akun"
+            >
               <p className="text-xs text-white/40 font-mono uppercase tracking-wide">
                 Masuk sebagai
               </p>
@@ -120,7 +125,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
               <p className="text-xs text-white/40 font-mono">
                 {isSuperAccount ? "Pengelola" : "Staf"}
               </p>
-            </div>
+            </Link>
             <form action="/api/auth/signout" method="POST">
               <button
                 type="submit"

@@ -55,7 +55,7 @@ create table informasi_publik (
   tanggal_acara timestamptz,
   lokasi text,
   status text not null default 'published' check (status in ('published', 'diarsipkan')),
-  dibuat_oleh uuid references profiles(id),
+  dibuat_oleh uuid references profiles(id) on delete set null,
   created_at timestamptz default now(),
   updated_at timestamptz default now()
 );
@@ -137,7 +137,7 @@ create table potensi_daerah (
   gambar_url text,
   status text not null default 'published' check (status in ('published', 'diarsipkan')),
   urutan int default 0,
-  dibuat_oleh uuid references profiles(id),
+  dibuat_oleh uuid references profiles(id) on delete set null,
   created_at timestamptz default now()
 );
 
@@ -157,7 +157,7 @@ create table dokumen_edaran (
   deskripsi text not null,
   file_url text not null,
   tanggal_terbit date not null,
-  diunggah_oleh uuid references profiles(id),
+  diunggah_oleh uuid references profiles(id) on delete set null,
   created_at timestamptz default now()
 );
 
@@ -180,7 +180,7 @@ create table pengaduan (
   status text not null default 'baru' check (status in ('baru', 'diproses', 'selesai')),
   catatan_tindak_lanjut text,
   setuju_data_pribadi boolean not null default false, -- checkbox persetujuan UU PDP
-  ditangani_oleh uuid references profiles(id),
+  ditangani_oleh uuid references profiles(id) on delete set null,
   created_at timestamptz default now(),
   updated_at timestamptz default now(),
   diarsipkan_pada timestamptz -- diisi otomatis 2 tahun setelah status 'selesai', DECISIONS #12
