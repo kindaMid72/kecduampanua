@@ -84,7 +84,17 @@
     "layanan": "Layanan",
     "aksesCepatStandarPelayananDesc": "Prosedur, syarat, dan estimasi waktu layanan administrasi",
     "aksesCepatInformasiDesc": "Pengumuman, kegiatan, dan jadwal rapat kecamatan",
-    "aksesCepatKontakDesc": "Alamat, nomor telepon, dan jam operasional kantor"
+    "aksesCepatKontakDesc": "Alamat, nomor telepon, dan jam operasional kantor",
+    "beritaTerkini": "Berita Terkini",
+    "potensiDaerahUnggulan": "Potensi Daerah Unggulan",
+    "statistikKecamatan": "Statistik Kecamatan",
+    "aksesCepatPengaduanDesc": "Layanan terpadu pengaduan, aspirasi, dan keluhan masyarakat",
+    "aksesCepatPotensiDesc": "Eksplorasi sumber daya, wisata, dan pengolahan lokal",
+    "totalPenduduk": "Total Penduduk",
+    "luasWilayah": "Luas Wilayah",
+    "fasilitasPendidikan": "Fasilitas Pendidikan",
+    "fasilitasKesehatan": "Fasilitas Kesehatan",
+    "satuanLuas": "km²"
   },
   "profil": {
     "title": "Profil Kecamatan",

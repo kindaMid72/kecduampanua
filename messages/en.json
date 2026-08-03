@@ -84,7 +84,17 @@
     "layanan": "Services",
     "aksesCepatStandarPelayananDesc": "Procedures, requirements, and estimated time for administrative services",
     "aksesCepatInformasiDesc": "Announcements, events, and sub-district meeting schedules",
-    "aksesCepatKontakDesc": "Address, phone number, and office operating hours"
+    "aksesCepatKontakDesc": "Address, phone number, and office operating hours",
+    "beritaTerkini": "Latest News",
+    "potensiDaerahUnggulan": "Featured Regional Potential",
+    "statistikKecamatan": "District Statistics",
+    "aksesCepatPengaduanDesc": "Integrated public complaint and aspiration service",
+    "aksesCepatPotensiDesc": "Explore local resources, tourism, and processing",
+    "totalPenduduk": "Total Population",
+    "luasWilayah": "Total Area",
+    "fasilitasPendidikan": "Educational Facilities",
+    "fasilitasKesehatan": "Healthcare Facilities",
+    "satuanLuas": "sq.km"
   },
   "profil": {
     "title": "Sub-District Profile",
