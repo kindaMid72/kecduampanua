@@ -22,7 +22,7 @@ export function SectionDivider({ className = "", vertical = false }: SectionDivi
   return (
     <div
       aria-hidden="true"
-      className={["h-[3px] w-full bg-gradient-to-r from-primary via-secondary to-accent", className].join(" ")}
+      className={["h-[3px] bg-gradient-to-r from-primary via-secondary to-accent", className].join(" ")}
     />
   );
 }
