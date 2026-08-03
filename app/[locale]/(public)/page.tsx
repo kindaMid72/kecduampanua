@@ -186,7 +186,7 @@ export default async function Beranda({
             priority
             className="object-cover object-center"
           />
-          <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px]"></div>
+          <div className="absolute inset-0 bg-background/40 backdrop-blur-[2px]"></div>
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
         </div>
 
