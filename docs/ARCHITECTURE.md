@@ -26,7 +26,8 @@ Next.js (App Router, TS) + Tailwind + Supabase (Postgres, Auth, Storage) + Verce
     /informasi/[slug]/page.tsx
     /data-statistik/page.tsx
     /potensi-daerah/page.tsx
-    /galeri/page.tsx
+    /berita/page.tsx
+    /berita/[slug]/page.tsx
     /edaran-dokumen/page.tsx
     /edaran-dokumen/[id]/page.tsx
     /pengaduan/page.tsx
@@ -39,7 +40,7 @@ Next.js (App Router, TS) + Tailwind + Supabase (Postgres, Auth, Storage) + Verce
     /informasi-publik/...
     /standar-pelayanan/...
     /potensi-daerah/...
-    /galeri/...
+    /berita/...
     /edaran-dokumen/...
     /pengaduan/...                 dashboard status
     /pengguna/page.tsx             khusus super_account
@@ -110,7 +111,7 @@ Field syarat/alur di Standar Pelayanan: tampilkan badge "Terjemahan otomatis —
 
 ## 8. Storage & Performa Gambar
 
-Client-side compress (`browser-image-compression`, target ~400KB, max 1600px) sebelum upload ke bucket Supabase Storage (`informasi-images`, `galeri-images`, `struktur-organisasi`, `potensi-daerah-images`). `next/image` untuk semua render.
+Client-side compress (`browser-image-compression`, target ~400KB, max 1600px) sebelum upload ke bucket Supabase Storage (`informasi-images`, `berita-images`, `struktur-organisasi`, `potensi-daerah-images`). `next/image` untuk semua render.
 
 ## 9. Anti-Spam Pengaduan
 

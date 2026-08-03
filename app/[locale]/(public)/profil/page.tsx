@@ -1,15 +1,23 @@
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 import { Card } from "@/components/ui/Card";
 import { CategoryLabel } from "@/components/ui/CategoryLabel";
 import { SectionDivider } from "@/components/ui/SectionDivider";
 import Image from "next/image";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Profil Kecamatan — Kecamatan Duampanua",
-  description:
-    "Sejarah, visi-misi, struktur organisasi, dan informasi ASN Kecamatan Duampanua.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "metadata" });
+  return {
+    title: t("profilTitle"),
+    description: t("profilDesc"),
+  };
+}
 
 export const revalidate = false;
 
@@ -28,6 +36,8 @@ export default async function ProfilPage({
 }) {
   const { locale } = await params;
 
+  const tProfil = await getTranslations({ locale, namespace: "profil" });
+
   let profil = null;
   let struktur: {
     id: string;
@@ -36,10 +46,16 @@ export default async function ProfilPage({
     foto_url: string | null;
     urutan: number;
   }[] = [];
+  let statistik: {
+    id: string;
+    nama_desa_kelurahan: string;
+    jumlah_penduduk: number | null;
+    tahun_data: number;
+  }[] = [];
 
   try {
     const supabase = await createClient();
-    const [profilRes, strukturRes] = await Promise.all([
+    const [profilRes, strukturRes, statistikRes] = await Promise.all([
       supabase
         .from("profil_kecamatan")
         .select(
@@ -51,9 +67,15 @@ export default async function ProfilPage({
         .from("struktur_organisasi")
         .select("id, nama_pejabat, jabatan, foto_url, urutan")
         .order("urutan", { ascending: true }),
+      supabase
+        .from("data_statistik")
+        .select("id, nama_desa_kelurahan, jumlah_penduduk, tahun_data")
+        .order("tahun_data", { ascending: false })
+        .order("nama_desa_kelurahan", { ascending: true }),
     ]);
     profil = profilRes.data;
     struktur = strukturRes.data ?? [];
+    statistik = statistikRes.data ?? [];
   } catch {
     // Graceful — tampil placeholder
   }
@@ -68,9 +90,9 @@ export default async function ProfilPage({
     <>
       {/* Header */}
       <section className="max-w-6xl mx-auto px-4 py-10 sm:py-14">
-        <CategoryLabel label="Tentang Kami" className="mb-1 block" />
+        <CategoryLabel label={tProfil("tentangKami")} className="mb-1 block" />
         <h1 className="font-display text-3xl sm:text-4xl font-semibold text-primary">
-          Profil Kecamatan
+          {tProfil("title")}
         </h1>
       </section>
 
@@ -82,14 +104,14 @@ export default async function ProfilPage({
         aria-labelledby="sejarah-heading"
       >
         <h2 id="sejarah-heading" className="font-display text-2xl font-semibold text-primary mb-4">
-          Sejarah
+          {tProfil("sejarah")}
         </h2>
         {sejarah ? (
           <div className="prose prose-sm max-w-none text-text/80 leading-relaxed whitespace-pre-line">
             {sejarah}
           </div>
         ) : (
-          <Placeholder pesan="Sejarah kecamatan sedang diperbarui." />
+          <Placeholder pesan={tProfil("sejarahPlaceholder")} />
         )}
       </section>
 
@@ -101,23 +123,23 @@ export default async function ProfilPage({
         aria-labelledby="visimisi-heading"
       >
         <h2 id="visimisi-heading" className="font-display text-2xl font-semibold text-primary mb-6">
-          Visi &amp; Misi
+          {tProfil("visiMisi")}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card padding="md">
-            <h3 className="font-medium text-primary mb-3">Visi</h3>
+            <h3 className="font-medium text-primary mb-3">{tProfil("visi")}</h3>
             {visi ? (
               <p className="text-text/80 text-sm leading-relaxed">{visi}</p>
             ) : (
-              <Placeholder pesan="Visi sedang diperbarui." />
+              <Placeholder pesan={tProfil("visiPlaceholder")} />
             )}
           </Card>
           <Card padding="md">
-            <h3 className="font-medium text-primary mb-3">Misi</h3>
+            <h3 className="font-medium text-primary mb-3">{tProfil("misi")}</h3>
             {misi ? (
               <p className="text-text/80 text-sm leading-relaxed whitespace-pre-line">{misi}</p>
             ) : (
-              <Placeholder pesan="Misi sedang diperbarui." />
+              <Placeholder pesan={tProfil("misiPlaceholder")} />
             )}
           </Card>
         </div>
@@ -132,10 +154,10 @@ export default async function ProfilPage({
         aria-labelledby="struktur-heading"
       >
         <h2 id="struktur-heading" className="font-display text-2xl font-semibold text-primary mb-6">
-          Struktur Organisasi
+          {tProfil("strukturOrganisasi")}
         </h2>
         {struktur.length === 0 ? (
-          <Placeholder pesan="Struktur organisasi sedang diperbarui." />
+          <Placeholder pesan={tProfil("strukturPlaceholder")} />
         ) : (
           <ul
             className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
@@ -148,7 +170,7 @@ export default async function ProfilPage({
                     {pejabat.foto_url ? (
                       <Image
                         src={pejabat.foto_url}
-                        alt={`Foto ${pejabat.nama_pejabat}`}
+                        alt={tProfil("fotoAlt", { nama: pejabat.nama_pejabat })}
                         width={80}
                         height={80}
                         className="object-cover w-full h-full"
@@ -182,17 +204,43 @@ export default async function ProfilPage({
         aria-labelledby="asn-heading"
       >
         <h2 id="asn-heading" className="font-display text-2xl font-semibold text-primary mb-4">
-          Jumlah ASN
+          {tProfil("jumlahAsn")}
         </h2>
-        {profil?.jumlah_asn != null ? (
+        {profil?.jumlah_asn != null && (
           <Card padding="md" className="inline-flex items-baseline gap-3">
             <span className="font-display text-5xl font-semibold text-primary font-mono">
               {profil.jumlah_asn}
             </span>
-            <span className="text-text/60 text-sm">orang ASN</span>
+            <span className="text-text/60 text-sm">{tProfil("asnSuffix")}</span>
           </Card>
+        )}
+      </section>
+
+      <SectionDivider className="mx-4 sm:mx-8" />
+
+      {/* Data Statistik Penduduk */}
+      <section
+        id="statistik"
+        className="max-w-6xl mx-auto px-4 py-10"
+        aria-labelledby="statistik-heading"
+      >
+        <h2 id="statistik-heading" className="font-display text-2xl font-semibold text-primary mb-6">
+          Data Statistik Penduduk
+        </h2>
+        {statistik.length === 0 ? (
+          <Placeholder pesan="Data statistik belum tersedia." />
         ) : (
-          <Placeholder pesan="Data jumlah ASN sedang diperbarui." />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {statistik.map((stat) => (
+              <Card key={stat.id} padding="md" className="flex flex-col gap-2">
+                <span className="text-sm font-medium text-text/60">{stat.nama_desa_kelurahan}</span>
+                <span className="font-display text-3xl font-semibold text-primary">
+                  {stat.jumlah_penduduk ? new Intl.NumberFormat("id-ID").format(stat.jumlah_penduduk) : "-"}
+                </span>
+                <span className="text-xs text-text/40">Tahun Data: {stat.tahun_data}</span>
+              </Card>
+            ))}
+          </div>
         )}
       </section>
     </>

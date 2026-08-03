@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
-import { LayoutDashboard, FileText, BookOpen, Users, Settings, LogOut, UserCog } from "lucide-react";
+import { LayoutDashboard, FileText, BookOpen, Users, Settings, LogOut, UserCog, Newspaper, Map, BarChart, FileBox, MessageSquareWarning } from "lucide-react";
 import { SectionDivider } from "@/components/ui/SectionDivider";
 
 interface AdminLayoutProps {
@@ -11,7 +11,12 @@ interface AdminLayoutProps {
 const navItems = [
   { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
   { label: "Informasi Publik", href: "/admin/informasi-publik", icon: BookOpen },
+  { label: "Berita", href: "/admin/berita", icon: Newspaper },
   { label: "Standar Pelayanan", href: "/admin/standar-pelayanan", icon: FileText },
+  { label: "Potensi Daerah", href: "/admin/potensi-daerah", icon: Map },
+  { label: "Data Statistik", href: "/admin/data-statistik", icon: BarChart },
+  { label: "Edaran Dokumen", href: "/admin/edaran-dokumen", icon: FileBox },
+  { label: "Pengaduan", href: "/admin/pengaduan", icon: MessageSquareWarning },
   { label: "Profil & Kontak", href: "/admin/profil", icon: Settings },
   { label: "Pengaturan Akun", href: "/admin/pengaturan-akun", icon: UserCog },
 ];

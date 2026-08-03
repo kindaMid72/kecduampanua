@@ -7,10 +7,13 @@ export async function updateProfilAction(formData: FormData) {
   const raw = {
     nama_kecamatan: formData.get("nama_kecamatan") || null,
     sejarah: formData.get("sejarah") || null,
+    sejarah_en: formData.get("sejarah_en") || null,
     visi: formData.get("visi") || null,
+    visi_en: formData.get("visi_en") || null,
     misi: formData.get("misi") || null,
+    misi_en: formData.get("misi_en") || null,
     jumlah_asn: formData.get("jumlah_asn") ? parseInt(formData.get("jumlah_asn") as string) : null,
-    
+
     // Kontak
     alamat: formData.get("alamat") || null,
     telepon: formData.get("telepon") || null,
@@ -25,6 +28,7 @@ export async function updateProfilAction(formData: FormData) {
     ppid_kontak: formData.get("ppid_kontak") || null,
     ppid_jam_layanan: formData.get("ppid_jam_layanan") || null,
     maklumat_pelayanan: formData.get("maklumat_pelayanan") || null,
+    maklumat_pelayanan_en: formData.get("maklumat_pelayanan_en") || null,
   };
 
   const supabase = await createClient();
@@ -34,54 +38,23 @@ export async function updateProfilAction(formData: FormData) {
     return { error: "Anda belum login." };
   }
 
-  // Auto-translate best effort
-  let sejarah_en = null;
-  let visi_en = null;
-  let misi_en = null;
-  let maklumat_pelayanan_en = null;
-
-  if (process.env.GOOGLE_TRANSLATE_API_KEY) {
-    try {
-      const trans = async (text: string) => {
-        const res = await fetch("http://localhost:3000/api/translate", {
-          method: "POST",
-          body: JSON.stringify({ text, target: "en" })
-        });
-        const data = await res.json();
-        return data.translated;
-      };
-
-      if (raw.sejarah) sejarah_en = await trans(raw.sejarah as string);
-      if (raw.visi) visi_en = await trans(raw.visi as string);
-      if (raw.misi) misi_en = await trans(raw.misi as string);
-      if (raw.maklumat_pelayanan) maklumat_pelayanan_en = await trans(raw.maklumat_pelayanan as string);
-    } catch {
-      // ignore
-    }
-  }
-
-  // Karena profil_kecamatan adalah single-row (tapi id-nya UUID), kita cari id-nya dulu
-  const { data: existing } = await supabase.from("profil_kecamatan").select("id").limit(1).maybeSingle();
-
-  const dataToSave = {
-    ...raw,
-    sejarah_en,
-    visi_en,
-    misi_en,
-    maklumat_pelayanan_en,
-  };
+  const { data: existing } = await supabase
+    .from("profil_kecamatan")
+    .select("id")
+    .limit(1)
+    .maybeSingle();
 
   let error;
   if (existing?.id) {
     const { error: updateError } = await supabase
       .from("profil_kecamatan")
-      .update(dataToSave)
+      .update(raw)
       .eq("id", existing.id);
     error = updateError;
   } else {
     const { error: insertError } = await supabase
       .from("profil_kecamatan")
-      .insert(dataToSave);
+      .insert(raw);
     error = insertError;
   }
 
@@ -91,5 +64,76 @@ export async function updateProfilAction(formData: FormData) {
   }
 
   revalidatePath("/", "layout");
+  return { success: true };
+}
+
+export async function createPejabatAction(formData: FormData) {
+  const raw = {
+    nama_pejabat: formData.get("nama_pejabat") as string,
+    jabatan: formData.get("jabatan") as string,
+    foto_url: formData.get("foto_url") as string || null,
+    urutan: parseInt(formData.get("urutan") as string) || 0,
+  };
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Anda belum login." };
+  }
+
+  const { error } = await supabase.from("struktur_organisasi").insert(raw);
+  if (error) {
+    console.error(error);
+    return { error: "Gagal menyimpan pejabat." };
+  }
+
+  revalidatePath("/admin/profil");
+  revalidatePath("/profil");
+  return { success: true };
+}
+
+export async function updatePejabatAction(id: string, formData: FormData) {
+  const raw = {
+    nama_pejabat: formData.get("nama_pejabat") as string,
+    jabatan: formData.get("jabatan") as string,
+    foto_url: formData.get("foto_url") as string || null,
+    urutan: parseInt(formData.get("urutan") as string) || 0,
+  };
+
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Anda belum login." };
+  }
+
+  const { error } = await supabase.from("struktur_organisasi").update(raw).eq("id", id);
+  if (error) {
+    console.error(error);
+    return { error: "Gagal memperbarui pejabat." };
+  }
+
+  revalidatePath("/admin/profil");
+  revalidatePath("/profil");
+  return { success: true };
+}
+
+export async function deletePejabatAction(id: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user) {
+    return { error: "Anda belum login." };
+  }
+
+  const { error } = await supabase.from("struktur_organisasi").delete().eq("id", id);
+  if (error) {
+    console.error(error);
+    return { error: "Gagal menghapus pejabat." };
+  }
+
+  revalidatePath("/admin/profil");
+  revalidatePath("/profil");
   return { success: true };
 }

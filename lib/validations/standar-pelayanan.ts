@@ -2,13 +2,16 @@ import { z } from "zod";
 
 export const layananSchema = z.object({
   nama_layanan: z.string().min(3, "Nama layanan minimal 3 karakter"),
-  deskripsi: z.string().optional().nullable(),
+  nama_layanan_en: z.string().optional().nullable().or(z.literal("")),
+  deskripsi: z.string().optional().nullable().or(z.literal("")),
+  deskripsi_en: z.string().optional().nullable().or(z.literal("")),
   syarat_dokumen: z
     .array(z.string().min(1))
     .optional()
     .default([]),
-  alur_proses: z.string().optional().nullable(),
-  estimasi_waktu: z.string().max(100).optional().nullable(),
+  alur_proses: z.string().optional().nullable().or(z.literal("")),
+  alur_proses_en: z.string().optional().nullable().or(z.literal("")),
+  estimasi_waktu: z.string().max(100).optional().nullable().or(z.literal("")),
   link_formulir_url: z
     .string()
     .url("Format URL tidak valid")
@@ -26,3 +29,4 @@ export const layananSchema = z.object({
 });
 
 export type LayananInput = z.input<typeof layananSchema>;
+

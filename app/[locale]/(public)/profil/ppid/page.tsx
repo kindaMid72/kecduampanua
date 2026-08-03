@@ -1,15 +1,23 @@
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 import { Card } from "@/components/ui/Card";
 import { CategoryLabel } from "@/components/ui/CategoryLabel";
 import { SectionDivider } from "@/components/ui/SectionDivider";
 import { ShieldCheck } from "lucide-react";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "PPID — Kecamatan Duampanua",
-  description:
-    "Pejabat Pengelola Informasi dan Dokumentasi (PPID) Kecamatan Duampanua. Keterbukaan informasi publik sesuai UU KIP No. 14/2008.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "metadata" });
+  return {
+    title: t("ppidTitle"),
+    description: t("ppidDesc"),
+  };
+}
 
 export const revalidate = false;
 
@@ -17,7 +25,15 @@ function Placeholder({ pesan }: { pesan: string }) {
   return <p className="text-sm text-text/50 italic">{pesan}</p>;
 }
 
-export default async function PPIDPage() {
+export default async function PPIDPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const tPpid = await getTranslations({ locale, namespace: "ppid" });
+  const tCommon = await getTranslations({ locale, namespace: "common" });
+
   let profil = null;
 
   try {
@@ -36,12 +52,12 @@ export default async function PPIDPage() {
     <>
       {/* Header */}
       <section className="max-w-6xl mx-auto px-4 py-10 sm:py-14">
-        <CategoryLabel label="Keterbukaan Informasi" className="mb-1 block" />
+        <CategoryLabel label={tPpid("tagline")} className="mb-1 block" />
         <h1 className="font-display text-3xl sm:text-4xl font-semibold text-primary mb-2">
-          PPID
+          {tPpid("title")}
         </h1>
         <p className="text-text/60 text-base max-w-xl">
-          Pejabat Pengelola Informasi dan Dokumentasi Kecamatan Duampanua
+          {tPpid("subTitle")}
         </p>
       </section>
 
@@ -53,19 +69,14 @@ export default async function PPIDPage() {
           <ShieldCheck size={24} className="text-secondary flex-shrink-0 mt-0.5" aria-hidden="true" />
           <div>
             <h2 id="dasar-hukum-heading" className="font-display text-2xl font-semibold text-primary">
-              Dasar Hukum
+              {tPpid("dasarHukum")}
             </h2>
           </div>
         </div>
 
         <Card padding="md" className="max-w-2xl">
           <p className="text-text/80 text-sm leading-relaxed">
-            {profil?.ppid_dasar_hukum ?? (
-              <>
-                Undang-Undang Nomor 14 Tahun 2008 tentang Keterbukaan Informasi Publik (UU KIP).
-                Setiap badan publik wajib menyediakan dan melayani permohonan informasi publik secara cepat, tepat waktu, biaya ringan, dan cara sederhana.
-              </>
-            )}
+            {profil?.ppid_dasar_hukum ?? tPpid("defaultDasarHukum")}
           </p>
         </Card>
       </section>
@@ -78,40 +89,40 @@ export default async function PPIDPage() {
         aria-labelledby="petugas-heading"
       >
         <h2 id="petugas-heading" className="font-display text-2xl font-semibold text-primary mb-6">
-          Petugas PPID
+          {tPpid("petugasPpid")}
         </h2>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl">
           <Card padding="md">
             <p className="text-xs font-mono text-text/50 uppercase tracking-wide mb-1">
-              Nama Petugas
+              {tPpid("namaPetugas")}
             </p>
             {profil?.ppid_nama_petugas ? (
               <p className="font-medium text-text">{profil.ppid_nama_petugas}</p>
             ) : (
-              <Placeholder pesan="Sedang dilengkapi" />
+              <Placeholder pesan={tCommon("sedangDiperbarui")} />
             )}
           </Card>
 
           <Card padding="md">
             <p className="text-xs font-mono text-text/50 uppercase tracking-wide mb-1">
-              Kontak
+              {tPpid("kontak")}
             </p>
             {profil?.ppid_kontak ? (
               <p className="font-medium text-text font-mono">{profil.ppid_kontak}</p>
             ) : (
-              <Placeholder pesan="Sedang dilengkapi" />
+              <Placeholder pesan={tCommon("sedangDiperbarui")} />
             )}
           </Card>
 
           <Card padding="md">
             <p className="text-xs font-mono text-text/50 uppercase tracking-wide mb-1">
-              Jam Layanan
+              {tPpid("jamLayanan")}
             </p>
             {profil?.ppid_jam_layanan ? (
               <p className="font-medium text-text font-mono text-sm">{profil.ppid_jam_layanan}</p>
             ) : (
-              <Placeholder pesan="Sedang dilengkapi" />
+              <Placeholder pesan={tCommon("sedangDiperbarui")} />
             )}
           </Card>
         </div>
@@ -123,8 +134,7 @@ export default async function PPIDPage() {
       <section className="max-w-6xl mx-auto px-4 py-10">
         <Card padding="md" className="max-w-2xl bg-primary/5 border-primary/20">
           <p className="text-sm text-text/70 leading-relaxed">
-            <strong className="text-primary">Catatan:</strong> Halaman ini merupakan versi minimal PPID sesuai kewajiban dasar UU KIP.
-            Untuk permohonan informasi publik, silakan menghubungi petugas PPID melalui kontak di atas.
+            <strong className="text-primary">{tPpid("catatan")}:</strong> {tPpid("catatanText")}
           </p>
         </Card>
       </section>

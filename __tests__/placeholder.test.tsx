@@ -1,6 +1,25 @@
 import { render, screen } from "@testing-library/react";
 import { expect, test, vi } from "vitest";
 import ProfilPage from "@/app/[locale]/(public)/profil/page";
+import idMessages from "@/messages/id.json";
+
+// Mock next-intl/server for Vitest
+vi.mock("next-intl/server", () => ({
+  getTranslations: vi.fn(async ({ namespace }: { namespace?: string }) => {
+    const nsObj = namespace
+      ? (idMessages as Record<string, Record<string, string>>)[namespace]
+      : (idMessages as unknown as Record<string, string>);
+    return (key: string, values?: Record<string, string>) => {
+      let text = nsObj?.[key] ?? key;
+      if (values) {
+        Object.entries(values).forEach(([k, v]) => {
+          text = text.replace(new RegExp(`{${k}}`, "g"), v);
+        });
+      }
+      return text;
+    };
+  }),
+}));
 
 // Mock Supabase client
 vi.mock("@/lib/supabase/server", () => ({

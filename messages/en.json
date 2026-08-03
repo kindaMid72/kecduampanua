@@ -1,13 +1,34 @@
 {
   "metadata": {
     "siteName": "Duampanua Sub-District",
-    "siteDescription": "Official Website of Duampanua Sub-District"
+    "siteDescription": "Official Website of Duampanua Sub-District",
+    "berandaTitle": "Home — Duampanua Sub-District",
+    "berandaDesc": "Official website of Duampanua Sub-District. Public service information, announcements, and sub-district profile.",
+    "profilTitle": "Sub-District Profile — Duampanua Sub-District",
+    "profilDesc": "History, vision-mission, organizational structure, and civil servants of Duampanua Sub-District.",
+    "ppidTitle": "PPID — Duampanua Sub-District",
+    "ppidDesc": "Information Management and Documentation Officer (PPID) of Duampanua Sub-District. Public information disclosure in accordance with Law No. 14/2008.",
+    "standarPelayananTitle": "Service Standards — Duampanua Sub-District",
+    "standarPelayananDesc": "Procedures, required documents, and estimated processing time for administrative services in Duampanua Sub-District.",
+    "informasiTitle": "Public Information — Duampanua Sub-District",
+    "informasiDesc": "Official announcements, activity agendas, and meeting schedules of Duampanua Sub-District.",
+    "kontakTitle": "Contact — Duampanua Sub-District",
+    "kontakDesc": "Address, phone number, email, and operating hours of Duampanua Sub-District Office.",
+    "beritaTitle": "News — Duampanua Sub-District",
+    "beritaDesc": "Articles and official activity coverage of Duampanua Sub-District.",
+    "potensiTitle": "Local Potential | Duampanua District",
+    "potensiDesc": "Information on economic, tourism, and processing potential in Duampanua District.",
+    "edaranTitle": "Circulars & Documents | Duampanua District",
+    "edaranDesc": "Collection of circulars, documents, regulations, guidelines, and official reports.",
+    "pengaduanTitle": "Public Complaints | Duampanua District",
+    "pengaduanDesc": "Integrated public complaint service of Duampanua District."
   },
   "nav": {
     "beranda": "Home",
     "profil": "Profile",
     "sejarah": "History",
     "visiMisi": "Vision & Mission",
+    "sejarahVisiMisi": "History & Vision-Mission",
     "strukturOrganisasi": "Organizational Structure",
     "jumlahAsn": "Civil Servants",
     "ppid": "PPID",
@@ -15,12 +36,16 @@
     "potensiDaerah": "Regional Potential",
     "informasi": "Information",
     "informasiPublik": "Public Information",
-    "galeri": "Gallery",
+    "berita": "News",
     "layananPublik": "Public Services",
     "standarPelayanan": "Service Standards",
     "pengaduan": "Public Complaints",
     "edaranDokumen": "Document Circulars",
-    "kontak": "Contact"
+    "kontak": "Contact",
+    "ariaNavigasiUtama": "Main Navigation",
+    "ariaNavigasiMobile": "Mobile Navigation",
+    "bukaMenu": "Open menu",
+    "tutupMenu": "Close menu"
   },
   "common": {
     "selengkapnya": "Read More",
@@ -36,69 +61,193 @@
     "sedangDiperbarui": "Data is being updated",
     "memuatData": "Loading data...",
     "terbitkan": "Publish",
-    "arsipkan": "Archive"
+    "arsipkan": "Archive",
+    "semua": "All"
   },
   "beranda": {
     "title": "Home",
+    "selamatDatang": "Welcome",
+    "tagline": "Transparent and accessible public services",
     "papanInformasi": "Information Board",
     "statusKantor": "Office Status",
+    "statusKantorDiperbarui": "Office status is being updated",
+    "kantorBuka": "Office Open",
+    "kantorTutup": "Office Closed",
     "jamLayanan": "Service Hours",
+    "jamLayananDiperbarui": "Service hours information is being updated",
+    "hariKerja": "Monday – Friday",
     "aksesCepat": "Quick Access",
-    "informasiTerbaru": "Latest Information"
+    "terbaru": "Latest",
+    "informasiTerbaru": "Public Information",
+    "lihatSemua": "View all →",
+    "placeholderInfo": "Information is not yet available. Content will appear here once published by staff.",
+    "layanan": "Services",
+    "aksesCepatStandarPelayananDesc": "Procedures, requirements, and estimated time for administrative services",
+    "aksesCepatInformasiDesc": "Announcements, events, and sub-district meeting schedules",
+    "aksesCepatKontakDesc": "Address, phone number, and office operating hours"
   },
   "profil": {
     "title": "Sub-District Profile",
+    "tentangKami": "About Us",
     "sejarah": "History",
+    "visiMisi": "Vision & Mission",
     "visi": "Vision",
     "misi": "Mission",
     "strukturOrganisasi": "Organizational Structure",
-    "jumlahAsn": "Number of Civil Servants"
+    "jumlahAsn": "Civil Servants",
+    "asnSuffix": "civil servants",
+    "fotoAlt": "Photo of {nama}",
+    "sejarahPlaceholder": "Sub-district history is being updated.",
+    "visiPlaceholder": "Vision is being updated.",
+    "misiPlaceholder": "Mission is being updated.",
+    "strukturPlaceholder": "Organizational structure is being updated.",
+    "asnPlaceholder": "Civil servant count data is being updated."
+  },
+  "ppid": {
+    "title": "PPID",
+    "tagline": "Information Disclosure",
+    "subTitle": "Information Management and Documentation Officer of Duampanua Sub-District",
+    "dasarHukum": "Legal Basis",
+    "defaultDasarHukum": "Law Number 14 of 2008 concerning Public Information Disclosure (UU KIP). Every public body is obliged to provide and serve public information requests quickly, on time, at low cost, and in a simple manner.",
+    "petugasPpid": "PPID Officer",
+    "namaPetugas": "Officer Name",
+    "kontak": "Contact",
+    "jamLayanan": "Service Hours",
+    "catatan": "Note",
+    "catatanText": "This page is a minimal PPID version in accordance with UU KIP basic obligations. For public information requests, please contact the PPID officer via the contact above."
   },
   "standarPelayanan": {
     "title": "Service Standards",
+    "category": "Public Services",
     "maklumat": "Service Declaration",
+    "daftarLayanan": "Service List",
     "syaratDokumen": "Required Documents",
     "alurProses": "Process / Procedure",
     "estimasiWaktu": "Estimated Time",
-    "unduhFormulir": "Download Form"
+    "estimasi": "Estimated:",
+    "unduhFormulir": "Download Form",
+    "dokumenStandar": "Service Standards Doc.",
+    "placeholderMaklumat": "Service declaration is being prepared.",
+    "placeholderLayanan": "Service standards are being prepared by sub-district staff."
   },
   "informasiPublik": {
     "title": "Public Information",
+    "category": "Information",
+    "subtitle": "Official announcements, activity agendas, and meeting schedules of Duampanua Sub-District.",
     "pengumuman": "Announcements",
     "kegiatan": "Activities",
     "jadwalRapat": "Meeting Schedules",
     "tanggalAcara": "Event Date",
-    "lokasi": "Location"
+    "lokasi": "Location",
+    "kembali": "Back to Public Information",
+    "placeholderList": "No public information has been published yet.",
+    "filterSemua": "All"
   },
   "pengaduan": {
     "title": "Public Complaints",
-    "formTitle": "Complaint Form",
-    "namaPelapor": "Reporter Name",
-    "kontakPelapor": "Phone Number / Email",
-    "kategori": "Complaint Category",
-    "deskripsi": "Complaint Description",
-    "lampiran": "Attachment (optional)",
-    "persetujuanData": "I consent to the use of my personal data in accordance with applicable regulations",
-    "cekStatus": "Check Complaint Status",
-    "nomorTracking": "Tracking Number",
-    "masukkanNomor": "Enter your tracking number (e.g., PGD-XXXXXXXX)",
-    "status": {
-      "baru": "New",
-      "diproses": "In Progress",
-      "selesai": "Completed"
+    "subtitle": "Submit your reports, complaints, or aspirations. We guarantee your data privacy.",
+    "form": {
+      "nama": "Full Name",
+      "kontak": "Phone Number / Email",
+      "kategori": "Report Category",
+      "deskripsi": "Report Description",
+      "lampiran": "Attachment (Optional, max 5MB)",
+      "pdp": "I agree that my personal data will be processed for the purpose of follow-up to this report in accordance with applicable regulations.",
+      "submit": "Submit Report",
+      "submitting": "Submitting...",
+      "success": "Report Successfully Submitted",
+      "successDesc": "Save the following tracking number to check your report status:",
+      "copy": "Copy",
+      "copied": "Copied",
+      "cekStatus": "Check Report Status"
     },
-    "bannerLapor": "You can also report through the national channel SP4N-LAPOR!"
+    "kategori": {
+      "pilih": "-- Select Category --",
+      "infrastruktur": "Infrastructure & Public Facilities",
+      "pelayanan": "Public Services",
+      "keamanan": "Security & Order",
+      "lingkungan": "Environment & Cleanliness",
+      "lainnya": "Others"
+    },
+    "status": {
+      "title": "Check Complaint Status",
+      "subtitle": "Enter your tracking number (Example: PND-12345678)",
+      "placeholder": "Tracking Number",
+      "cek": "Check Status",
+      "notFound": "Complaint not found. Please ensure the tracking number is correct.",
+      "baru": "Newly Received",
+      "diproses": "Being Processed",
+      "selesai": "Completed",
+      "catatan": "Follow-up Note:",
+      "tanggal": "Report Date:"
+    },
+    "lapor": {
+      "title": "SP4N-LAPOR!",
+      "desc": "You can also submit complaints through the National Public Service Complaint Management System (SP4N-LAPOR!).",
+      "btn": "Visit LAPOR!"
+    }
   },
   "kontak": {
     "title": "Contact",
+    "hubungiKami": "Contact Us",
     "alamat": "Address",
     "telepon": "Phone",
     "email": "Email",
     "jamOperasional": "Operating Hours",
-    "peta": "Location on Map"
+    "peta": "Location on Map",
+    "bukaPeta": "Open in OpenStreetMap",
+    "iframeTitle": "Duampanua Sub-District Office Location",
+    "placeholderAlamat": "Address is being updated",
+    "placeholderTelepon": "Phone number is being updated",
+    "placeholderEmail": "Email is being updated",
+    "placeholderJam": "Operating hours are being updated",
+    "placeholderPeta": "Location coordinates are being updated",
+    "layananPengaduan": "Public Complaint Service",
+    "pengaduanDesc": "Submit your reports, aspirations, or complaints through our integrated public complaint form.",
+    "buatLaporan": "Create Report / Check Status"
   },
   "footer": {
-    "hakCipta": "© {year} Duampanua Sub-District. All rights reserved.",
-    "dikelola": "Managed by Duampanua Sub-District"
+    "navigasi": "Navigation",
+    "informasi": "Information",
+    "keterbukaanInformasi": "Public Information Disclosure (PPID)",
+    "placeholderAlamat": "Address is being updated",
+    "ariaNavigasiFooter": "Footer navigation",
+    "hakCipta": "© {year} {nama}. All rights reserved.",
+    "dikelola": "Managed by {nama}"
+  },
+  "berita": {
+    "title": "News",
+    "category": "Information",
+    "subtitle": "Articles and official activity coverage of Duampanua Sub-District.",
+    "kembali": "Back to News",
+    "placeholderList": "No news has been published yet.",
+    "filterSemua": "All"
+  },
+  "potensi": {
+    "title": "Local Potential",
+    "subtitle": "Explore the various economic, tourism, and natural resource potentials in Duampanua District.",
+    "kategori": {
+      "semua": "All Categories",
+      "ekonomi": "Economy",
+      "wisata": "Tourism",
+      "pengolahan": "Processing"
+    },
+    "lokasi": "Location",
+    "emptyData": "No local potential data available for this category yet."
+  },
+  "edaran": {
+    "title": "Circulars & Public Documents",
+    "subtitle": "Access various regulations, circulars, service guidelines, and official reports from the Duampanua District Government.",
+    "kategori": {
+      "semua": "All Categories",
+      "regulasi": "Regulations",
+      "panduan": "Guidelines",
+      "laporan": "Reports",
+      "lainnya": "Others"
+    },
+    "nomor": "Document Number:",
+    "unduh": "Download Document",
+    "lihat": "View Document",
+    "emptyData": "No documents available for this category yet."
   }
 }

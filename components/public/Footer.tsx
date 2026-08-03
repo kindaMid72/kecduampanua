@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { SectionDivider } from "@/components/ui/SectionDivider";
 import { MapPin, Phone, Mail, Clock } from "lucide-react";
 
@@ -13,9 +14,22 @@ interface FooterProps {
   } | null;
 }
 
-export function Footer({ locale, profil }: FooterProps) {
+export async function Footer({ locale, profil }: FooterProps) {
+  const tFooter = await getTranslations({ locale, namespace: "footer" });
+  const tNav = await getTranslations({ locale, namespace: "nav" });
+  const tMeta = await getTranslations({ locale, namespace: "metadata" });
+
   const year = new Date().getFullYear();
-  const nama = profil?.nama_kecamatan ?? "Kecamatan Duampanua";
+  const nama = profil?.nama_kecamatan ?? tMeta("siteName");
+
+  const navLinks = [
+    { label: tNav("beranda"), href: "" },
+    { label: tNav("profil"), href: "/profil" },
+    { label: tNav("standarPelayanan"), href: "/standar-pelayanan" },
+    { label: tNav("informasiPublik"), href: "/informasi" },
+    { label: tNav("ppid"), href: "/profil/ppid" },
+    { label: tNav("kontak"), href: "/kontak" },
+  ];
 
   return (
     <footer className="bg-primary text-white/80 mt-auto">
@@ -37,7 +51,7 @@ export function Footer({ locale, profil }: FooterProps) {
               ) : (
                 <p className="flex gap-2 opacity-50">
                   <MapPin size={14} className="flex-shrink-0 mt-0.5" aria-hidden="true" />
-                  <span className="italic">Alamat sedang dilengkapi</span>
+                  <span className="italic">{tFooter("placeholderAlamat")}</span>
                 </p>
               )}
               {profil?.telepon && (
@@ -66,17 +80,10 @@ export function Footer({ locale, profil }: FooterProps) {
           </div>
 
           {/* Kolom 2 — Navigasi cepat */}
-          <nav aria-label="Navigasi footer">
-            <h3 className="text-white font-medium text-sm mb-3">Navigasi</h3>
+          <nav aria-label={tFooter("ariaNavigasiFooter")}>
+            <h3 className="text-white font-medium text-sm mb-3">{tFooter("navigasi")}</h3>
             <ul className="space-y-2 text-sm" role="list">
-              {[
-                { label: "Beranda", href: "" },
-                { label: "Profil Kecamatan", href: "/profil" },
-                { label: "Standar Pelayanan", href: "/standar-pelayanan" },
-                { label: "Informasi Publik", href: "/informasi" },
-                { label: "PPID", href: "/profil/ppid" },
-                { label: "Kontak", href: "/kontak" },
-              ].map((link) => (
+              {navLinks.map((link) => (
                 <li key={link.href}>
                   <Link
                     href={`/${locale}${link.href}`}
@@ -91,7 +98,7 @@ export function Footer({ locale, profil }: FooterProps) {
 
           {/* Kolom 3 — Info tambahan */}
           <div>
-            <h3 className="text-white font-medium text-sm mb-3">Informasi</h3>
+            <h3 className="text-white font-medium text-sm mb-3">{tFooter("informasi")}</h3>
             <ul className="space-y-2 text-sm" role="list">
               <li>
                 <a
@@ -105,7 +112,7 @@ export function Footer({ locale, profil }: FooterProps) {
               </li>
               <li>
                 <Link href={`/${locale}/profil/ppid`} className="hover:text-white transition-colors">
-                  Keterbukaan Informasi (PPID)
+                  {tFooter("keterbukaanInformasi")}
                 </Link>
               </li>
             </ul>
@@ -114,8 +121,8 @@ export function Footer({ locale, profil }: FooterProps) {
 
         {/* Copyright */}
         <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs text-white/40 font-mono">
-          <p>© {year} {nama}. Seluruh hak dilindungi.</p>
-          <p>Dikelola oleh {nama}</p>
+          <p>{tFooter("hakCipta", { year, nama })}</p>
+          <p>{tFooter("dikelola", { nama })}</p>
         </div>
       </div>
     </footer>

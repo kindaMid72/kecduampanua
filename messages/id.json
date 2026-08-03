@@ -1,13 +1,34 @@
 {
   "metadata": {
     "siteName": "Kecamatan Duampanua",
-    "siteDescription": "Website Resmi Kecamatan Duampanua"
+    "siteDescription": "Website Resmi Kecamatan Duampanua",
+    "berandaTitle": "Beranda — Kecamatan Duampanua",
+    "berandaDesc": "Website resmi Kecamatan Duampanua. Informasi layanan publik, pengumuman, dan profil kecamatan.",
+    "profilTitle": "Profil Kecamatan — Kecamatan Duampanua",
+    "profilDesc": "Sejarah, visi-misi, struktur organisasi, dan informasi ASN Kecamatan Duampanua.",
+    "ppidTitle": "PPID — Kecamatan Duampanua",
+    "ppidDesc": "Pejabat Pengelola Informasi dan Dokumentasi (PPID) Kecamatan Duampanua. Keterbukaan informasi publik sesuai UU KIP No. 14/2008.",
+    "standarPelayananTitle": "Standar Pelayanan — Kecamatan Duampanua",
+    "standarPelayananDesc": "Prosedur, syarat dokumen, dan estimasi waktu layanan administrasi Kecamatan Duampanua.",
+    "informasiTitle": "Informasi Publik — Kecamatan Duampanua",
+    "informasiDesc": "Pengumuman, agenda kegiatan, dan jadwal rapat resmi Kecamatan Duampanua.",
+    "kontakTitle": "Kontak — Kecamatan Duampanua",
+    "kontakDesc": "Alamat, nomor telepon, email, dan jam operasional Kantor Kecamatan Duampanua.",
+    "beritaTitle": "Berita — Kecamatan Duampanua",
+    "beritaDesc": "Artikel dan liputan kegiatan resmi Kecamatan Duampanua.",
+    "potensiTitle": "Potensi Daerah | Kecamatan Duampanua",
+    "potensiDesc": "Informasi potensi ekonomi, wisata, dan pengolahan di Kecamatan Duampanua.",
+    "edaranTitle": "Edaran & Dokumen | Kecamatan Duampanua",
+    "edaranDesc": "Kumpulan edaran, dokumen, regulasi, panduan, dan laporan resmi.",
+    "pengaduanTitle": "Pengaduan Masyarakat | Kecamatan Duampanua",
+    "pengaduanDesc": "Layanan pengaduan masyarakat terpadu Kecamatan Duampanua."
   },
   "nav": {
     "beranda": "Beranda",
     "profil": "Profil",
     "sejarah": "Sejarah",
     "visiMisi": "Visi & Misi",
+    "sejarahVisiMisi": "Sejarah & Visi-Misi",
     "strukturOrganisasi": "Struktur Organisasi",
     "jumlahAsn": "Jumlah ASN",
     "ppid": "PPID",
@@ -15,12 +36,16 @@
     "potensiDaerah": "Potensi Daerah",
     "informasi": "Informasi",
     "informasiPublik": "Informasi Publik",
-    "galeri": "Galeri",
+    "berita": "Berita",
     "layananPublik": "Layanan Publik",
     "standarPelayanan": "Standar Pelayanan",
     "pengaduan": "Pengaduan Masyarakat",
     "edaranDokumen": "Edaran Dokumen",
-    "kontak": "Kontak"
+    "kontak": "Kontak",
+    "ariaNavigasiUtama": "Navigasi Utama",
+    "ariaNavigasiMobile": "Navigasi mobile",
+    "bukaMenu": "Buka menu",
+    "tutupMenu": "Tutup menu"
   },
   "common": {
     "selengkapnya": "Selengkapnya",
@@ -36,69 +61,193 @@
     "sedangDiperbarui": "Data sedang diperbarui",
     "memuatData": "Memuat data...",
     "terbitkan": "Terbitkan",
-    "arsipkan": "Arsipkan"
+    "arsipkan": "Arsipkan",
+    "semua": "Semua"
   },
   "beranda": {
     "title": "Beranda",
+    "selamatDatang": "Selamat Datang",
+    "tagline": "Pelayanan publik yang transparan dan mudah dijangkau",
     "papanInformasi": "Papan Informasi",
     "statusKantor": "Status Kantor",
+    "statusKantorDiperbarui": "Status kantor sedang diperbarui",
+    "kantorBuka": "Kantor Buka",
+    "kantorTutup": "Kantor Tutup",
     "jamLayanan": "Jam Layanan",
+    "jamLayananDiperbarui": "Informasi jam layanan sedang dilengkapi",
+    "hariKerja": "Senin – Jumat",
     "aksesCepat": "Akses Cepat",
-    "informasiTerbaru": "Informasi Terbaru"
+    "terbaru": "Terbaru",
+    "informasiTerbaru": "Informasi Publik",
+    "lihatSemua": "Lihat semua →",
+    "placeholderInfo": "Informasi belum tersedia. Konten akan muncul di sini setelah diterbitkan oleh staf.",
+    "layanan": "Layanan",
+    "aksesCepatStandarPelayananDesc": "Prosedur, syarat, dan estimasi waktu layanan administrasi",
+    "aksesCepatInformasiDesc": "Pengumuman, kegiatan, dan jadwal rapat kecamatan",
+    "aksesCepatKontakDesc": "Alamat, nomor telepon, dan jam operasional kantor"
   },
   "profil": {
     "title": "Profil Kecamatan",
+    "tentangKami": "Tentang Kami",
     "sejarah": "Sejarah",
+    "visiMisi": "Visi & Misi",
     "visi": "Visi",
     "misi": "Misi",
     "strukturOrganisasi": "Struktur Organisasi",
-    "jumlahAsn": "Jumlah ASN"
+    "jumlahAsn": "Jumlah ASN",
+    "asnSuffix": "orang ASN",
+    "fotoAlt": "Foto {nama}",
+    "sejarahPlaceholder": "Sejarah kecamatan sedang diperbarui.",
+    "visiPlaceholder": "Visi sedang diperbarui.",
+    "misiPlaceholder": "Misi sedang diperbarui.",
+    "strukturPlaceholder": "Struktur organisasi sedang diperbarui.",
+    "asnPlaceholder": "Data jumlah ASN sedang diperbarui."
+  },
+  "ppid": {
+    "title": "PPID",
+    "tagline": "Keterbukaan Informasi",
+    "subTitle": "Pejabat Pengelola Informasi dan Dokumentasi Kecamatan Duampanua",
+    "dasarHukum": "Dasar Hukum",
+    "defaultDasarHukum": "Undang-Undang Nomor 14 Tahun 2008 tentang Keterbukaan Informasi Publik (UU KIP). Setiap badan publik wajib menyediakan dan melayani permohonan informasi publik secara cepat, tepat waktu, biaya ringan, dan cara sederhana.",
+    "petugasPpid": "Petugas PPID",
+    "namaPetugas": "Nama Petugas",
+    "kontak": "Kontak",
+    "jamLayanan": "Jam Layanan",
+    "catatan": "Catatan",
+    "catatanText": "Halaman ini merupakan versi minimal PPID sesuai kewajiban dasar UU KIP. Untuk permohonan informasi publik, silakan menghubungi petugas PPID melalui kontak di atas."
   },
   "standarPelayanan": {
     "title": "Standar Pelayanan",
+    "category": "Layanan Publik",
     "maklumat": "Maklumat Pelayanan",
+    "daftarLayanan": "Daftar Layanan",
     "syaratDokumen": "Syarat Dokumen",
     "alurProses": "Alur / Prosedur",
     "estimasiWaktu": "Estimasi Waktu",
-    "unduhFormulir": "Unduh Formulir"
+    "estimasi": "Estimasi:",
+    "unduhFormulir": "Unduh Formulir",
+    "dokumenStandar": "Dok. Standar Pelayanan",
+    "placeholderMaklumat": "Maklumat pelayanan sedang disiapkan.",
+    "placeholderLayanan": "Standar pelayanan sedang disiapkan oleh staf kecamatan."
   },
   "informasiPublik": {
     "title": "Informasi Publik",
+    "category": "Informasi",
+    "subtitle": "Pengumuman resmi, agenda kegiatan, dan jadwal rapat Kecamatan Duampanua.",
     "pengumuman": "Pengumuman",
     "kegiatan": "Kegiatan",
     "jadwalRapat": "Jadwal Rapat",
     "tanggalAcara": "Tanggal Acara",
-    "lokasi": "Lokasi"
+    "lokasi": "Lokasi",
+    "kembali": "Kembali ke Informasi Publik",
+    "placeholderList": "Belum ada informasi publik yang diterbitkan.",
+    "filterSemua": "Semua"
   },
   "pengaduan": {
     "title": "Pengaduan Masyarakat",
-    "formTitle": "Formulir Pengaduan",
-    "namaPelapor": "Nama Pelapor",
-    "kontakPelapor": "Nomor HP / Email",
-    "kategori": "Kategori Pengaduan",
-    "deskripsi": "Uraian Pengaduan",
-    "lampiran": "Lampiran (opsional)",
-    "persetujuanData": "Saya menyetujui penggunaan data pribadi sesuai ketentuan yang berlaku",
-    "cekStatus": "Cek Status Pengaduan",
-    "nomorTracking": "Nomor Tracking",
-    "masukkanNomor": "Masukkan nomor tracking Anda (contoh: PGD-XXXXXXXX)",
-    "status": {
-      "baru": "Baru",
-      "diproses": "Diproses",
-      "selesai": "Selesai"
+    "subtitle": "Sampaikan laporan, keluhan, atau aspirasi Anda. Kami menjamin kerahasiaan data Anda.",
+    "form": {
+      "nama": "Nama Lengkap",
+      "kontak": "Nomor HP / Email",
+      "kategori": "Kategori Laporan",
+      "deskripsi": "Deskripsi Laporan",
+      "lampiran": "Lampiran (Opsional, max 5MB)",
+      "pdp": "Saya menyetujui data pribadi saya diproses untuk keperluan tindak lanjut laporan ini sesuai dengan peraturan yang berlaku.",
+      "submit": "Kirim Laporan",
+      "submitting": "Mengirim...",
+      "success": "Laporan Berhasil Dikirim",
+      "successDesc": "Simpan nomor tracking berikut untuk mengecek status laporan Anda:",
+      "copy": "Salin",
+      "copied": "Tersalin",
+      "cekStatus": "Cek Status Laporan"
     },
-    "bannerLapor": "Anda juga dapat melaporkan melalui kanal nasional SP4N-LAPOR!"
+    "kategori": {
+      "pilih": "-- Pilih Kategori --",
+      "infrastruktur": "Infrastruktur & Fasilitas Umum",
+      "pelayanan": "Pelayanan Publik",
+      "keamanan": "Keamanan & Ketertiban",
+      "lingkungan": "Lingkungan & Kebersihan",
+      "lainnya": "Lain-lain"
+    },
+    "status": {
+      "title": "Cek Status Pengaduan",
+      "subtitle": "Masukkan nomor tracking Anda (Contoh: PND-12345678)",
+      "placeholder": "Nomor Tracking",
+      "cek": "Cek Status",
+      "notFound": "Pengaduan tidak ditemukan. Pastikan nomor tracking benar.",
+      "baru": "Baru Masuk",
+      "diproses": "Sedang Diproses",
+      "selesai": "Selesai",
+      "catatan": "Catatan Tindak Lanjut:",
+      "tanggal": "Tanggal Laporan:"
+    },
+    "lapor": {
+      "title": "SP4N-LAPOR!",
+      "desc": "Anda juga dapat menyampaikan pengaduan melalui Sistem Pengelolaan Pengaduan Pelayanan Publik Nasional (SP4N-LAPOR!).",
+      "btn": "Kunjungi LAPOR!"
+    }
   },
   "kontak": {
     "title": "Kontak",
+    "hubungiKami": "Hubungi Kami",
     "alamat": "Alamat",
     "telepon": "Telepon",
     "email": "Email",
     "jamOperasional": "Jam Operasional",
-    "peta": "Lokasi di Peta"
+    "peta": "Lokasi di Peta",
+    "bukaPeta": "Buka di OpenStreetMap",
+    "iframeTitle": "Lokasi Kantor Kecamatan Duampanua",
+    "placeholderAlamat": "Alamat sedang dilengkapi",
+    "placeholderTelepon": "Nomor telepon sedang dilengkapi",
+    "placeholderEmail": "Email sedang dilengkapi",
+    "placeholderJam": "Jam operasional sedang dilengkapi",
+    "placeholderPeta": "Koordinat lokasi sedang dilengkapi",
+    "layananPengaduan": "Layanan Pengaduan Masyarakat",
+    "pengaduanDesc": "Sampaikan laporan, aspirasi, atau keluhan Anda melalui form layanan pengaduan terpadu kami.",
+    "buatLaporan": "Buat Laporan / Cek Status"
   },
   "footer": {
-    "hakCipta": "© {year} Kecamatan Duampanua. Seluruh hak dilindungi.",
-    "dikelola": "Dikelola oleh Kecamatan Duampanua"
+    "navigasi": "Navigasi",
+    "informasi": "Informasi",
+    "keterbukaanInformasi": "Keterbukaan Informasi (PPID)",
+    "placeholderAlamat": "Alamat sedang dilengkapi",
+    "ariaNavigasiFooter": "Navigasi footer",
+    "hakCipta": "© {year} {nama}. Seluruh hak dilindungi.",
+    "dikelola": "Dikelola oleh {nama}"
+  },
+  "berita": {
+    "title": "Berita",
+    "category": "Informasi",
+    "subtitle": "Artikel dan liputan kegiatan resmi Kecamatan Duampanua.",
+    "kembali": "Kembali ke Berita",
+    "placeholderList": "Belum ada berita yang diterbitkan.",
+    "filterSemua": "Semua"
+  },
+  "potensi": {
+    "title": "Potensi Daerah",
+    "subtitle": "Jelajahi berbagai potensi ekonomi, wisata, dan sumber daya alam yang ada di Kecamatan Duampanua.",
+    "kategori": {
+      "semua": "Semua Kategori",
+      "ekonomi": "Ekonomi",
+      "wisata": "Wisata",
+      "pengolahan": "Pengolahan"
+    },
+    "lokasi": "Lokasi",
+    "emptyData": "Belum ada data potensi daerah untuk kategori ini."
+  },
+  "edaran": {
+    "title": "Edaran & Dokumen Publik",
+    "subtitle": "Akses berbagai regulasi, surat edaran, panduan layanan, dan laporan resmi dari Pemerintah Kecamatan Duampanua.",
+    "kategori": {
+      "semua": "Semua Kategori",
+      "regulasi": "Regulasi",
+      "panduan": "Panduan",
+      "laporan": "Laporan",
+      "lainnya": "Lainnya"
+    },
+    "nomor": "Nomor Dokumen:",
+    "unduh": "Unduh Dokumen",
+    "lihat": "Lihat Dokumen",
+    "emptyData": "Belum ada dokumen untuk kategori ini."
   }
 }

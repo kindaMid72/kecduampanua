@@ -2,12 +2,22 @@ import { CategoryLabel } from "./CategoryLabel";
 
 interface JamLayanan {
   hari: string;   // e.g. "Senin – Jumat"
-  jam: string;    // e.g. "08.00 – 16.00 WIB"
+  jam: string;    // e.g. "08.00 – 16.00 WITA"
 }
 
 interface AksesCepat {
   label: string;
   href: string;
+}
+
+interface PapanInformasiLabels {
+  papanInformasi?: string;
+  statusDiperbarui?: string;
+  kantorBuka?: string;
+  kantorTutup?: string;
+  jamLayanan?: string;
+  jamLayananDiperbarui?: string;
+  aksesCepat?: string;
 }
 
 interface PapanInformasiPanelProps {
@@ -16,6 +26,7 @@ interface PapanInformasiPanelProps {
   aksesCapt?: AksesCepat[];
   /** Pesan tambahan opsional di bawah status */
   catatan?: string | null;
+  labels?: PapanInformasiLabels;
 }
 
 /**
@@ -28,15 +39,24 @@ export function PapanInformasiPanel({
   jamLayanan,
   aksesCapt,
   catatan,
+  labels,
 }: PapanInformasiPanelProps) {
   const statusTampil =
     statusBuka === null || statusBuka === undefined ? null : statusBuka;
+
+  const lblPapan = labels?.papanInformasi ?? "Papan Informasi";
+  const lblStatusDiperbarui = labels?.statusDiperbarui ?? "Status kantor sedang diperbarui";
+  const lblKantorBuka = labels?.kantorBuka ?? "Kantor Buka";
+  const lblKantorTutup = labels?.kantorTutup ?? "Kantor Tutup";
+  const lblJamLayanan = labels?.jamLayanan ?? "Jam Layanan";
+  const lblJamDiperbarui = labels?.jamLayananDiperbarui ?? "Informasi jam layanan sedang dilengkapi";
+  const lblAksesCepat = labels?.aksesCepat ?? "Akses Cepat";
 
   return (
     <div className="relative border-[1.5px] border-primary rounded-[var(--radius-card)] bg-surface/50 p-6">
       {/* Tag label mengambang pojok kiri atas */}
       <div className="absolute -top-3 left-4 bg-primary px-3 py-0.5">
-        <CategoryLabel label="Papan Informasi" className="text-white" />
+        <CategoryLabel label={lblPapan} className="text-white" />
       </div>
 
       <div className="pt-2 space-y-5">
@@ -44,7 +64,7 @@ export function PapanInformasiPanel({
         <div className="flex items-center gap-3">
           {statusTampil === null ? (
             <span className="text-sm text-text/50 italic">
-              Status kantor sedang diperbarui
+              {lblStatusDiperbarui}
             </span>
           ) : (
             <>
@@ -58,7 +78,7 @@ export function PapanInformasiPanel({
                 ].join(" ")}
               />
               <span className="text-sm font-medium text-text">
-                {statusBuka ? "Kantor Buka" : "Kantor Tutup"}
+                {statusBuka ? lblKantorBuka : lblKantorTutup}
               </span>
               {catatan && (
                 <span className="text-sm text-text/60">— {catatan}</span>
@@ -70,7 +90,7 @@ export function PapanInformasiPanel({
         {/* Jam layanan */}
         <div>
           <p className="text-xs text-text/50 uppercase tracking-wide font-mono mb-1">
-            Jam Layanan
+            {lblJamLayanan}
           </p>
           {jamLayanan ? (
             <p className="text-sm text-text">
@@ -80,7 +100,7 @@ export function PapanInformasiPanel({
             </p>
           ) : (
             <p className="text-sm text-text/50 italic">
-              Informasi jam layanan sedang dilengkapi
+              {lblJamDiperbarui}
             </p>
           )}
         </div>
@@ -89,7 +109,7 @@ export function PapanInformasiPanel({
         {aksesCapt && aksesCapt.length > 0 && (
           <div>
             <p className="text-xs text-text/50 uppercase tracking-wide font-mono mb-2">
-              Akses Cepat
+              {lblAksesCepat}
             </p>
             <div className="flex flex-wrap gap-2">
               {aksesCapt.map((item) => (

@@ -1,4 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 import { PapanInformasiPanel } from "@/components/ui/PapanInformasiPanel";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
@@ -8,11 +9,18 @@ import Link from "next/link";
 import { FileText, Phone, BookOpen } from "lucide-react";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Beranda — Kecamatan Duampanua",
-  description:
-    "Website resmi Kecamatan Duampanua. Informasi layanan publik, pengumuman, dan profil kecamatan.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "metadata" });
+  return {
+    title: t("berandaTitle"),
+    description: t("berandaDesc"),
+  };
+}
 
 // Revalidate on-demand via /api/revalidate — bukan time-based
 export const revalidate = false;
@@ -29,18 +37,23 @@ const kategoriBadge: KategoriInfoMap = {
   jadwal_rapat: "warning",
 };
 
-const kategoriLabel: Record<string, string> = {
-  pengumuman: "Pengumuman",
-  kegiatan: "Kegiatan",
-  jadwal_rapat: "Jadwal Rapat",
-};
-
 export default async function Beranda({
   params,
 }: {
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+
+  const tBeranda = await getTranslations({ locale, namespace: "beranda" });
+  const tNav = await getTranslations({ locale, namespace: "nav" });
+  const tInfoPublik = await getTranslations({ locale, namespace: "informasiPublik" });
+  const tMeta = await getTranslations({ locale, namespace: "metadata" });
+
+  const kategoriLabel: Record<string, string> = {
+    pengumuman: tInfoPublik("pengumuman"),
+    kegiatan: tInfoPublik("kegiatan"),
+    jadwal_rapat: tInfoPublik("jadwalRapat"),
+  };
 
   let profil = null;
   let infos: {
@@ -52,11 +65,17 @@ export default async function Beranda({
     gambar_cover_url: string | null;
     slug: string;
   }[] = [];
+  let statistik: {
+    id: string;
+    nama_desa_kelurahan: string;
+    jumlah_penduduk: number | null;
+    tahun_data: number;
+  }[] = [];
 
   try {
     const supabase = await createClient();
 
-    const [profilRes, infoRes] = await Promise.all([
+    const [profilRes, infoRes, statistikRes] = await Promise.all([
       supabase
         .from("profil_kecamatan")
         .select("jam_operasional, nama_kecamatan")
@@ -68,25 +87,32 @@ export default async function Beranda({
         .eq("status", "published")
         .order("created_at", { ascending: false })
         .limit(3),
+      supabase
+        .from("data_statistik")
+        .select("id, nama_desa_kelurahan, jumlah_penduduk, tahun_data")
+        .order("tahun_data", { ascending: false })
+        .order("nama_desa_kelurahan", { ascending: true })
+        .limit(6),
     ]);
 
     profil = profilRes.data;
     infos = infoRes.data ?? [];
+    statistik = statistikRes.data ?? [];
   } catch {
     // Graceful — tampil dengan placeholder
   }
 
   // Parse jam operasional sederhana untuk status buka
-  // Format yang diharapkan: "Senin–Jumat, 08.00–16.00 WIB"
+  // Format yang diharapkan: "Senin–Jumat, 08.00–16.00 WITA"
   // Untuk Fase 1, status buka null (belum ada logika waktu real-time)
   const jamLayanan = profil?.jam_operasional
-    ? { hari: "Senin – Jumat", jam: profil.jam_operasional }
+    ? { hari: tBeranda("hariKerja"), jam: profil.jam_operasional }
     : null;
 
   const aksesCapt = [
-    { label: "Standar Pelayanan", href: `/${locale}/standar-pelayanan` },
-    { label: "Informasi Publik", href: `/${locale}/informasi` },
-    { label: "Kontak", href: `/${locale}/kontak` },
+    { label: tNav("standarPelayanan"), href: `/${locale}/standar-pelayanan` },
+    { label: tNav("informasiPublik"), href: `/${locale}/informasi` },
+    { label: tNav("kontak"), href: `/${locale}/kontak` },
   ];
 
   return (
@@ -94,13 +120,13 @@ export default async function Beranda({
       {/* Hero section */}
       <section className="max-w-6xl mx-auto px-4 py-10 sm:py-14">
         <div className="mb-3">
-          <CategoryLabel label="Selamat Datang" />
+          <CategoryLabel label={tBeranda("selamatDatang")} />
         </div>
         <h1 className="font-display text-3xl sm:text-4xl font-semibold text-primary mb-2">
-          {profil?.nama_kecamatan ?? "Kecamatan Duampanua"}
+          {profil?.nama_kecamatan ?? tMeta("siteName")}
         </h1>
         <p className="text-text/60 text-base mb-8 max-w-xl">
-          Pelayanan publik yang transparan dan mudah dijangkau
+          {tBeranda("tagline")}
         </p>
 
         {/* Papan Informasi — signature element, hanya di Beranda */}
@@ -108,8 +134,51 @@ export default async function Beranda({
           statusBuka={null}
           jamLayanan={jamLayanan}
           aksesCapt={aksesCapt}
+          labels={{
+            papanInformasi: tBeranda("papanInformasi"),
+            statusDiperbarui: tBeranda("statusKantorDiperbarui"),
+            kantorBuka: tBeranda("kantorBuka"),
+            kantorTutup: tBeranda("kantorTutup"),
+            jamLayanan: tBeranda("jamLayanan"),
+            jamLayananDiperbarui: tBeranda("jamLayananDiperbarui"),
+            aksesCepat: tBeranda("aksesCepat"),
+          }}
         />
       </section>
+
+      <SectionDivider className="mx-4 sm:mx-8" />
+
+      {/* Data Statistik Singkat */}
+      {statistik.length > 0 && (
+        <section className="max-w-6xl mx-auto px-4 py-10" aria-labelledby="statistik-heading">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <CategoryLabel label="Statistik" className="mb-1 block" />
+              <h2 id="statistik-heading" className="font-display text-2xl font-semibold text-primary">
+                Data Kependudukan
+              </h2>
+            </div>
+            <Link
+              href={`/${locale}/profil#statistik`}
+              className="text-sm text-secondary hover:text-primary transition-colors"
+            >
+              Lihat Selengkapnya
+            </Link>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {statistik.map((stat) => (
+              <Card key={stat.id} padding="sm" className="text-center flex flex-col justify-center gap-1">
+                <span className="font-display text-xl font-semibold text-primary">
+                  {stat.jumlah_penduduk ? new Intl.NumberFormat("id-ID").format(stat.jumlah_penduduk) : "-"}
+                </span>
+                <span className="text-xs font-medium text-text/60 line-clamp-2 leading-snug">
+                  {stat.nama_desa_kelurahan}
+                </span>
+              </Card>
+            ))}
+          </div>
+        </section>
+      )}
 
       <SectionDivider className="mx-4 sm:mx-8" />
 
@@ -117,23 +186,23 @@ export default async function Beranda({
       <section className="max-w-6xl mx-auto px-4 py-10" aria-labelledby="info-terbaru-heading">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <CategoryLabel label="Terbaru" className="mb-1 block" />
+            <CategoryLabel label={tBeranda("terbaru")} className="mb-1 block" />
             <h2 id="info-terbaru-heading" className="font-display text-2xl font-semibold text-primary">
-              Informasi Publik
+              {tBeranda("informasiTerbaru")}
             </h2>
           </div>
           <Link
             href={`/${locale}/informasi`}
             className="text-sm text-secondary hover:text-primary transition-colors"
           >
-            Lihat semua →
+            {tBeranda("lihatSemua")}
           </Link>
         </div>
 
         {infos.length === 0 ? (
           <Card padding="lg" className="text-center">
             <p className="text-text/50 italic text-sm">
-              Informasi belum tersedia. Konten akan muncul di sini setelah diterbitkan oleh staf.
+              {tBeranda("placeholderInfo")}
             </p>
           </Card>
         ) : (
@@ -179,27 +248,27 @@ export default async function Beranda({
 
       {/* Akses Cepat grid */}
       <section className="max-w-6xl mx-auto px-4 py-10" aria-labelledby="akses-cepat-heading">
-        <CategoryLabel label="Layanan" className="mb-1 block" />
+        <CategoryLabel label={tBeranda("layanan")} className="mb-1 block" />
         <h2 id="akses-cepat-heading" className="font-display text-2xl font-semibold text-primary mb-6">
-          Akses Cepat
+          {tBeranda("aksesCepat")}
         </h2>
         <ul className="grid grid-cols-1 sm:grid-cols-3 gap-4" role="list">
           {[
             {
-              label: "Standar Pelayanan",
-              desc: "Prosedur, syarat, dan estimasi waktu layanan administrasi",
+              label: tNav("standarPelayanan"),
+              desc: tBeranda("aksesCepatStandarPelayananDesc"),
               href: `/${locale}/standar-pelayanan`,
               icon: FileText,
             },
             {
-              label: "Informasi Publik",
-              desc: "Pengumuman, kegiatan, dan jadwal rapat kecamatan",
+              label: tNav("informasiPublik"),
+              desc: tBeranda("aksesCepatInformasiDesc"),
               href: `/${locale}/informasi`,
               icon: BookOpen,
             },
             {
-              label: "Kontak",
-              desc: "Alamat, nomor telepon, dan jam operasional kantor",
+              label: tNav("kontak"),
+              desc: tBeranda("aksesCepatKontakDesc"),
               href: `/${locale}/kontak`,
               icon: Phone,
             },

@@ -135,9 +135,10 @@ export async function getDaftarPenggunaAction(): Promise<{
     }));
 
     return { data: result };
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Terjadi kesalahan server saat memuat data pengguna.";
     console.error("Terjadi error di getDaftarPenggunaAction:", err);
-    return { error: err?.message || "Terjadi kesalahan server saat memuat data pengguna." };
+    return { error: message };
   }
 }
 
@@ -217,9 +218,10 @@ export async function invitePenggunaAction(formData: FormData) {
 
     revalidatePath("/admin/pengguna");
     return { success: true, action_link: directLink };
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Terjadi kesalahan saat mengundang pengguna.";
     console.error("Error di invitePenggunaAction:", err);
-    return { error: err?.message || "Terjadi kesalahan saat mengundang pengguna." };
+    return { error: message };
   }
 }
 
@@ -304,9 +306,10 @@ export async function editPenggunaAction(
     revalidatePath("/admin/pengguna");
     revalidatePath("/admin");
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Terjadi kesalahan saat memperbarui data pengguna.";
     console.error("Error di editPenggunaAction:", err);
-    return { error: err?.message || "Terjadi kesalahan saat memperbarui data pengguna." };
+    return { error: message };
   }
 }
 
@@ -382,9 +385,10 @@ export async function hapusPenggunaAction(userId: string) {
 
     revalidatePath("/admin/pengguna");
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Terjadi kesalahan saat menghapus pengguna.";
     console.error("Error di hapusPenggunaAction:", err);
-    return { error: err?.message || "Terjadi kesalahan saat menghapus pengguna." };
+    return { error: message };
   }
 }
 
@@ -494,9 +498,10 @@ export async function resetKataSandiAction(userId: string) {
     const directLink = `${origin}/admin/atur-kata-sandi?token=${rawToken}`;
 
     return { success: true, action_link: directLink };
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Terjadi kesalahan saat membuat tautan reset kata sandi.";
     console.error("Error di resetKataSandiAction:", err);
-    return { error: err?.message || "Terjadi kesalahan saat membuat tautan reset kata sandi." };
+    return { error: message };
   }
 }
 
@@ -557,8 +562,9 @@ export async function ubahStatusPenggunaAction(userId: string, newStatus: "aktif
 
     revalidatePath("/admin/pengguna");
     return { success: true };
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Terjadi kesalahan saat mengubah status pengguna.";
     console.error("Error di ubahStatusPenggunaAction:", err);
-    return { error: err?.message || "Terjadi kesalahan saat mengubah status pengguna." };
+    return { error: message };
   }
 }

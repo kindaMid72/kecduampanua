@@ -26,8 +26,8 @@ export const setPasswordSchema = z
     path: ["konfirmasi"],
   });
 
-export type LoginInput = z.infer<typeof loginSchema>;
-export type SetPasswordInput = z.infer<typeof setPasswordSchema>;
+export type LoginInput = z.input<typeof loginSchema>;
+export type SetPasswordInput = z.input<typeof setPasswordSchema>;
 
 export const editPenggunaSchema = z.object({
   nama_lengkap: z
@@ -40,7 +40,7 @@ export const editPenggunaSchema = z.object({
   }),
 });
 
-export type EditPenggunaInput = z.infer<typeof editPenggunaSchema>;
+export type EditPenggunaInput = z.input<typeof editPenggunaSchema>;
 
 export const updateProfilMandiriSchema = z.object({
   nama_lengkap: z
@@ -50,7 +50,7 @@ export const updateProfilMandiriSchema = z.object({
     .max(100, "Nama lengkap maksimal 100 karakter"),
 });
 
-export type UpdateProfilMandiriInput = z.infer<typeof updateProfilMandiriSchema>;
+export type UpdateProfilMandiriInput = z.input<typeof updateProfilMandiriSchema>;
 
 export const gantiKataSandiSchema = z
   .object({
@@ -69,4 +69,4 @@ export const gantiKataSandiSchema = z
     path: ["konfirmasi_kata_sandi_baru"],
   });
 
-export type GantiKataSandiInput = z.infer<typeof gantiKataSandiSchema>;
+export type GantiKataSandiInput = z.input<typeof gantiKataSandiSchema>;

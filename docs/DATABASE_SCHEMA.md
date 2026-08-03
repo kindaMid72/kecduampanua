@@ -69,33 +69,41 @@ create policy "Staf kelola penuh" on informasi_publik for all using (is_staf_akt
 
 Catatan: tidak ada status `draft` — sesuai DECISIONS #5 (tidak ada approval layer, langsung terbit saat disimpan).
 
-## 3. `galeri_album` & `galeri_foto`
+## 3. `berita`
 
 ```sql
-create table galeri_album (
+create table berita (
   id uuid primary key default gen_random_uuid(),
   judul text not null,
-  deskripsi text,
-  informasi_publik_id uuid references informasi_publik(id), -- opsional, link ke post kegiatan terkait
-  created_at timestamptz default now()
+  judul_en text,
+  slug text not null unique,
+  konten text not null,
+  konten_en text,
+  gambar_cover_url text,      -- wajib diisi (validasi di form admin)
+  kategori text,              -- bebas diisi staf, tidak enum
+  status text not null default 'published' check (status in ('published', 'diarsipkan')),
+  dibuat_oleh uuid references profiles(id) on delete set null,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
 );
 
-create table galeri_foto (
-  id uuid primary key default gen_random_uuid(),
-  album_id uuid references galeri_album(id) on delete cascade,
-  gambar_url text not null,
-  keterangan text,
-  urutan int default 0
-);
+alter table berita enable row level security;
 
-alter table galeri_album enable row level security;
-alter table galeri_foto enable row level security;
+create policy "Publik baca yang published" on berita
+  for select using (status = 'published');
 
-create policy "Publik lihat album" on galeri_album for select using (true);
-create policy "Publik lihat foto" on galeri_foto for select using (true);
-create policy "Staf kelola album" on galeri_album for all using (is_staf_aktif());
-create policy "Staf kelola foto" on galeri_foto for all using (is_staf_aktif());
+create policy "Staf baca semua" on berita
+  for select using (is_staf_aktif());
+
+create policy "Staf kelola penuh" on berita
+  for all using (is_staf_aktif());
 ```
+
+**Perbedaan desain vs `informasi_publik`:**
+- `kategori`: teks bebas (staf isi sendiri) — bukan enum ketat, karena topik berita lebih beragam
+- `gambar_cover_url`: wajib diisi via validasi form admin (konten editorial butuh visual)
+- Tidak ada `tanggal_acara` / `lokasi` — berita bukan jadwal acara
+- Kolom `_en` opsional sama seperti modul lain (DECISIONS #26)
 
 ## 4. `layanan` (tampil publik sebagai "Standar Pelayanan")
 

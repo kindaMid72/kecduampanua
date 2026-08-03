@@ -1,15 +1,23 @@
 import { createClient } from "@/lib/supabase/server";
+import { getTranslations } from "next-intl/server";
 import { CategoryLabel } from "@/components/ui/CategoryLabel";
 import { SectionDivider } from "@/components/ui/SectionDivider";
 import { Card } from "@/components/ui/Card";
 import { CheckSquare, Clock, Download, ChevronDown } from "lucide-react";
 import type { Metadata } from "next";
 
-export const metadata: Metadata = {
-  title: "Standar Pelayanan — Kecamatan Duampanua",
-  description:
-    "Prosedur, syarat dokumen, dan estimasi waktu layanan administrasi Kecamatan Duampanua.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "metadata" });
+  return {
+    title: t("standarPelayananTitle"),
+    description: t("standarPelayananDesc"),
+  };
+}
 
 export const revalidate = false;
 
@@ -23,6 +31,7 @@ export default async function StandarPelayananPage({
   params: Promise<{ locale: string }>;
 }) {
   const { locale } = await params;
+  const tStandar = await getTranslations({ locale, namespace: "standarPelayanan" });
   const isEn = locale === "en";
 
   let maklumat: string | null = null;
@@ -70,9 +79,9 @@ export default async function StandarPelayananPage({
     <>
       {/* Header */}
       <section className="max-w-6xl mx-auto px-4 py-10 sm:py-14">
-        <CategoryLabel label="Layanan Publik" className="mb-1 block" />
+        <CategoryLabel label={tStandar("category")} className="mb-1 block" />
         <h1 className="font-display text-3xl sm:text-4xl font-semibold text-primary">
-          Standar Pelayanan
+          {tStandar("title")}
         </h1>
       </section>
 
@@ -84,7 +93,7 @@ export default async function StandarPelayananPage({
         aria-labelledby="maklumat-heading"
       >
         <h2 id="maklumat-heading" className="font-display text-2xl font-semibold text-primary mb-4">
-          Maklumat Pelayanan
+          {tStandar("maklumat")}
         </h2>
         {maklumat ? (
           <Card padding="md" className="border-l-4 border-l-accent max-w-2xl">
@@ -94,7 +103,7 @@ export default async function StandarPelayananPage({
           </Card>
         ) : (
           <Card padding="md" className="max-w-2xl">
-            <Placeholder pesan="Maklumat pelayanan sedang disiapkan." />
+            <Placeholder pesan={tStandar("placeholderMaklumat")} />
           </Card>
         )}
       </section>
@@ -110,13 +119,13 @@ export default async function StandarPelayananPage({
           id="daftar-layanan-heading"
           className="font-display text-2xl font-semibold text-primary mb-6"
         >
-          Daftar Layanan
+          {tStandar("daftarLayanan")}
         </h2>
 
         {layananList.length === 0 ? (
           <Card padding="lg" className="text-center">
             <p className="text-text/50 italic text-sm">
-              Standar pelayanan sedang disiapkan oleh staf kecamatan.
+              {tStandar("placeholderLayanan")}
             </p>
           </Card>
         ) : (
@@ -152,7 +161,7 @@ export default async function StandarPelayananPage({
                     {syarat.length > 0 && (
                       <div>
                         <h3 className="text-xs font-mono text-text/50 uppercase tracking-wide mb-2">
-                          Syarat Dokumen
+                          {tStandar("syaratDokumen")}
                         </h3>
                         <ul className="space-y-1.5" role="list">
                           {syarat.map((s, i) => (
@@ -173,7 +182,7 @@ export default async function StandarPelayananPage({
                     {alur && (
                       <div>
                         <h3 className="text-xs font-mono text-text/50 uppercase tracking-wide mb-2">
-                          Alur / Prosedur
+                          {tStandar("alurProses")}
                         </h3>
                         <ol className="space-y-2 pl-0" role="list">
                           {alur.split("\n").filter(Boolean).map((step: string, i: number) => (
@@ -193,7 +202,7 @@ export default async function StandarPelayananPage({
                       <div className="flex items-center gap-2 text-sm text-text/70">
                         <Clock size={14} className="text-secondary" aria-hidden="true" />
                         <span>
-                          <span className="font-mono text-text/50 uppercase text-xs tracking-wide mr-1">Estimasi:</span>
+                          <span className="font-mono text-text/50 uppercase text-xs tracking-wide mr-1">{tStandar("estimasi")}</span>
                           {layanan.estimasi_waktu}
                         </span>
                       </div>
@@ -209,7 +218,7 @@ export default async function StandarPelayananPage({
                           className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-secondary text-secondary rounded-[var(--radius-button)] hover:bg-secondary hover:text-white transition-colors min-h-[44px]"
                         >
                           <Download size={14} aria-hidden="true" />
-                          Unduh Formulir
+                          {tStandar("unduhFormulir")}
                         </a>
                       )}
                       {layanan.dokumen_standar_pelayanan_url && (
@@ -220,7 +229,7 @@ export default async function StandarPelayananPage({
                           className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-primary/30 text-primary rounded-[var(--radius-button)] hover:bg-primary hover:text-white transition-colors min-h-[44px]"
                         >
                           <Download size={14} aria-hidden="true" />
-                          Dok. Standar Pelayanan
+                          {tStandar("dokumenStandar")}
                         </a>
                       )}
                     </div>

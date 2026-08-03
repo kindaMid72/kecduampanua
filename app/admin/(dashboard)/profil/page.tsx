@@ -5,10 +5,8 @@ import { updateProfilAction } from "./actions";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { createClient } from "@/lib/supabase/client";
-import { CheckCircle } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { setPasswordSchema, type SetPasswordInput } from "@/lib/validations/auth";
+import { CheckCircle, Globe } from "lucide-react";
+import PejabatSection from "./PejabatSection";
 
 export default function ProfilAdminPage() {
   const supabase = createClient();
@@ -16,24 +14,18 @@ export default function ProfilAdminPage() {
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+
   
-  const {
-    register: registerPassword,
-    handleSubmit: handlePasswordSubmitForm,
-    reset: resetPasswordForm,
-    formState: { errors: passwordErrors },
-  } = useForm<SetPasswordInput>({
-    resolver: zodResolver(setPasswordSchema),
-  });
-  const [passwordLoading, setPasswordLoading] = useState(false);
-  const [passwordError, setPasswordError] = useState<string | null>(null);
-  const [passwordSuccess, setPasswordSuccess] = useState(false);
-  
+  const [showEn, setShowEn] = useState(false);
+
   const [formData, setFormData] = useState({
     nama_kecamatan: "",
     sejarah: "",
+    sejarah_en: "",
     visi: "",
+    visi_en: "",
     misi: "",
+    misi_en: "",
     jumlah_asn: "",
     alamat: "",
     telepon: "",
@@ -46,6 +38,7 @@ export default function ProfilAdminPage() {
     ppid_kontak: "",
     ppid_jam_layanan: "",
     maklumat_pelayanan: "",
+    maklumat_pelayanan_en: "",
   });
 
   useEffect(() => {
@@ -60,8 +53,11 @@ export default function ProfilAdminPage() {
         setFormData({
           nama_kecamatan: data.nama_kecamatan || "",
           sejarah: data.sejarah || "",
+          sejarah_en: data.sejarah_en || "",
           visi: data.visi || "",
+          visi_en: data.visi_en || "",
           misi: data.misi || "",
+          misi_en: data.misi_en || "",
           jumlah_asn: data.jumlah_asn ? String(data.jumlah_asn) : "",
           alamat: data.alamat || "",
           telepon: data.telepon || "",
@@ -74,7 +70,12 @@ export default function ProfilAdminPage() {
           ppid_kontak: data.ppid_kontak || "",
           ppid_jam_layanan: data.ppid_jam_layanan || "",
           maklumat_pelayanan: data.maklumat_pelayanan || "",
+          maklumat_pelayanan_en: data.maklumat_pelayanan_en || "",
         });
+        // Auto-buka section EN jika sudah ada konten EN
+        if (data.sejarah_en || data.visi_en || data.misi_en || data.maklumat_pelayanan_en) {
+          setShowEn(true);
+        }
       }
       setFetching(false);
     }
@@ -85,22 +86,6 @@ export default function ProfilAdminPage() {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
   };
 
-  const onPasswordSubmit = async (data: SetPasswordInput) => {
-    setPasswordError(null);
-    setPasswordSuccess(false);
-    setPasswordLoading(true);
-
-    const { error: updateError } = await supabase.auth.updateUser({ password: data.password });
-    
-    if (updateError) {
-      setPasswordError("Gagal mengubah kata sandi: " + updateError.message);
-    } else {
-      setPasswordSuccess(true);
-      resetPasswordForm();
-      setTimeout(() => setPasswordSuccess(false), 3000);
-    }
-    setPasswordLoading(false);
-  };
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -192,6 +177,61 @@ export default function ProfilAdminPage() {
               rows={5}
               className="w-full p-3 border rounded focus:ring-2 focus:ring-primary outline-none resize-y"
             ></textarea>
+          </div>
+
+          {/* Section Bahasa Inggris — Identitas */}
+          <div className="border border-surface rounded-lg">
+            <button
+              type="button"
+              onClick={() => setShowEn(v => !v)}
+              className="w-full flex items-center gap-2 px-4 py-3 text-sm text-text/70 hover:text-text hover:bg-surface/40 rounded-lg transition-colors text-left"
+            >
+              <Globe size={15} className="text-secondary flex-shrink-0" />
+              <span className="font-medium">Versi Bahasa Inggris (opsional)</span>
+              <span className="ml-auto text-xs text-text/40">{showEn ? "Sembunyikan" : "Tampilkan"}</span>
+            </button>
+            {showEn && (
+              <div className="px-4 pb-4 space-y-4 border-t border-surface pt-4">
+                <p className="text-xs text-text/50">
+                  Kosongkan jika tidak diperlukan — halaman <span className="font-mono">/en/</span> akan otomatis menampilkan versi Indonesia sebagai fallback.
+                </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-1.5">Visi (Bahasa Inggris)</label>
+                    <textarea
+                      name="visi_en"
+                      value={formData.visi_en}
+                      onChange={handleChange}
+                      rows={3}
+                      className="w-full p-3 border rounded focus:ring-2 focus:ring-primary outline-none resize-y"
+                      placeholder="English vision..."
+                    ></textarea>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1.5">Misi (Bahasa Inggris)</label>
+                    <textarea
+                      name="misi_en"
+                      value={formData.misi_en}
+                      onChange={handleChange}
+                      rows={3}
+                      className="w-full p-3 border rounded focus:ring-2 focus:ring-primary outline-none resize-y"
+                      placeholder="English mission..."
+                    ></textarea>
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-1.5">Sejarah (Bahasa Inggris)</label>
+                  <textarea
+                    name="sejarah_en"
+                    value={formData.sejarah_en}
+                    onChange={handleChange}
+                    rows={5}
+                    className="w-full p-3 border rounded focus:ring-2 focus:ring-primary outline-none resize-y"
+                    placeholder="English history..."
+                  ></textarea>
+                </div>
+              </div>
+            )}
           </div>
 
           <div>
@@ -296,6 +336,20 @@ export default function ProfilAdminPage() {
             ></textarea>
           </div>
 
+          {showEn && (
+            <div>
+              <label className="block text-sm font-medium mb-1.5">Maklumat Pelayanan (Bahasa Inggris)</label>
+              <textarea
+                name="maklumat_pelayanan_en"
+                value={formData.maklumat_pelayanan_en}
+                onChange={handleChange}
+                rows={3}
+                className="w-full p-3 border rounded focus:ring-2 focus:ring-primary outline-none resize-y"
+                placeholder="English service declaration..."
+              ></textarea>
+            </div>
+          )}
+
           <div>
             <label className="block text-sm font-medium mb-1.5">Dasar Hukum PPID</label>
             <textarea
@@ -341,58 +395,16 @@ export default function ProfilAdminPage() {
           </div>
         </Card>
 
-        <div className="flex justify-end">
+        <div className="flex justify-end border-b pb-6 mb-6">
           <Button type="submit" loading={loading} size="lg">
             Simpan Semua Perubahan
           </Button>
         </div>
       </form>
 
-      {/* Pengaturan Akun Pribadi */}
-      <Card padding="md" className="space-y-5">
-        <h2 className="text-lg font-semibold text-primary mb-4 border-b pb-2">Ubah Kata Sandi Akun Anda</h2>
-        <form onSubmit={handlePasswordSubmitForm(onPasswordSubmit)} className="space-y-4">
-          {passwordError && (
-            <div className="p-3 bg-red-50 text-red-700 text-sm rounded border border-red-200">
-              {passwordError}
-            </div>
-          )}
-          {passwordSuccess && (
-            <div className="p-3 bg-[color:var(--color-status-success)]/10 text-[color:var(--color-status-success)] text-sm rounded border border-[color:var(--color-status-success)]/20 flex items-center gap-2">
-              <CheckCircle size={16} /> Kata sandi berhasil diubah.
-            </div>
-          )}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1.5">Kata Sandi Baru</label>
-              <input
-                type="password"
-                {...registerPassword("password")}
-                className={`w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none ${passwordErrors.password ? 'border-red-400' : ''}`}
-              />
-              {passwordErrors.password && (
-                <p className="mt-1 text-xs text-red-600">{passwordErrors.password.message}</p>
-              )}
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1.5">Konfirmasi Sandi Baru</label>
-              <input
-                type="password"
-                {...registerPassword("konfirmasi")}
-                className={`w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none ${passwordErrors.konfirmasi ? 'border-red-400' : ''}`}
-              />
-              {passwordErrors.konfirmasi && (
-                <p className="mt-1 text-xs text-red-600">{passwordErrors.konfirmasi.message}</p>
-              )}
-            </div>
-          </div>
-          <div className="flex justify-end">
-            <Button type="submit" variant="secondary" loading={passwordLoading}>
-              Ubah Kata Sandi
-            </Button>
-          </div>
-        </form>
-      </Card>
+      {/* Daftar Pejabat di luar form profil */}
+      <PejabatSection />
+
     </div>
   );
 }

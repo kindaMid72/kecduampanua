@@ -47,14 +47,14 @@ Update file ini setiap menyelesaikan item (centang `[x]`). Ini pengganti "ingata
 
 - [ ] Halaman Data Statistik
 - [ ] Halaman & admin Potensi Daerah (tab filter kategori)
-- [ ] Halaman & admin Galeri (link opsional ke Informasi Publik kategori kegiatan)
+- [x] Halaman & admin Berita (artikel editorial & liputan kegiatan kecamatan)
 - [ ] Halaman & admin Edaran Dokumen (deskripsi wajib sebelum unduh)
 - [ ] Form Pengaduan (honeypot + rate limit + checkbox persetujuan data pribadi)
 - [ ] Halaman Cek Status Pengaduan (via RPC function, bukan direct select — lihat `.claude/skills/rls-review/SKILL.md`)
 - [ ] Dashboard admin Pengaduan (ubah status, catatan tindak lanjut)
 - [ ] Banner SP4N-LAPOR! di halaman Pengaduan & Kontak
 - [ ] Job terjadwal arsip otomatis data pengaduan (2 tahun setelah selesai)
-- [ ] Aktifkan penuh auto-translate (`/api/translate` + badge "perlu ditinjau" di Standar Pelayanan)
+- [x] **Bilingual hibrida** — field `_en` opsional di form admin (Informasi Publik, Standar Pelayanan, Profil); tidak ada dependency API berbayar; halaman `/en/` fallback ke teks Indonesia otomatis (DECISIONS #10)
 - [ ] SEO: sitemap, robots.txt, hreflang, metadata per halaman
 
 *Kriteria selesai: warga bisa submit pengaduan & cek status mandiri; RLS pengaduan lolos uji akses `anon` (tidak bisa listing data orang lain); semua modul Fase 1+2 punya versi `/en/` yang render (auto-translate atau fallback).*

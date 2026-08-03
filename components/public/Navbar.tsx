@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import { Menu, X, ChevronDown } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { SectionDivider } from "@/components/ui/SectionDivider";
 
 interface NavItem {
@@ -11,33 +12,6 @@ interface NavItem {
   href?: string;
   children?: { label: string; href: string }[];
 }
-
-// Definisi nav — sesuai PRD §4 dan messages/id.json
-const navItems: NavItem[] = [
-  { label: "Beranda", href: "/" },
-  {
-    label: "Profil",
-    children: [
-      { label: "Sejarah & Visi-Misi", href: "/profil" },
-      { label: "Struktur Organisasi", href: "/profil#struktur" },
-      { label: "Jumlah ASN", href: "/profil#asn" },
-      { label: "PPID", href: "/profil/ppid" },
-    ],
-  },
-  {
-    label: "Informasi",
-    children: [
-      { label: "Informasi Publik", href: "/informasi" },
-    ],
-  },
-  {
-    label: "Layanan Publik",
-    children: [
-      { label: "Standar Pelayanan", href: "/standar-pelayanan" },
-    ],
-  },
-  { label: "Kontak", href: "/kontak" },
-];
 
 interface DropdownMenuProps {
   item: NavItem;
@@ -88,12 +62,41 @@ export function Navbar({ locale }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openDropdown, setOpenDropdown] = useState<string | null>(null);
 
-  // Tutup mobile menu saat pathname berubah
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
+  const tNav = useTranslations("nav");
+
+  const navItems: NavItem[] = [
+    { label: tNav("beranda"), href: "/" },
+    {
+      label: tNav("profil"),
+      children: [
+        { label: tNav("sejarahVisiMisi"), href: "/profil" },
+        { label: tNav("strukturOrganisasi"), href: "/profil#struktur" },
+        { label: tNav("jumlahAsn"), href: "/profil#asn" },
+        { label: tNav("ppid"), href: "/profil/ppid" },
+      ],
+    },
+    {
+      label: tNav("informasi"),
+      children: [
+        { label: tNav("informasiPublik"), href: "/informasi" },
+        { label: tNav("berita"), href: "/berita" },
+      ],
+    },
+    {
+      label: tNav("layananPublik"),
+      children: [
+        { label: tNav("standarPelayanan"), href: "/standar-pelayanan" },
+        { label: tNav("edaranDokumen"), href: "/edaran-dokumen" },
+      ],
+    },
+    { label: tNav("potensiDaerah"), href: "/potensi" },
+    { label: tNav("kontak"), href: "/kontak" },
+  ];
+
+  function closeAllMenus() {
     setMobileOpen(false);
     setOpenDropdown(null);
-  }, [pathname]);
+  }
 
   function isActive(href?: string) {
     if (!href) return false;
@@ -109,11 +112,12 @@ export function Navbar({ locale }: NavbarProps) {
     <header className="bg-primary text-white sticky top-0 z-40 shadow-sm">
       <nav
         className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16"
-        aria-label="Navigasi Utama"
+        aria-label={tNav("ariaNavigasiUtama")}
       >
         {/* Logo */}
         <Link
           href={`/${locale}`}
+          onClick={closeAllMenus}
           className="flex items-center gap-2 flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
         >
           <div
@@ -123,9 +127,19 @@ export function Navbar({ locale }: NavbarProps) {
             <span className="text-xs font-mono font-bold">KD</span>
           </div>
           <span className="font-display font-semibold text-sm leading-tight hidden sm:block">
-            Kecamatan
-            <br />
-            Duampanua
+            {locale === "en" ? (
+              <>
+                Duampanua
+                <br />
+                Sub-District
+              </>
+            ) : (
+              <>
+                Kecamatan
+                <br />
+                Duampanua
+              </>
+            )}
           </span>
         </Link>
 
@@ -136,6 +150,7 @@ export function Navbar({ locale }: NavbarProps) {
               {item.href ? (
                 <Link
                   href={`/${locale}${item.href === "/" ? "" : item.href}`}
+                  onClick={closeAllMenus}
                   aria-current={isActive(item.href) ? "page" : undefined}
                   className={[
                     "flex items-center h-16 px-3 text-sm font-medium transition-colors duration-150",
@@ -187,6 +202,7 @@ export function Navbar({ locale }: NavbarProps) {
         <div className="hidden md:flex items-center gap-1 text-xs font-mono text-white/60">
           <Link
             href={`/id${pathname.replace(/^\/(id|en)/, "")}`}
+            onClick={closeAllMenus}
             className={`hover:text-white transition-colors ${locale === "id" ? "text-white font-bold" : ""}`}
           >
             ID
@@ -194,6 +210,7 @@ export function Navbar({ locale }: NavbarProps) {
           <span className="text-white/30">|</span>
           <Link
             href={`/en${pathname.replace(/^\/(id|en)/, "")}`}
+            onClick={closeAllMenus}
             className={`hover:text-white transition-colors ${locale === "en" ? "text-white font-bold" : ""}`}
           >
             EN
@@ -204,7 +221,7 @@ export function Navbar({ locale }: NavbarProps) {
         <button
           className="md:hidden flex items-center justify-center h-11 w-11 rounded focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent"
           onClick={() => setMobileOpen((v) => !v)}
-          aria-label={mobileOpen ? "Tutup menu" : "Buka menu"}
+          aria-label={mobileOpen ? tNav("tutupMenu") : tNav("bukaMenu")}
           aria-expanded={mobileOpen}
           aria-controls="mobile-nav"
         >
@@ -221,7 +238,7 @@ export function Navbar({ locale }: NavbarProps) {
           id="mobile-nav"
           className="md:hidden bg-primary border-t border-white/10 px-4 pb-4"
           role="navigation"
-          aria-label="Navigasi mobile"
+          aria-label={tNav("ariaNavigasiMobile")}
         >
           <ul className="space-y-1 pt-2" role="list">
             {navItems.map((item) => (
@@ -229,6 +246,7 @@ export function Navbar({ locale }: NavbarProps) {
                 {item.href ? (
                   <Link
                     href={`/${locale}${item.href === "/" ? "" : item.href}`}
+                    onClick={closeAllMenus}
                     aria-current={isActive(item.href) ? "page" : undefined}
                     className="block px-3 py-3 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded transition-colors min-h-[44px]"
                   >
@@ -249,6 +267,7 @@ export function Navbar({ locale }: NavbarProps) {
                         <li key={child.href}>
                           <Link
                             href={`/${locale}${child.href}`}
+                            onClick={closeAllMenus}
                             className="block px-3 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded transition-colors min-h-[44px]"
                           >
                             {child.label}
@@ -266,12 +285,14 @@ export function Navbar({ locale }: NavbarProps) {
           <div className="mt-4 pt-4 border-t border-white/10 flex gap-4 px-3">
             <Link
               href={`/id${pathname.replace(/^\/(id|en)/, "")}`}
+              onClick={closeAllMenus}
               className={`text-sm font-mono ${locale === "id" ? "text-white font-bold" : "text-white/60 hover:text-white"}`}
             >
               Indonesia
             </Link>
             <Link
               href={`/en${pathname.replace(/^\/(id|en)/, "")}`}
+              onClick={closeAllMenus}
               className={`text-sm font-mono ${locale === "en" ? "text-white font-bold" : "text-white/60 hover:text-white"}`}
             >
               English

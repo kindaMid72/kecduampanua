@@ -65,8 +65,9 @@ export default function PenggunaAdminPage() {
         setIsSuperAccount(true);
         setPengguna(res.data || []);
       }
-    } catch (err: any) {
-      setError(err?.message || "Gagal memuat data pengguna.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Gagal memuat data pengguna.";
+      setError(message);
     }
   }, []);
 
@@ -99,9 +100,10 @@ export default function PenggunaAdminPage() {
             setPengguna(res.data || []);
           }
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         if (isMounted) {
-          setError(err?.message || "Terjadi kesalahan saat memuat data pengguna.");
+          const message = err instanceof Error ? err.message : "Terjadi kesalahan saat memuat data pengguna.";
+          setError(message);
         }
       } finally {
         if (isMounted) {

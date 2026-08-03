@@ -26,7 +26,7 @@ Website resmi kecamatan (wilayah pesisir) untuk profil, layanan administratif, i
 - Deploy ke domain go.id (tunduk konfirmasi hosting — lihat §8)
 
 ### Fase 2
-- Informasi Publik penuh (kategori, pencarian), Data Statistik, Potensi Daerah, Galeri
+- Informasi Publik penuh (kategori, pencarian), Data Statistik, Potensi Daerah, Berita
 - Edaran Dokumen
 - Pengaduan Masyarakat (form + cek status + banner SP4N-LAPOR!)
 - Bilingual auto-translate aktif penuh
@@ -49,7 +49,7 @@ Beranda | Profil ▾ | Informasi ▾ | Layanan Publik ▾ | Kontak
 |---|---|
 | Beranda | Papan Informasi (status kantor, jam layanan), info terbaru, akses cepat |
 | Profil ▾ | Sejarah, Visi-Misi, Struktur Organisasi, Jumlah ASN, PPID (minimal), Data Statistik, Potensi Daerah |
-| Informasi ▾ | Informasi Publik (pengumuman/kegiatan/jadwal rapat), Galeri |
+| Informasi ▾ | Informasi Publik (pengumuman/kegiatan/jadwal rapat), Berita |
 | Layanan Publik ▾ | Standar Pelayanan (+ Maklumat Pelayanan), Pengaduan (+ cek status, + banner SP4N-LAPOR!), Edaran Dokumen |
 | Kontak | Alamat, kontak resmi, peta |
 
@@ -65,7 +65,7 @@ Beranda | Profil ▾ | Informasi ▾ | Layanan Publik ▾ | Kontak
 
 **Potensi Daerah** — gabungan Potensi Ekonomi, Pariwisata, Potensi Pengolahan (DECISIONS #9). Satu menu admin, tab filter di publik.
 
-**Galeri** — album foto kegiatan.
+**Berita** — artikel editorial dan liputan kegiatan kecamatan. Kategori bebas diisi staf (tidak enum). Field: judul, konten panjang, gambar cover (wajib), kategori, tanggal terbit. List + detail per artikel. Bilingual (kolom `_en` opsional — fallback ke Indonesia). Berbeda dari Informasi Publik yang fokus ke pengumuman/kegiatan/jadwal dengan kategori enum ketat.
 
 **Edaran Dokumen** — daftar dokumen resmi (kategori bebas), langsung tayang saat diunggah, deskripsi wajib diisi & ditampilkan sebelum tombol unduh (DECISIONS #8).
 
