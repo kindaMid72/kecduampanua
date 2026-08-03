@@ -81,7 +81,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       <div className="flex flex-1">
         {/* Sidebar desktop */}
         <aside
-          className="hidden lg:flex flex-col w-64 bg-primary text-white flex-shrink-0 min-h-screen"
+          className="hidden lg:flex flex-col w-64 bg-primary text-white flex-shrink-0 sticky top-0 h-screen"
           aria-label="Navigasi admin"
         >
           {/* Logo/Brand */}
@@ -95,7 +95,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           </div>
 
           {/* Nav items */}
-          <nav className="flex-1 px-3 py-4" aria-label="Menu admin">
+          <nav className="flex-1 px-3 py-4 overflow-y-auto" aria-label="Menu admin">
             <ul className="space-y-1" role="list">
               {allNavItems.map((item) => {
                 const Icon = item.icon;
@@ -115,7 +115,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           </nav>
 
           {/* User info + logout */}
-          <div className="px-3 py-4 border-t border-white/10">
+          <div className="px-3 py-4 border-t border-white/10 mt-auto">
             <Link
               href="/admin/pengaturan-akun"
               className="block px-3 py-2 mb-2 rounded-[var(--radius-button)] hover:bg-white/10 transition-colors"
