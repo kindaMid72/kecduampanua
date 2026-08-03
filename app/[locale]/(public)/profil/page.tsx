@@ -173,6 +173,7 @@ export default async function ProfilPage({
                         alt={tProfil("fotoAlt", { nama: pejabat.nama_pejabat })}
                         width={80}
                         height={80}
+                        unoptimized
                         className="object-cover w-full h-full"
                       />
                     ) : (
