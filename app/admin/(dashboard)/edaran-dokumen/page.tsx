@@ -10,7 +10,7 @@ export default async function EdaranDokumenPage() {
   const supabase = await createClient();
   
   const { data, error } = await supabase
-    .from("edaran_dokumen")
+    .from("dokumen_edaran")
     .select("*")
     .order("created_at", { ascending: false });
 
@@ -41,8 +41,8 @@ export default async function EdaranDokumenPage() {
               <tr>
                 <th className="px-6 py-4 font-medium">Judul Dokumen</th>
                 <th className="px-6 py-4 font-medium">Nomor / Kategori</th>
-                <th className="px-6 py-4 font-medium text-center">Status</th>
-                <th className="px-6 py-4 font-medium text-right">Terakhir Diunggah</th>
+                <th className="px-6 py-4 font-medium text-center">Tanggal Terbit</th>
+                <th className="px-6 py-4 font-medium text-right">Diunggah Pada</th>
                 <th className="px-6 py-4 font-medium text-center">Aksi</th>
               </tr>
             </thead>
@@ -70,21 +70,21 @@ export default async function EdaranDokumenPage() {
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <p className="font-medium text-text">{item.nomor_dokumen || "-"}</p>
-                      <span className="inline-flex items-center px-2 py-1 rounded bg-secondary/10 text-secondary text-xs font-medium capitalize mt-1">
-                        {item.kategori}
-                      </span>
+                      <p className="font-medium text-text">{item.nomor_surat || "-"}</p>
+                      {item.kategori && (
+                        <span className="inline-flex items-center px-2 py-1 rounded bg-secondary/10 text-secondary text-xs font-medium capitalize mt-1">
+                          {item.kategori}
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-center">
-                      <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
-                        item.status === 'published' ? 'bg-[color:var(--color-status-success)]/10 text-[color:var(--color-status-success)]' : 'bg-surface text-text/60'
-                      }`}>
-                        {item.status === 'published' ? 'Diterbitkan' : 'Diarsipkan'}
+                      <span className="text-text/80">
+                        {new Date(item.tanggal_terbit).toLocaleDateString('id-ID', { year: 'numeric', month: 'long', day: 'numeric' })}
                       </span>
                     </td>
                     <td className="px-6 py-4 text-text/60 text-right">
-                      {item.updated_at
-                        ? formatDistanceToNow(new Date(item.updated_at || item.created_at), { addSuffix: true, locale: localeId })
+                      {item.created_at
+                        ? formatDistanceToNow(new Date(item.created_at), { addSuffix: true, locale: localeId })
                         : "-"}
                     </td>
                     <td className="px-6 py-4 text-center">

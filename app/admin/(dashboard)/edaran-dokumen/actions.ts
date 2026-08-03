@@ -8,11 +8,11 @@ import { edaranDokumenSchema } from "@/lib/validations/edaran-dokumen";
 export async function createEdaranAction(formData: FormData) {
   const raw = {
     judul: formData.get("judul"),
-    judul_en: formData.get("judul_en") || undefined,
-    nomor_dokumen: formData.get("nomor_dokumen") || undefined,
-    kategori: formData.get("kategori"),
+    nomor_surat: formData.get("nomor_surat") || undefined,
+    kategori: formData.get("kategori") || undefined,
+    deskripsi: formData.get("deskripsi"),
     file_url: formData.get("file_url"),
-    status: formData.get("status") || "published",
+    tanggal_terbit: formData.get("tanggal_terbit"),
   };
 
   const parsed = edaranDokumenSchema.safeParse(raw);
@@ -27,9 +27,9 @@ export async function createEdaranAction(formData: FormData) {
     return { error: "Anda belum login." };
   }
 
-  const { error } = await supabase.from("edaran_dokumen").insert({
+  const { error } = await supabase.from("dokumen_edaran").insert({
     ...parsed.data,
-    dibuat_oleh: user.id,
+    diunggah_oleh: user.id,
   });
 
   if (error) {
@@ -45,11 +45,11 @@ export async function createEdaranAction(formData: FormData) {
 export async function updateEdaranAction(id: string, formData: FormData) {
   const raw = {
     judul: formData.get("judul"),
-    judul_en: formData.get("judul_en") || undefined,
-    nomor_dokumen: formData.get("nomor_dokumen") || undefined,
-    kategori: formData.get("kategori"),
+    nomor_surat: formData.get("nomor_surat") || undefined,
+    kategori: formData.get("kategori") || undefined,
+    deskripsi: formData.get("deskripsi"),
     file_url: formData.get("file_url"),
-    status: formData.get("status") || "published",
+    tanggal_terbit: formData.get("tanggal_terbit"),
   };
 
   const parsed = edaranDokumenSchema.safeParse(raw);
@@ -64,7 +64,7 @@ export async function updateEdaranAction(id: string, formData: FormData) {
     return { error: "Anda belum login." };
   }
 
-  const { error } = await supabase.from("edaran_dokumen").update(parsed.data).eq("id", id);
+  const { error } = await supabase.from("dokumen_edaran").update(parsed.data).eq("id", id);
 
   if (error) {
     console.error(error);
@@ -84,7 +84,7 @@ export async function deleteEdaranAction(id: string) {
     return { error: "Anda belum login." };
   }
 
-  const { error } = await supabase.from("edaran_dokumen").delete().eq("id", id);
+  const { error } = await supabase.from("dokumen_edaran").delete().eq("id", id);
 
   if (error) {
     console.error(error);

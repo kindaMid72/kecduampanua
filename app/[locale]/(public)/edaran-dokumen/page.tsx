@@ -40,13 +40,14 @@ export default async function EdaranDokumenPage({
 
   const supabase = await createClient();
   let query = supabase
-    .from("edaran_dokumen")
-    .select("id, judul, judul_en, nomor_dokumen, kategori, file_url, created_at")
-    .eq("status", "published")
-    .order("created_at", { ascending: false });
+    .from("dokumen_edaran")
+    .select("id, judul, nomor_surat, kategori, deskripsi, file_url, tanggal_terbit")
+    .order("tanggal_terbit", { ascending: false });
 
-  if (kategoriParam !== "semua" && ["regulasi", "panduan", "laporan", "lainnya"].includes(kategoriParam)) {
-    query = query.eq("kategori", kategoriParam);
+  if (kategoriParam !== "semua" && kategoriParam) {
+    // Basic filter by category name, case-insensitive logic might be needed if they type it freely, 
+    // but the URL param is strictly from KATEGORI below.
+    query = query.ilike("kategori", `%${kategoriParam}%`);
   }
 
   const { data: edaranList, error } = await query;
@@ -111,9 +112,18 @@ export default async function EdaranDokumenPage({
         ) : (
           <div className="flex flex-col gap-4">
             {data.map((item) => {
-              const judul = isEn && item.judul_en ? item.judul_en : item.judul;
-              const katId = item.kategori as "regulasi" | "panduan" | "laporan" | "lainnya";
-              const tanggal = format(new Date(item.created_at), "dd MMMM yyyy", { locale: isEn ? undefined : localeId });
+              const judul = item.judul;
+              
+              // Map the category id from the textual category field
+              let katId = "lainnya";
+              if (item.kategori) {
+                const kLower = item.kategori.toLowerCase();
+                if (kLower.includes("regulasi")) katId = "regulasi";
+                else if (kLower.includes("panduan")) katId = "panduan";
+                else if (kLower.includes("laporan")) katId = "laporan";
+              }
+
+              const tanggal = format(new Date(item.tanggal_terbit), "dd MMMM yyyy", { locale: isEn ? undefined : localeId });
 
               return (
                 <Card key={item.id} padding="md" className="flex flex-col sm:flex-row sm:items-center gap-4 group">
@@ -133,9 +143,14 @@ export default async function EdaranDokumenPage({
                     <h3 className="font-display text-lg font-semibold text-text mb-1 truncate">
                       {judul}
                     </h3>
-                    {item.nomor_dokumen && (
+                    {item.nomor_surat && (
                       <p className="text-sm text-text/60">
-                        {tEdaran("nomor")} <span className="font-medium text-text">{item.nomor_dokumen}</span>
+                        {tEdaran("nomor")} <span className="font-medium text-text">{item.nomor_surat}</span>
+                      </p>
+                    )}
+                    {item.deskripsi && (
+                      <p className="text-sm text-text/50 mt-1 line-clamp-1">
+                        {item.deskripsi}
                       </p>
                     )}
                   </div>

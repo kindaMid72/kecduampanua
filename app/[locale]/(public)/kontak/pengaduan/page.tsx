@@ -7,7 +7,6 @@ import { pengaduanPublikSchema, type PengaduanPublikInput } from "@/lib/validati
 import { submitPengaduanAction } from "./actions";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { FileUpload } from "@/components/ui/FileUpload";
 import { useTranslations } from "next-intl";
 import { AlertCircle, CheckCircle2, Copy, ExternalLink, Search } from "lucide-react";
 import Link from "next/link";
@@ -37,8 +36,6 @@ export default function PengaduanPage({ params }: { params: Promise<{ locale: st
     defaultValues: { kategori: "", setuju_data_pribadi: false }
   });
 
-  const fileUrl = watch("lampiran_url") || "";
-
   async function onSubmit(data: PengaduanPublikInput) {
     setLoading(true);
     setError(null);
@@ -48,7 +45,6 @@ export default function PengaduanPage({ params }: { params: Promise<{ locale: st
     formData.append("kontak_pelapor", data.kontak_pelapor);
     formData.append("kategori", data.kategori);
     formData.append("deskripsi", data.deskripsi);
-    if (data.lampiran_url) formData.append("lampiran_url", data.lampiran_url);
     formData.append("setuju_data_pribadi", String(data.setuju_data_pribadi));
     if (data.honeypot) formData.append("honeypot", data.honeypot);
 
@@ -214,15 +210,6 @@ export default function PengaduanPage({ params }: { params: Promise<{ locale: st
                       className="w-full h-32 px-3 py-2 border rounded focus:ring-2 focus:ring-primary outline-none resize-y"
                     />
                     {errors.deskripsi && <p className="text-red-500 text-xs mt-1">{errors.deskripsi.message}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium mb-1.5">{t("form.lampiran")}</label>
-                    <FileUpload 
-                      value={fileUrl}
-                      onChange={(url) => setValue("lampiran_url", url)}
-                      folder="pengaduan"
-                    />
                   </div>
 
                   <div className="pt-2">

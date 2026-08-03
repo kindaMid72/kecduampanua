@@ -31,7 +31,6 @@ export async function submitPengaduanAction(formData: FormData) {
     kontak_pelapor: formData.get("kontak_pelapor"),
     kategori: formData.get("kategori"),
     deskripsi: formData.get("deskripsi"),
-    lampiran_url: formData.get("lampiran_url") || undefined,
     setuju_data_pribadi: formData.get("setuju_data_pribadi") === "true",
     honeypot: formData.get("honeypot") || "",
   };
@@ -79,7 +78,6 @@ export async function submitPengaduanAction(formData: FormData) {
     kontak_pelapor: parsed.data.kontak_pelapor,
     kategori: parsed.data.kategori,
     deskripsi: parsed.data.deskripsi,
-    lampiran_url: parsed.data.lampiran_url,
     setuju_data_pribadi: parsed.data.setuju_data_pribadi,
     status: "baru",
   });

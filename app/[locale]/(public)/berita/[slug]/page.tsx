@@ -108,11 +108,12 @@ export default async function BeritaDetailPage({
 
         {/* Gambar Cover */}
         {item.gambar_cover_url && (
-          <div className="relative w-full h-56 sm:h-80 rounded-lg overflow-hidden mb-8 bg-surface">
+          <div className="relative aspect-video w-full rounded-lg overflow-hidden mb-8 bg-surface">
             <Image
               src={item.gambar_cover_url}
               alt={judul}
               fill
+              unoptimized
               className="object-cover"
               priority
               sizes="(max-width: 768px) 100vw, 900px"

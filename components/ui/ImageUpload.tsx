@@ -10,9 +10,16 @@ interface ImageUploadProps {
   onChange: (url: string) => void;
   bucket?: string;
   folder?: string;
+  aspectRatio?: string;
 }
 
-export function ImageUpload({ value, onChange, bucket = "uploads", folder = "images" }: ImageUploadProps) {
+export function ImageUpload({ 
+  value, 
+  onChange, 
+  bucket = "uploads", 
+  folder = "images",
+  aspectRatio = "aspect-video" 
+}: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -79,7 +86,7 @@ export function ImageUpload({ value, onChange, bucket = "uploads", folder = "ima
           <img 
             src={value} 
             alt="Uploaded preview" 
-            className="w-full h-48 object-cover"
+            className={`w-full ${aspectRatio} object-cover`}
           />
           <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <button
@@ -92,7 +99,7 @@ export function ImageUpload({ value, onChange, bucket = "uploads", folder = "ima
           </div>
         </div>
       ) : (
-        <label className="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-primary/20 rounded-lg cursor-pointer bg-surface/10 hover:bg-surface/30 transition-colors">
+        <label className={`flex flex-col items-center justify-center w-full ${aspectRatio} border-2 border-dashed border-primary/20 rounded-lg cursor-pointer bg-surface/10 hover:bg-surface/30 transition-colors`}>
           <div className="flex flex-col items-center justify-center pt-5 pb-6">
             {isUploading ? (
               <Loader2 className="w-8 h-8 text-primary/50 animate-spin mb-3" />

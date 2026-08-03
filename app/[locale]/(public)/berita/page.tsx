@@ -159,11 +159,12 @@ export default async function BeritaListPage({
                   <Card interactive padding="none" className="h-full flex flex-col overflow-hidden">
                     {/* Gambar Cover */}
                     {item.gambar_cover_url && (
-                      <div className="relative h-44 bg-surface flex-shrink-0 overflow-hidden">
+                      <div className="relative aspect-video w-full bg-surface flex-shrink-0 overflow-hidden">
                         <Image
                           src={item.gambar_cover_url}
                           alt={judul}
                           fill
+                          unoptimized
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                         />

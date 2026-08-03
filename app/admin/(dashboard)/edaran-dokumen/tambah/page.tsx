@@ -8,17 +8,18 @@ import { createEdaranAction } from "../actions";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import Link from "next/link";
-import { ArrowLeft, Globe } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { FileUpload } from "@/components/ui/FileUpload";
 
 export default function TambahEdaranPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [showEn, setShowEn] = useState(false);
 
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<EdaranDokumenInput>({
     resolver: zodResolver(edaranDokumenSchema),
-    defaultValues: { kategori: "regulasi", status: "published" }
+    defaultValues: { 
+      tanggal_terbit: new Date().toISOString().split('T')[0]
+    }
   });
 
   const fileUrl = watch("file_url") || "";
@@ -29,11 +30,11 @@ export default function TambahEdaranPage() {
 
     const formData = new FormData();
     formData.append("judul", data.judul);
-    if (data.judul_en) formData.append("judul_en", data.judul_en);
-    if (data.nomor_dokumen) formData.append("nomor_dokumen", data.nomor_dokumen);
-    formData.append("kategori", data.kategori);
+    if (data.nomor_surat) formData.append("nomor_surat", data.nomor_surat);
+    if (data.kategori) formData.append("kategori", data.kategori);
+    formData.append("deskripsi", data.deskripsi);
     formData.append("file_url", data.file_url);
-    formData.append("status", data.status);
+    formData.append("tanggal_terbit", data.tanggal_terbit);
 
     const res = await createEdaranAction(formData);
     if (res?.error) {
@@ -72,39 +73,47 @@ export default function TambahEdaranPage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1.5">Nomor Dokumen</label>
+              <label className="block text-sm font-medium mb-1.5">Nomor Surat / Dokumen</label>
               <input
                 type="text"
-                {...register("nomor_dokumen")}
+                {...register("nomor_surat")}
                 className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
                 placeholder="Opsional, misal: 100/123/Kec.Dua"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1.5">Kategori <span className="text-red-500">*</span></label>
-              <select
+              <label className="block text-sm font-medium mb-1.5">Kategori</label>
+              <input
+                type="text"
                 {...register("kategori")}
                 className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none bg-white"
-              >
-                <option value="regulasi">Regulasi</option>
-                <option value="panduan">Panduan</option>
-                <option value="laporan">Laporan</option>
-                <option value="lainnya">Lainnya</option>
-              </select>
+                placeholder="Contoh: Regulasi, Panduan, dll"
+              />
               {errors.kategori && <p className="text-red-500 text-xs mt-1">{errors.kategori.message}</p>}
             </div>
           </div>
-
+          
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1.5">Tanggal Terbit <span className="text-red-500">*</span></label>
+              <input
+                type="date"
+                {...register("tanggal_terbit")}
+                className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
+              />
+              {errors.tanggal_terbit && <p className="text-red-500 text-xs mt-1">{errors.tanggal_terbit.message}</p>}
+            </div>
+          </div>
+          
           <div>
-            <label className="block text-sm font-medium mb-1.5">Status <span className="text-red-500">*</span></label>
-            <select
-              {...register("status")}
-              className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none bg-white max-w-[200px]"
-            >
-              <option value="published">Diterbitkan</option>
-              <option value="diarsipkan">Diarsipkan</option>
-            </select>
-            {errors.status && <p className="text-red-500 text-xs mt-1">{errors.status.message}</p>}
+            <label className="block text-sm font-medium mb-1.5">Deskripsi Ringkas <span className="text-red-500">*</span></label>
+            <textarea
+              {...register("deskripsi")}
+              rows={3}
+              className="w-full p-3 border rounded focus:ring-2 focus:ring-primary outline-none"
+              placeholder="Jelaskan isi atau tujuan dari dokumen ini..."
+            />
+            {errors.deskripsi && <p className="text-red-500 text-xs mt-1">{errors.deskripsi.message}</p>}
           </div>
 
           <div>
@@ -116,37 +125,6 @@ export default function TambahEdaranPage() {
               accept=".pdf"
             />
             {errors.file_url && <p className="text-red-500 text-xs mt-1">{errors.file_url.message}</p>}
-          </div>
-
-          {/* Section Bahasa Inggris */}
-          <div className="border border-surface rounded-lg">
-            <button
-              type="button"
-              onClick={() => setShowEn(v => !v)}
-              className="w-full flex items-center gap-2 px-4 py-3 text-sm text-text/70 hover:text-text hover:bg-surface/40 rounded-lg transition-colors text-left"
-            >
-              <Globe size={15} className="text-secondary flex-shrink-0" />
-              <span className="font-medium">Versi Bahasa Inggris (opsional)</span>
-              <span className="ml-auto text-xs text-text/40">
-                {showEn ? "Sembunyikan" : "Tampilkan"}
-              </span>
-            </button>
-            {showEn && (
-              <div className="px-4 pb-4 space-y-4 border-t border-surface pt-4">
-                <p className="text-xs text-text/50">
-                  Kosongkan jika tidak diperlukan — halaman <span className="font-mono">/en/</span> akan otomatis menampilkan versi Indonesia sebagai fallback.
-                </p>
-                <div>
-                  <label className="block text-sm font-medium mb-1.5">Judul (Bahasa Inggris)</label>
-                  <input
-                    type="text"
-                    {...register("judul_en")}
-                    className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
-                    placeholder="English title..."
-                  />
-                </div>
-              </div>
-            )}
           </div>
 
           <div className="pt-4 flex justify-end gap-3 border-t border-surface mt-6">

@@ -5,7 +5,6 @@ export const pengaduanPublikSchema = z.object({
   kontak_pelapor: z.string().min(5, "Kontak (Email/No HP) wajib diisi"),
   kategori: z.string().min(1, "Kategori wajib dipilih"),
   deskripsi: z.string().min(10, "Deskripsi pengaduan minimal 10 karakter"),
-  lampiran_url: z.string().optional(),
   setuju_data_pribadi: z.boolean().refine((val) => val === true, {
     message: "Anda harus menyetujui kebijakan privasi",
   }),
