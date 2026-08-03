@@ -72,6 +72,7 @@ export function Navbar({ locale }: NavbarProps) {
         { label: tNav("sejarahVisiMisi"), href: "/profil" },
         { label: tNav("strukturOrganisasi"), href: "/profil#struktur" },
         { label: tNav("jumlahAsn"), href: "/profil#asn" },
+        { label: tNav("dataStatistik"), href: "/profil#statistik" },
         { label: tNav("ppid"), href: "/profil/ppid" },
       ],
     },

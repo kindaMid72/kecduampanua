@@ -6,11 +6,7 @@ import { redirect } from "next/navigation";
 import { dataStatistikSchema } from "@/lib/validations/data-statistik";
 
 export async function createDataStatistikAction(formData: FormData) {
-  const raw = {
-    nama_desa_kelurahan: formData.get("nama_desa_kelurahan"),
-    jumlah_penduduk: formData.get("jumlah_penduduk") ? parseInt(formData.get("jumlah_penduduk") as string) : undefined,
-    tahun_data: parseInt(formData.get("tahun_data") as string),
-  };
+  const raw = Object.fromEntries(formData.entries());
 
   const parsed = dataStatistikSchema.safeParse(raw);
   if (!parsed.success) {
@@ -38,11 +34,7 @@ export async function createDataStatistikAction(formData: FormData) {
 }
 
 export async function updateDataStatistikAction(id: string, formData: FormData) {
-  const raw = {
-    nama_desa_kelurahan: formData.get("nama_desa_kelurahan"),
-    jumlah_penduduk: formData.get("jumlah_penduduk") ? parseInt(formData.get("jumlah_penduduk") as string) : undefined,
-    tahun_data: parseInt(formData.get("tahun_data") as string),
-  };
+  const raw = Object.fromEntries(formData.entries());
 
   const parsed = dataStatistikSchema.safeParse(raw);
   if (!parsed.success) {
