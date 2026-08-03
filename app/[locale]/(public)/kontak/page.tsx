@@ -77,10 +77,10 @@ export default async function KontakPage({
 
   const hasCoords = profil?.koordinat_lat && profil?.koordinat_lng;
   const mapUrl = hasCoords
-    ? `https://www.openstreetmap.org/?mlat=${profil?.koordinat_lat}&mlon=${profil?.koordinat_lng}#map=15/${profil?.koordinat_lat}/${profil?.koordinat_lng}`
+    ? `https://www.google.com/maps/search/?api=1&query=${profil?.koordinat_lat},${profil?.koordinat_lng}`
     : null;
   const embedUrl = hasCoords
-    ? `https://www.openstreetmap.org/export/embed.html?bbox=${(profil?.koordinat_lng ?? 0) - 0.01}%2C${(profil?.koordinat_lat ?? 0) - 0.01}%2C${(profil?.koordinat_lng ?? 0) + 0.01}%2C${(profil?.koordinat_lat ?? 0) + 0.01}&layer=mapnik&marker=${profil?.koordinat_lat}%2C${profil?.koordinat_lng}`
+    ? `https://maps.google.com/maps?q=${profil?.koordinat_lat},${profil?.koordinat_lng}&z=15&output=embed`
     : null;
 
   return (
@@ -162,7 +162,7 @@ export default async function KontakPage({
             </div>
           </Card>
 
-          {/* Peta OpenStreetMap */}
+          {/* Peta Google Maps */}
           <div className="space-y-3">
             <h2 className="font-display text-xl font-semibold text-primary">
               {tKontak("peta")}
