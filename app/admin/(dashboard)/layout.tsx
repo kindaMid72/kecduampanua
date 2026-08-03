@@ -58,7 +58,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
         </div>
         <SectionDivider />
         {/* Mobile nav horizontal scroll */}
-        <nav aria-label="Navigasi admin mobile" className="overflow-x-auto">
+        <nav aria-label="Navigasi admin mobile" className="overflow-x-auto scrollbar-none">
           <ul className="flex px-4 py-2 gap-1 whitespace-nowrap" role="list">
             {allNavItems.map((item) => {
               const Icon = item.icon;
@@ -95,7 +95,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           </div>
 
           {/* Nav items */}
-          <nav className="flex-1 px-3 py-4 overflow-y-auto" aria-label="Menu admin">
+          <nav className="flex-1 px-3 py-4 overflow-y-auto scrollbar-none" aria-label="Menu admin">
             <ul className="space-y-1" role="list">
               {allNavItems.map((item) => {
                 const Icon = item.icon;
