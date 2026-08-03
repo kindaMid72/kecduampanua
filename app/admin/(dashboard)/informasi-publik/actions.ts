@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { informasiPublikSchema } from "@/lib/validations/informasi-publik";
+import { deleteStorageFile } from "@/lib/supabase/storage";
 
 export async function createInformasiAction(formData: FormData) {
   const raw = {
@@ -88,6 +89,12 @@ export async function updateInformasiAction(id: string, formData: FormData) {
     return { error: "Anda belum login." };
   }
 
+  const { data: oldData } = await supabase
+    .from("informasi_publik")
+    .select("gambar_cover_url")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase.from("informasi_publik").update({
     judul: parsed.data.judul,
     judul_en: parsed.data.judul_en || null,
@@ -105,6 +112,10 @@ export async function updateInformasiAction(id: string, formData: FormData) {
     return { error: "Gagal memperbarui data." };
   }
 
+  if (oldData?.gambar_cover_url && oldData.gambar_cover_url !== parsed.data.gambar_cover_url) {
+    await deleteStorageFile(supabase, oldData.gambar_cover_url);
+  }
+
   revalidatePath("/admin/informasi-publik");
   revalidatePath("/informasi");
   revalidatePath("/");
@@ -119,11 +130,21 @@ export async function deleteInformasiAction(id: string) {
     return { error: "Anda belum login." };
   }
 
+  const { data: oldData } = await supabase
+    .from("informasi_publik")
+    .select("gambar_cover_url")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase.from("informasi_publik").delete().eq("id", id);
 
   if (error) {
     console.error(error);
     return { error: "Gagal menghapus data." };
+  }
+
+  if (oldData?.gambar_cover_url) {
+    await deleteStorageFile(supabase, oldData.gambar_cover_url);
   }
 
   revalidatePath("/admin/informasi-publik");

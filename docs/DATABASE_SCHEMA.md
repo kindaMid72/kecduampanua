@@ -184,7 +184,6 @@ create table pengaduan (
   kontak_pelapor text not null,
   kategori text,
   deskripsi text not null,
-  lampiran_url text,
   status text not null default 'baru' check (status in ('baru', 'diproses', 'selesai')),
   catatan_tindak_lanjut text,
   setuju_data_pribadi boolean not null default false, -- checkbox persetujuan UU PDP

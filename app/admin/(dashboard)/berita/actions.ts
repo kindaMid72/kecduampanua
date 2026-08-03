@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { beritaSchema } from "@/lib/validations/berita";
+import { deleteStorageFile } from "@/lib/supabase/storage";
 
 export async function createBeritaAction(formData: FormData) {
   const raw = {
@@ -83,6 +84,12 @@ export async function updateBeritaAction(id: string, formData: FormData) {
     return { error: "Anda belum login." };
   }
 
+  const { data: oldData } = await supabase
+    .from("berita")
+    .select("gambar_cover_url")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase
     .from("berita")
     .update({
@@ -101,6 +108,10 @@ export async function updateBeritaAction(id: string, formData: FormData) {
     return { error: "Gagal memperbarui berita." };
   }
 
+  if (oldData?.gambar_cover_url && oldData.gambar_cover_url !== parsed.data.gambar_cover_url) {
+    await deleteStorageFile(supabase, oldData.gambar_cover_url);
+  }
+
   revalidatePath("/admin/berita");
   revalidatePath("/berita");
   revalidatePath("/");
@@ -117,11 +128,21 @@ export async function deleteBeritaAction(id: string) {
     return { error: "Anda belum login." };
   }
 
+  const { data: oldData } = await supabase
+    .from("berita")
+    .select("gambar_cover_url")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase.from("berita").delete().eq("id", id);
 
   if (error) {
     console.error(error);
     return { error: "Gagal menghapus berita." };
+  }
+
+  if (oldData?.gambar_cover_url) {
+    await deleteStorageFile(supabase, oldData.gambar_cover_url);
   }
 
   revalidatePath("/admin/berita");

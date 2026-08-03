@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
+import { deleteStorageFile } from "@/lib/supabase/storage";
 
 export async function updateProfilAction(formData: FormData) {
   const raw = {
@@ -108,10 +109,20 @@ export async function updatePejabatAction(id: string, formData: FormData) {
     return { error: "Anda belum login." };
   }
 
+  const { data: oldData } = await supabase
+    .from("struktur_organisasi")
+    .select("foto_url")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase.from("struktur_organisasi").update(raw).eq("id", id);
   if (error) {
     console.error(error);
     return { error: "Gagal memperbarui pejabat." };
+  }
+
+  if (oldData?.foto_url && oldData.foto_url !== raw.foto_url) {
+    await deleteStorageFile(supabase, oldData.foto_url);
   }
 
   revalidatePath("/admin/profil");
@@ -127,10 +138,20 @@ export async function deletePejabatAction(id: string) {
     return { error: "Anda belum login." };
   }
 
+  const { data: oldData } = await supabase
+    .from("struktur_organisasi")
+    .select("foto_url")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase.from("struktur_organisasi").delete().eq("id", id);
   if (error) {
     console.error(error);
     return { error: "Gagal menghapus pejabat." };
+  }
+
+  if (oldData?.foto_url) {
+    await deleteStorageFile(supabase, oldData.foto_url);
   }
 
   revalidatePath("/admin/profil");

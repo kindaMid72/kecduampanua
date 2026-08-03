@@ -131,20 +131,7 @@ export default function UbahPengaduanPage({ params }: { params: Promise<{ id: st
                     {pengaduan.deskripsi}
                   </div>
                 </div>
-                
-                {pengaduan.lampiran_url && (
-                  <div>
-                    <p className="text-xs text-text/50 uppercase tracking-wider mb-1">Lampiran</p>
-                    <a 
-                      href={pengaduan.lampiran_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-3 py-2 bg-surface hover:bg-surface/80 rounded text-sm transition-colors text-primary"
-                    >
-                      <Download size={14} /> Lihat/Unduh Lampiran
-                    </a>
-                  </div>
-                )}
+
               </div>
             </Card>
           </div>

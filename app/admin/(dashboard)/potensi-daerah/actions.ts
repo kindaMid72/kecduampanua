@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { potensiDaerahSchema } from "@/lib/validations/potensi-daerah";
+import { deleteStorageFile } from "@/lib/supabase/storage";
 
 export async function createPotensiAction(formData: FormData) {
   const raw = {
@@ -71,11 +72,21 @@ export async function updatePotensiAction(id: string, formData: FormData) {
     return { error: "Anda belum login." };
   }
 
+  const { data: oldData } = await supabase
+    .from("potensi_daerah")
+    .select("gambar_url")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase.from("potensi_daerah").update(parsed.data).eq("id", id);
 
   if (error) {
     console.error(error);
     return { error: "Gagal memperbarui data." };
+  }
+
+  if (oldData?.gambar_url && oldData.gambar_url !== parsed.data.gambar_url) {
+    await deleteStorageFile(supabase, oldData.gambar_url);
   }
 
   revalidatePath("/admin/potensi-daerah");
@@ -92,11 +103,21 @@ export async function deletePotensiAction(id: string) {
     return { error: "Anda belum login." };
   }
 
+  const { data: oldData } = await supabase
+    .from("potensi_daerah")
+    .select("gambar_url")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase.from("potensi_daerah").delete().eq("id", id);
 
   if (error) {
     console.error(error);
     return { error: "Gagal menghapus data." };
+  }
+
+  if (oldData?.gambar_url) {
+    await deleteStorageFile(supabase, oldData.gambar_url);
   }
 
   revalidatePath("/admin/potensi-daerah");

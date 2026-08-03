@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { layananSchema } from "@/lib/validations/standar-pelayanan";
+import { deleteStorageFile } from "@/lib/supabase/storage";
 
 export async function createLayananAction(formData: FormData) {
   const rawSyarat = formData.getAll("syarat_dokumen");
@@ -89,6 +90,12 @@ export async function updateLayananAction(id: string, formData: FormData) {
     return { error: "Anda belum login." };
   }
 
+  const { data: oldData } = await supabase
+    .from("layanan")
+    .select("dokumen_standar_pelayanan_url")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase.from("layanan").update({
     nama_layanan: parsed.data.nama_layanan,
     nama_layanan_en: parsed.data.nama_layanan_en || null,
@@ -109,6 +116,10 @@ export async function updateLayananAction(id: string, formData: FormData) {
     return { error: "Gagal memperbarui data." };
   }
 
+  if (oldData?.dokumen_standar_pelayanan_url && oldData.dokumen_standar_pelayanan_url !== parsed.data.dokumen_standar_pelayanan_url) {
+    await deleteStorageFile(supabase, oldData.dokumen_standar_pelayanan_url);
+  }
+
   revalidatePath("/admin/standar-pelayanan");
   revalidatePath("/standar-pelayanan");
   revalidatePath("/");
@@ -123,11 +134,21 @@ export async function deleteLayananAction(id: string) {
     return { error: "Anda belum login." };
   }
 
+  const { data: oldData } = await supabase
+    .from("layanan")
+    .select("dokumen_standar_pelayanan_url")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase.from("layanan").delete().eq("id", id);
 
   if (error) {
     console.error(error);
     return { error: "Gagal menghapus data." };
+  }
+
+  if (oldData?.dokumen_standar_pelayanan_url) {
+    await deleteStorageFile(supabase, oldData.dokumen_standar_pelayanan_url);
   }
 
   revalidatePath("/admin/standar-pelayanan");

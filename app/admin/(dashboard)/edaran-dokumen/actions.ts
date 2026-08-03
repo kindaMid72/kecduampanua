@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { edaranDokumenSchema } from "@/lib/validations/edaran-dokumen";
+import { deleteStorageFile } from "@/lib/supabase/storage";
 
 export async function createEdaranAction(formData: FormData) {
   const raw = {
@@ -64,11 +65,21 @@ export async function updateEdaranAction(id: string, formData: FormData) {
     return { error: "Anda belum login." };
   }
 
+  const { data: oldData } = await supabase
+    .from("dokumen_edaran")
+    .select("file_url")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase.from("dokumen_edaran").update(parsed.data).eq("id", id);
 
   if (error) {
     console.error(error);
     return { error: "Gagal memperbarui data." };
+  }
+
+  if (oldData?.file_url && oldData.file_url !== parsed.data.file_url) {
+    await deleteStorageFile(supabase, oldData.file_url);
   }
 
   revalidatePath("/admin/edaran-dokumen");
@@ -84,11 +95,21 @@ export async function deleteEdaranAction(id: string) {
     return { error: "Anda belum login." };
   }
 
+  const { data: oldData } = await supabase
+    .from("dokumen_edaran")
+    .select("file_url")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase.from("dokumen_edaran").delete().eq("id", id);
 
   if (error) {
     console.error(error);
     return { error: "Gagal menghapus data." };
+  }
+
+  if (oldData?.file_url) {
+    await deleteStorageFile(supabase, oldData.file_url);
   }
 
   revalidatePath("/admin/edaran-dokumen");
