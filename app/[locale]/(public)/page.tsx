@@ -176,19 +176,33 @@ export default async function Beranda({
   return (
     <>
       {/* Hero section */}
-      <section className="max-w-6xl mx-auto px-4 py-10 sm:py-14">
-        <div className="mb-3">
-          <CategoryLabel label={tBeranda("selamatDatang")} />
+      <section className="relative px-4 py-12 sm:py-20 overflow-hidden">
+        {/* Background Image with Blur Overlay */}
+        <div className="absolute inset-0 -z-10">
+          <Image
+            src="/hero-web-duampanua.webp"
+            alt="Hero Background"
+            fill
+            priority
+            className="object-cover object-center"
+          />
+          <div className="absolute inset-0 bg-background/50 backdrop-blur-[2px]"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
         </div>
-        <h1 className="font-display text-3xl sm:text-4xl font-semibold text-primary mb-2">
-          {profil?.nama_kecamatan ?? tMeta("siteName")}
-        </h1>
-        <p className="text-text/60 text-base mb-8 max-w-xl">
-          {tBeranda("tagline")}
-        </p>
 
-        {/* Papan Informasi */}
-        <PapanInformasiPanel
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="mb-3">
+            <CategoryLabel label={tBeranda("selamatDatang")} />
+          </div>
+          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-semibold text-primary mb-4 drop-shadow-sm">
+            {profil?.nama_kecamatan ?? tMeta("siteName")}
+          </h1>
+          <p className="text-text/80 text-base sm:text-lg mb-8 max-w-xl font-medium drop-shadow-sm">
+            {tBeranda("tagline")}
+          </p>
+
+          {/* Papan Informasi */}
+          <PapanInformasiPanel
           statusBuka={statusBuka}
           jamLayanan={jamLayanan}
           aksesCapt={aksesCapt}
@@ -202,6 +216,7 @@ export default async function Beranda({
             aksesCepat: tBeranda("aksesCepat"),
           }}
         />
+        </div>
       </section>
 
       <SectionDivider className="mx-4 sm:mx-8" />
