@@ -238,54 +238,46 @@ export default async function Beranda({
               {tBeranda("lihatSemua")}
             </Link>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <Card padding="md" className="flex flex-col items-center justify-center text-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                <Users size={20} />
+          <div className="border-2 border-primary/20 bg-surface/30 rounded-lg overflow-hidden flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-primary/10">
+            <div className="flex-1 p-6 flex flex-col items-center justify-center text-center gap-2 hover:bg-surface/50 transition-colors">
+              <div className="w-10 h-10 flex items-center justify-center text-secondary mb-2">
+                <Users size={24} />
               </div>
-              <div>
-                <div className="font-display text-2xl font-semibold text-primary mb-1">
-                  {new Intl.NumberFormat("id-ID").format(aggStatistik.totalPenduduk)}
-                </div>
-                <div className="text-sm font-medium text-text/60">{tBeranda("totalPenduduk")}</div>
+              <div className="font-mono text-3xl font-semibold text-primary mb-1">
+                {new Intl.NumberFormat("id-ID").format(aggStatistik.totalPenduduk)}
               </div>
-            </Card>
+              <div className="text-sm font-medium text-text/70 uppercase tracking-wider">{tBeranda("totalPenduduk")}</div>
+            </div>
             
-            <Card padding="md" className="flex flex-col items-center justify-center text-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                <Map size={20} />
+            <div className="flex-1 p-6 flex flex-col items-center justify-center text-center gap-2 hover:bg-surface/50 transition-colors">
+              <div className="w-10 h-10 flex items-center justify-center text-secondary mb-2">
+                <Map size={24} />
               </div>
-              <div>
-                <div className="font-display text-2xl font-semibold text-primary mb-1">
-                  {new Intl.NumberFormat("id-ID").format(aggStatistik.luasWilayah)}
-                </div>
-                <div className="text-sm font-medium text-text/60">{tBeranda("luasWilayah")} ({tBeranda("satuanLuas")})</div>
+              <div className="font-mono text-3xl font-semibold text-primary mb-1">
+                {new Intl.NumberFormat("id-ID").format(aggStatistik.luasWilayah)}
               </div>
-            </Card>
+              <div className="text-sm font-medium text-text/70 uppercase tracking-wider">{tBeranda("luasWilayah")} ({tBeranda("satuanLuas")})</div>
+            </div>
 
-            <Card padding="md" className="flex flex-col items-center justify-center text-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                <School size={20} />
+            <div className="flex-1 p-6 flex flex-col items-center justify-center text-center gap-2 hover:bg-surface/50 transition-colors">
+              <div className="w-10 h-10 flex items-center justify-center text-secondary mb-2">
+                <School size={24} />
               </div>
-              <div>
-                <div className="font-display text-2xl font-semibold text-primary mb-1">
-                  {new Intl.NumberFormat("id-ID").format(aggStatistik.fasilitasPendidikan)}
-                </div>
-                <div className="text-sm font-medium text-text/60">{tBeranda("fasilitasPendidikan")}</div>
+              <div className="font-mono text-3xl font-semibold text-primary mb-1">
+                {new Intl.NumberFormat("id-ID").format(aggStatistik.fasilitasPendidikan)}
               </div>
-            </Card>
+              <div className="text-sm font-medium text-text/70 uppercase tracking-wider">{tBeranda("fasilitasPendidikan")}</div>
+            </div>
 
-            <Card padding="md" className="flex flex-col items-center justify-center text-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
-                <HeartPulse size={20} />
+            <div className="flex-1 p-6 flex flex-col items-center justify-center text-center gap-2 hover:bg-surface/50 transition-colors">
+              <div className="w-10 h-10 flex items-center justify-center text-secondary mb-2">
+                <HeartPulse size={24} />
               </div>
-              <div>
-                <div className="font-display text-2xl font-semibold text-primary mb-1">
-                  {new Intl.NumberFormat("id-ID").format(aggStatistik.fasilitasKesehatan)}
-                </div>
-                <div className="text-sm font-medium text-text/60">{tBeranda("fasilitasKesehatan")}</div>
+              <div className="font-mono text-3xl font-semibold text-primary mb-1">
+                {new Intl.NumberFormat("id-ID").format(aggStatistik.fasilitasKesehatan)}
               </div>
-            </Card>
+              <div className="text-sm font-medium text-text/70 uppercase tracking-wider">{tBeranda("fasilitasKesehatan")}</div>
+            </div>
           </div>
         </section>
       )}
@@ -316,48 +308,80 @@ export default async function Beranda({
             </p>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {beritaTerkini.map((item) => {
-              const judul = isEn && item.judul_en ? item.judul_en : item.judul;
-              const tanggal = new Date(item.created_at).toLocaleDateString(
-                isEn ? "en-GB" : "id-ID",
-                { day: "numeric", month: "long", year: "numeric" }
-              );
-              return (
-                <Link key={item.id} href={`/${locale}/berita/${item.slug}`} className="block h-full group">
-                  <Card interactive padding="none" className="h-full flex flex-col overflow-hidden">
-                    <div className="relative w-full h-48 bg-surface">
-                      {item.gambar_cover_url ? (
-                        <Image
-                          src={item.gambar_cover_url}
-                          alt={judul}
-                          fill
-                          unoptimized
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center text-text/20">
-                          <span className="font-display text-4xl">{judul.charAt(0)}</span>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Main Featured Article */}
+            {beritaTerkini.length > 0 && (
+              <div className="lg:col-span-8">
+                {(() => {
+                  const item = beritaTerkini[0];
+                  const judul = isEn && item.judul_en ? item.judul_en : item.judul;
+                  const tanggal = new Date(item.created_at).toLocaleDateString(
+                    isEn ? "en-GB" : "id-ID",
+                    { day: "numeric", month: "long", year: "numeric" }
+                  );
+                  return (
+                    <Link href={`/${locale}/berita/${item.slug}`} className="block group border border-surface rounded-lg overflow-hidden h-full flex flex-col bg-surface/20 hover:border-primary/30 transition-colors">
+                      <div className="relative w-full aspect-video sm:aspect-[2/1] bg-surface">
+                        {item.gambar_cover_url ? (
+                          <Image
+                            src={item.gambar_cover_url}
+                            alt={judul}
+                            fill
+                            unoptimized
+                            className="object-cover group-hover:scale-[1.02] transition-transform duration-700"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-text/20">
+                            <span className="font-display text-6xl">{judul.charAt(0)}</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className="p-6 flex flex-col justify-center flex-1 bg-background">
+                        <div className="flex items-center gap-3 mb-4">
+                          <Badge variant="default" className="text-xs uppercase tracking-wider">
+                            {item.kategori || tNav("berita")}
+                          </Badge>
+                          <time dateTime={item.created_at} className="text-xs font-mono text-text/60">
+                            {tanggal}
+                          </time>
                         </div>
-                      )}
-                    </div>
-                    <div className="p-5 flex flex-col flex-1">
-                      <div className="flex items-center justify-between mb-3">
-                        <Badge variant="default" className="text-xs">
+                        <h3 className="font-display font-medium text-text text-2xl leading-tight group-hover:text-primary transition-colors">
+                          {judul}
+                        </h3>
+                      </div>
+                    </Link>
+                  );
+                })()}
+              </div>
+            )}
+            
+            {/* Side Articles */}
+            {beritaTerkini.length > 1 && (
+              <div className="lg:col-span-4 flex flex-col divide-y divide-surface border-y lg:border-y-0 lg:border-l border-surface lg:pl-6">
+                {beritaTerkini.slice(1).map((item) => {
+                  const judul = isEn && item.judul_en ? item.judul_en : item.judul;
+                  const tanggal = new Date(item.created_at).toLocaleDateString(
+                    isEn ? "en-GB" : "id-ID",
+                    { day: "numeric", month: "long", year: "numeric" }
+                  );
+                  return (
+                    <Link key={item.id} href={`/${locale}/berita/${item.slug}`} className="py-6 first:pt-0 lg:first:pt-0 last:pb-0 group flex flex-col h-full justify-center">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Badge variant="default" className="text-[10px] uppercase tracking-wider">
                           {item.kategori || tNav("berita")}
                         </Badge>
                         <time dateTime={item.created_at} className="text-xs font-mono text-text/50">
                           {tanggal}
                         </time>
                       </div>
-                      <h3 className="font-medium text-text text-base leading-snug line-clamp-3">
+                      <h3 className="font-medium text-text text-base leading-snug line-clamp-3 group-hover:text-primary transition-colors">
                         {judul}
                       </h3>
-                    </div>
-                  </Card>
-                </Link>
-              );
-            })}
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </div>
         )}
       </section>
@@ -388,50 +412,55 @@ export default async function Beranda({
             </p>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {potensiUnggulan.map((item) => {
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 pb-8">
+            {potensiUnggulan.map((item, index) => {
               const judul = isEn && item.judul_en ? item.judul_en : item.judul;
               const deskripsi = isEn && item.deskripsi_en ? item.deskripsi_en : item.deskripsi;
               const katId = item.kategori as "ekonomi" | "wisata" | "pengolahan";
+              const isMiddle = index === 1;
 
               return (
-                <Link key={item.id} href={`/${locale}/potensi?k=${katId}`} className="block h-full group">
-                  <Card interactive padding="none" className="overflow-hidden flex flex-col h-full">
-                    <div className="relative w-full h-40 bg-surface">
+                <Link 
+                  key={item.id} 
+                  href={`/${locale}/potensi?k=${katId}`} 
+                  className={`block h-full group ${isMiddle ? 'md:translate-y-8' : ''}`}
+                >
+                  <div className="h-full flex flex-col border border-surface bg-background hover:border-primary/30 transition-colors overflow-hidden rounded">
+                    <div className="relative w-full aspect-square sm:h-56 sm:aspect-auto bg-surface overflow-hidden">
                       {item.gambar_url ? (
                         <Image
                           src={item.gambar_url}
                           alt={judul}
                           fill
                           unoptimized
-                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                          className="object-cover group-hover:scale-105 transition-transform duration-700 grayscale-[0.2] group-hover:grayscale-0"
                         />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center text-text/20">
+                        <div className="w-full h-full flex items-center justify-center text-text/20 bg-surface/50">
                           <span className="font-display text-4xl">{judul.charAt(0)}</span>
                         </div>
                       )}
-                      <div className="absolute top-3 left-3">
-                        <Badge variant={potensiBadgeMap[katId] || "default"} className="shadow-sm backdrop-blur-sm bg-white/90">
+                      <div className="absolute top-4 left-4">
+                        <Badge variant={potensiBadgeMap[katId] || "default"} className="shadow-sm border-white/20 bg-background/95 backdrop-blur font-mono uppercase tracking-wider text-[10px]">
                           {tPotensi(`kategori.${katId}`)}
                         </Badge>
                       </div>
                     </div>
-                    <div className="p-4 flex flex-col flex-1">
-                      <h3 className="font-display text-lg font-semibold text-text mb-2 line-clamp-2">
+                    <div className="p-5 flex flex-col flex-1 border-t border-surface/50">
+                      <h3 className="font-display text-lg font-semibold text-primary mb-2 line-clamp-2 group-hover:text-accent transition-colors">
                         {judul}
                       </h3>
                       {item.lokasi && (
-                        <div className="flex items-center gap-1.5 text-xs text-text/60 mb-2">
-                          <MapPin size={14} className="flex-shrink-0" />
+                        <div className="flex items-center gap-1.5 text-xs text-text/60 mb-3 font-mono">
+                          <MapPin size={14} className="flex-shrink-0 text-secondary" />
                           <span className="truncate">{item.lokasi}</span>
                         </div>
                       )}
-                      <p className="text-sm text-text/70 line-clamp-2 leading-relaxed">
+                      <p className="text-sm text-text/70 line-clamp-3 leading-relaxed">
                         {deskripsi}
                       </p>
                     </div>
-                  </Card>
+                  </div>
                 </Link>
               );
             })}
@@ -465,36 +494,36 @@ export default async function Beranda({
             </p>
           </Card>
         ) : (
-          <ul
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-            role="list"
-          >
+          <ul className="flex flex-col border-t-2 border-primary/10" role="list">
             {infos.map((item) => {
               const judul = isEn && item.judul_en ? item.judul_en : item.judul;
               const kat = item.kategori as keyof typeof kategoriBadge;
               const tanggal = new Date(item.created_at).toLocaleDateString(
                 isEn ? "en-GB" : "id-ID",
-                { day: "numeric", month: "long", year: "numeric" }
+                { day: "2-digit", month: "short", year: "numeric" }
               );
               return (
                 <li key={item.id}>
-                  <Link href={`/${locale}/informasi/${item.slug}`} className="block h-full">
-                    <Card interactive padding="md" className="h-full flex flex-col">
-                      <div className="flex items-start justify-between gap-2 mb-3">
-                        <Badge variant={kategoriBadge[kat] ?? "default"}>
+                  <Link href={`/${locale}/informasi/${item.slug}`} className="group block border-b border-surface hover:bg-surface/30 transition-colors">
+                    <div className="px-4 py-5 flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
+                      <time
+                        dateTime={item.created_at}
+                        className="text-sm font-mono font-medium text-secondary whitespace-nowrap w-28 shrink-0"
+                      >
+                        {tanggal}
+                      </time>
+                      <div className="shrink-0 w-32">
+                        <Badge variant={kategoriBadge[kat] ?? "default"} className="font-mono text-[10px] uppercase tracking-wider">
                           {kategoriLabel[kat] ?? kat}
                         </Badge>
-                        <time
-                          dateTime={item.created_at}
-                          className="text-xs font-mono text-text/40 flex-shrink-0"
-                        >
-                          {tanggal}
-                        </time>
                       </div>
-                      <p className="font-medium text-text text-sm leading-snug flex-1">
+                      <p className="font-medium text-text text-base leading-snug flex-1 group-hover:text-primary transition-colors">
                         {judul}
                       </p>
-                    </Card>
+                      <div className="hidden md:block opacity-0 group-hover:opacity-100 transition-opacity text-primary shrink-0">
+                        <TrendingUp size={18} className="rotate-90" />
+                      </div>
+                    </div>
                   </Link>
                 </li>
               );
@@ -511,57 +540,55 @@ export default async function Beranda({
         <h2 id="akses-cepat-heading" className="font-display text-2xl font-semibold text-primary mb-6">
           {tBeranda("aksesCepat")}
         </h2>
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4" role="list">
-          {[
-            {
-              label: tNav("standarPelayanan"),
-              desc: tBeranda("aksesCepatStandarPelayananDesc"),
-              href: `/${locale}/standar-pelayanan`,
-              icon: FileText,
-            },
-            {
-              label: tNav("informasiPublik"),
-              desc: tBeranda("aksesCepatInformasiDesc"),
-              href: `/${locale}/informasi`,
-              icon: BookOpen,
-            },
-            {
-              label: tNav("pengaduan"),
-              desc: tBeranda("aksesCepatPengaduanDesc"),
-              href: `/${locale}/kontak/pengaduan`,
-              icon: Megaphone,
-            },
-            {
-              label: tNav("potensiDaerah"),
-              desc: tBeranda("aksesCepatPotensiDesc"),
-              href: `/${locale}/potensi`,
-              icon: TrendingUp,
-            },
-            {
-              label: tNav("kontak"),
-              desc: tBeranda("aksesCepatKontakDesc"),
-              href: `/${locale}/kontak`,
-              icon: Phone,
-            },
-          ].map((item) => {
-            const Icon = item.icon;
-            return (
-              <li key={item.href}>
-                <Link href={item.href} className="block h-full">
-                  <Card interactive padding="md" className="h-full flex flex-col">
-                    <Icon
-                      size={24}
-                      className="text-secondary mb-3"
-                      aria-hidden="true"
-                    />
-                    <h3 className="font-medium text-text mb-1 text-sm">{item.label}</h3>
+        <div className="border border-primary/20 bg-surface/20 rounded-lg overflow-hidden">
+          <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 divide-y sm:divide-y-0 lg:divide-x divide-primary/10" role="list">
+            {[
+              {
+                label: tNav("standarPelayanan"),
+                desc: tBeranda("aksesCepatStandarPelayananDesc"),
+                href: `/${locale}/standar-pelayanan`,
+                icon: FileText,
+              },
+              {
+                label: tNav("informasiPublik"),
+                desc: tBeranda("aksesCepatInformasiDesc"),
+                href: `/${locale}/informasi`,
+                icon: BookOpen,
+              },
+              {
+                label: tNav("pengaduan"),
+                desc: tBeranda("aksesCepatPengaduanDesc"),
+                href: `/${locale}/kontak/pengaduan`,
+                icon: Megaphone,
+              },
+              {
+                label: tNav("potensiDaerah"),
+                desc: tBeranda("aksesCepatPotensiDesc"),
+                href: `/${locale}/potensi`,
+                icon: TrendingUp,
+              },
+              {
+                label: tNav("kontak"),
+                desc: tBeranda("aksesCepatKontakDesc"),
+                href: `/${locale}/kontak`,
+                icon: Phone,
+              },
+            ].map((item) => {
+              const Icon = item.icon;
+              return (
+                <li key={item.href} className="group">
+                  <Link href={item.href} className="block h-full p-6 hover:bg-surface/50 transition-colors flex flex-col items-start">
+                    <div className="w-10 h-10 mb-4 rounded bg-background border border-surface flex items-center justify-center group-hover:border-primary/30 group-hover:text-primary transition-colors text-secondary">
+                      <Icon size={20} aria-hidden="true" />
+                    </div>
+                    <h3 className="font-medium text-primary mb-2 text-sm">{item.label}</h3>
                     <p className="text-xs text-text/60 leading-relaxed flex-1">{item.desc}</p>
-                  </Card>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </section>
     </>
   );

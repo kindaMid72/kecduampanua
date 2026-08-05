@@ -152,23 +152,25 @@ export default async function ProfilPage({
         <h2 id="visimisi-heading" className="font-display text-2xl font-semibold text-primary mb-6">
           {tProfil("visiMisi")}
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card padding="md">
-            <h3 className="font-medium text-primary mb-3">{tProfil("visi")}</h3>
+        <div className="border border-primary/20 bg-surface/10 p-6 sm:p-10 flex flex-col md:flex-row gap-10 md:gap-16 relative before:absolute before:left-0 before:top-0 before:w-1 before:h-full before:bg-primary/20">
+          <div className="flex-1">
+            <h3 className="font-mono text-xs uppercase tracking-widest text-secondary mb-4">{tProfil("visi")}</h3>
             {visi ? (
-              <p className="text-text/80 text-sm leading-relaxed">{visi}</p>
+              <p className="text-primary font-display text-xl sm:text-2xl leading-relaxed italic">"{visi}"</p>
             ) : (
               <Placeholder pesan={tProfil("visiPlaceholder")} />
             )}
-          </Card>
-          <Card padding="md">
-            <h3 className="font-medium text-primary mb-3">{tProfil("misi")}</h3>
+          </div>
+          <div className="flex-1 md:border-l border-primary/10 md:pl-16">
+            <h3 className="font-mono text-xs uppercase tracking-widest text-secondary mb-4">{tProfil("misi")}</h3>
             {misi ? (
-              <p className="text-text/80 text-sm leading-relaxed whitespace-pre-line">{misi}</p>
+              <div className="text-text/80 leading-relaxed whitespace-pre-line prose prose-sm max-w-none marker:text-primary marker:font-mono">
+                {misi}
+              </div>
             ) : (
               <Placeholder pesan={tProfil("misiPlaceholder")} />
             )}
-          </Card>
+          </div>
         </div>
       </section>
 
@@ -186,65 +188,68 @@ export default async function ProfilPage({
         {struktur.length === 0 ? (
           <Placeholder pesan={tProfil("strukturPlaceholder")} />
         ) : (
-          <ul
-            className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4"
-            role="list"
-          >
-            {struktur.map((pejabat) => (
-              <li key={pejabat.id}>
-                <Card padding="sm" className="text-center">
-                  <div className="mx-auto mb-3 h-20 w-20 rounded-full bg-surface overflow-hidden flex items-center justify-center">
-                    {pejabat.foto_url ? (
-                      <Image
-                        src={pejabat.foto_url}
-                        alt={tProfil("fotoAlt", { nama: pejabat.nama_pejabat })}
-                        width={80}
-                        height={80}
-                        unoptimized
-                        className="object-cover w-full h-full"
-                      />
-                    ) : (
-                      <span
-                        className="text-2xl font-display text-text/20"
-                        aria-hidden="true"
-                      >
-                        {pejabat.nama_pejabat.charAt(0)}
-                      </span>
-                    )}
+          <div className="border border-primary/20 bg-primary/10 rounded overflow-hidden">
+            <ul
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[1px]"
+              role="list"
+            >
+              {struktur.map((pejabat) => (
+                <li key={pejabat.id} className="bg-surface/20 hover:bg-surface/40 transition-colors">
+                  <div className="p-6 text-center h-full flex flex-col items-center justify-center">
+                    <div className="mb-4 h-28 w-24 rounded-sm border border-surface bg-background overflow-hidden flex items-center justify-center shadow-sm">
+                      {pejabat.foto_url ? (
+                        <Image
+                          src={pejabat.foto_url}
+                          alt={tProfil("fotoAlt", { nama: pejabat.nama_pejabat })}
+                          width={96}
+                          height={112}
+                          unoptimized
+                          className="object-cover w-full h-full grayscale-[0.2]"
+                        />
+                      ) : (
+                        <span
+                          className="text-2xl font-display text-text/20"
+                          aria-hidden="true"
+                        >
+                          {pejabat.nama_pejabat.charAt(0)}
+                        </span>
+                      )}
+                    </div>
+                    <p className="font-medium text-text text-sm leading-snug">
+                      {pejabat.nama_pejabat}
+                    </p>
+                    <p className="text-[10px] font-mono text-secondary mt-2 border-t border-primary/10 pt-2 w-full uppercase tracking-wider">
+                      {pejabat.jabatan}
+                    </p>
                   </div>
-                  <p className="font-medium text-text text-sm leading-snug">
-                    {pejabat.nama_pejabat}
-                  </p>
-                  <p className="text-xs text-text/60 mt-0.5">{pejabat.jabatan}</p>
-                </Card>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          </div>
         )}
       </section>
 
       <SectionDivider className="mx-4 sm:mx-8" />
 
-      {/* Jumlah ASN */}
-      <section
-        id="asn"
-        className="max-w-6xl mx-auto px-4 py-10"
-        aria-labelledby="asn-heading"
-      >
-        <h2 id="asn-heading" className="font-display text-2xl font-semibold text-primary mb-4">
-          {tProfil("jumlahAsn")}
-        </h2>
-        {profil?.jumlah_asn != null && (
-          <Card padding="md" className="inline-flex items-baseline gap-3">
-            <span className="font-display text-5xl font-semibold text-primary font-mono">
-              {profil.jumlah_asn}
-            </span>
-            <span className="text-text/60 text-sm">{tProfil("asnSuffix")}</span>
-          </Card>
-        )}
-      </section>
-
-      <SectionDivider className="mx-4 sm:mx-8" />
+      {profil?.jumlah_asn != null && (
+        <section
+          id="asn"
+          className="bg-primary text-background py-16 my-10 border-y-4 border-accent/80"
+          aria-labelledby="asn-heading"
+        >
+          <div className="max-w-6xl mx-auto px-4 text-center flex flex-col items-center justify-center">
+            <h2 id="asn-heading" className="font-mono text-sm uppercase tracking-widest text-background/60 mb-4">
+              {tProfil("jumlahAsn")}
+            </h2>
+            <div className="flex items-baseline gap-4 justify-center">
+              <span className="font-display text-6xl md:text-8xl font-semibold text-accent">
+                {profil.jumlah_asn}
+              </span>
+              <span className="text-background/80 text-lg md:text-xl font-mono uppercase tracking-wider">{tProfil("asnSuffix")}</span>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Data Statistik Penduduk */}
       <section
@@ -354,18 +359,18 @@ function InsightCard({ title, tahunData, stat, isHighlight = false }: { title: s
   const faskesBurden = totalFaskes > 0 ? (penduduk / totalFaskes) : 0;
 
   const wrapperClass = isHighlight 
-    ? "border-2 border-primary/20 rounded-xl overflow-hidden bg-primary/[0.02] shadow-sm"
-    : "border border-surface rounded-xl overflow-hidden";
+    ? "border-2 border-primary rounded overflow-hidden bg-background"
+    : "border border-surface rounded overflow-hidden bg-background";
     
   const headerClass = isHighlight
-    ? "bg-primary/10 px-5 py-4 border-b border-primary/10 flex justify-between items-center flex-wrap gap-2"
-    : "bg-surface/30 px-5 py-4 border-b border-surface flex justify-between items-center flex-wrap gap-2";
+    ? "bg-primary text-background px-5 py-4 border-b border-primary flex justify-between items-center flex-wrap gap-2"
+    : "bg-surface/50 px-5 py-3 border-b border-surface flex justify-between items-center flex-wrap gap-2";
 
   return (
     <div className={wrapperClass}>
       <div className={headerClass}>
-        <h3 className="font-display text-xl font-semibold text-primary">{title}</h3>
-        <span className={`text-xs px-2 py-1 rounded border ${isHighlight ? 'text-primary font-medium bg-background border-primary/20' : 'text-text/50 bg-background border-surface'}`}>
+        <h3 className={`font-display text-xl font-semibold ${isHighlight ? 'text-background' : 'text-primary'}`}>{title}</h3>
+        <span className={`text-xs px-2 py-1 rounded-sm border font-mono ${isHighlight ? 'text-primary font-medium bg-background border-background' : 'text-text/70 bg-background border-surface'}`}>
           Tahun Data: {tahunData}
         </span>
       </div>
@@ -373,24 +378,24 @@ function InsightCard({ title, tahunData, stat, isHighlight = false }: { title: s
       <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Penduduk & Kepadatan */}
         <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-text/60 uppercase tracking-wider">Total Penduduk</span>
-          <span className="text-2xl font-display font-semibold text-text">
+          <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">Total Penduduk</span>
+          <span className="text-2xl font-mono font-semibold text-text">
             {stat.jumlah_penduduk ? new Intl.NumberFormat("id-ID").format(stat.jumlah_penduduk) : "-"}
           </span>
           {kepadatan > 0 && (
-            <span className="text-xs text-text/50">{new Intl.NumberFormat("id-ID").format(Math.round(kepadatan))} jiwa/km²</span>
+            <span className="text-xs text-text/50 font-mono">{new Intl.NumberFormat("id-ID").format(Math.round(kepadatan))} jiwa/km²</span>
           )}
         </div>
 
         {/* Dependency Ratio */}
         <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-text/60 uppercase tracking-wider">Dependency Ratio</span>
+          <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">Dependency Ratio</span>
           <div className="flex items-end gap-2">
-            <span className="text-2xl font-display font-semibold text-text">
+            <span className="text-2xl font-mono font-semibold text-text">
               {depRatio > 0 ? depRatio.toFixed(1) : "-"}
             </span>
             {depRatio > 0 && (
-              <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${depRatio > 50 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-medium ${depRatio > 50 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
                 {depRatio > 50 ? "Beban Tinggi" : "Bonus Demografi"}
               </span>
             )}
@@ -399,24 +404,24 @@ function InsightCard({ title, tahunData, stat, isHighlight = false }: { title: s
 
         {/* Sex Ratio */}
         <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-text/60 uppercase tracking-wider">Sex Ratio</span>
-          <span className="text-2xl font-display font-semibold text-text">
+          <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">Sex Ratio</span>
+          <span className="text-2xl font-mono font-semibold text-text">
             {sexRatio > 0 ? sexRatio.toFixed(0) : "-"}
           </span>
           {sexRatio > 0 && (
-            <span className="text-xs text-text/50">Laki-laki per 100 Perempuan</span>
+            <span className="text-xs text-text/50 font-mono">L per 100 P</span>
           )}
         </div>
 
         {/* Pendidikan */}
         <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-text/60 uppercase tracking-wider">Rasio Murid-Guru</span>
+          <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">Rasio Murid-Guru</span>
           <div className="flex items-end gap-2">
-            <span className="text-2xl font-display font-semibold text-text">
+            <span className="text-2xl font-mono font-semibold text-text">
               {muridGuru > 0 ? muridGuru.toFixed(0) : "-"}
             </span>
             {muridGuru > 0 && (
-              <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${muridGuru > 30 ? 'bg-red-100 text-red-700' : 'bg-surface text-text/70'}`}>
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-medium ${muridGuru > 30 ? 'bg-red-100 text-red-700' : 'bg-surface text-text/70'}`}>
                 {muridGuru > 30 ? "Overload" : "Ideal"}
               </span>
             )}
@@ -425,35 +430,35 @@ function InsightCard({ title, tahunData, stat, isHighlight = false }: { title: s
 
         {/* Kesehatan (Faskes Burden) */}
         <div className="flex flex-col gap-1">
-          <span className="text-xs font-medium text-text/60 uppercase tracking-wider">Beban Faskes</span>
-          <span className="text-2xl font-display font-semibold text-text">
+          <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">Beban Faskes</span>
+          <span className="text-2xl font-mono font-semibold text-text">
             {faskesBurden > 0 ? new Intl.NumberFormat("id-ID").format(Math.round(faskesBurden)) : "-"}
           </span>
           {faskesBurden > 0 && (
-            <span className="text-xs text-text/50">Warga per faskes</span>
+            <span className="text-xs text-text/50 font-mono">Warga / faskes</span>
           )}
         </div>
 
         {/* Pertanian */}
         {(yieldTani > 0 || (stat.luas_panen_ha && stat.luas_panen_ha > 0)) && (
           <div className="flex flex-col gap-1">
-            <span className="text-xs font-medium text-text/60 uppercase tracking-wider">Yield Pertanian</span>
-            <span className="text-2xl font-display font-semibold text-text">
+            <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">Yield Pertanian</span>
+            <span className="text-2xl font-mono font-semibold text-text">
               {yieldTani > 0 ? yieldTani.toFixed(1) : "-"}
             </span>
-            <span className="text-xs text-text/50">Ton per Hektar</span>
+            <span className="text-xs text-text/50 font-mono">Ton / Hektar</span>
           </div>
         )}
         
         {/* Kelautan (Tangkapan Ikan) */}
         {(stat.tangkapan_ikan_ton && stat.tangkapan_ikan_ton > 0) ? (
           <div className="flex flex-col gap-1">
-            <span className="text-xs font-medium text-text/60 uppercase tracking-wider">Tangkapan Ikan</span>
-            <span className="text-2xl font-display font-semibold text-text">
+            <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">Tangkapan Ikan</span>
+            <span className="text-2xl font-mono font-semibold text-text">
               {new Intl.NumberFormat("id-ID").format(stat.tangkapan_ikan_ton)} Ton
             </span>
             {(stat.jumlah_nelayan && stat.jumlah_nelayan > 0) ? (
-              <span className="text-xs text-text/50">Oleh {stat.jumlah_nelayan} Nelayan</span>
+              <span className="text-xs text-text/50 font-mono">Oleh {stat.jumlah_nelayan} Nelayan</span>
             ) : null}
           </div>
         ) : null}
