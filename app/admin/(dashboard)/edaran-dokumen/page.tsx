@@ -33,7 +33,7 @@ export default async function EdaranDokumenPage({ searchParams }: Props) {
   }
 
   const { data, count, error } = await query;
-  if (error) console.error(error);
+  // error fallback handled by data || []
 
   const edaran = data || [];
   const totalPages = calcTotalPages(count, pageSize);

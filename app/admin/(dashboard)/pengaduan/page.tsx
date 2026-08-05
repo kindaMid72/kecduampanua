@@ -40,7 +40,7 @@ export default async function PengaduanPage({ searchParams }: Props) {
   if (filterKategori) query = query.ilike("kategori", `%${filterKategori}%`);
 
   const { data, count, error } = await query;
-  if (error) console.error(error);
+  // error fallback handled by data || []
 
   const pengaduan = data || [];
   const totalPages = calcTotalPages(count, pageSize);

@@ -40,7 +40,7 @@ export default async function DataStatistikPage({ searchParams }: Props) {
   if (filterTahun) query = query.eq("tahun_data", parseInt(filterTahun, 10));
 
   const { data, count, error } = await query;
-  if (error) console.error(error);
+  // error fallback handled by data || []
 
   const statistik = data || [];
   const totalPages = calcTotalPages(count, pageSize);

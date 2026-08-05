@@ -35,7 +35,7 @@ export default async function PotensiDaerahPage({ searchParams }: Props) {
   if (filterStatus) query = query.eq("status", filterStatus);
 
   const { data, count, error } = await query;
-  if (error) console.error(error);
+  // error fallback handled by data || []
 
   const potensi = data || [];
   const totalPages = calcTotalPages(count, pageSize);
