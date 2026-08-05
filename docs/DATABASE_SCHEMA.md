@@ -143,6 +143,7 @@ create table potensi_daerah (
   deskripsi_en text,
   lokasi text,
   gambar_url text,
+  video_url text,
   status text not null default 'published' check (status in ('published', 'diarsipkan')),
   urutan int default 0,
   dibuat_oleh uuid references profiles(id) on delete set null,
@@ -228,6 +229,12 @@ create table profil_kecamatan (
   jam_operasional text,                             -- e.g. "Senin–Jumat, 08.00–16.00 WIB"
   koordinat_lat float8,                             -- untuk embed peta OpenStreetMap
   koordinat_lng float8,
+
+  -- Pejabat Utama (dipakai hero section slide 2, MIGRASI 011)
+  nama_pejabat_utama text,                          -- nama lengkap, e.g. "H. Ahmad Rifai, S.Sos"
+  jabatan_pejabat_utama text,                       -- e.g. "Camat Duampanua"
+  foto_pejabat_utama_url text,                      -- URL foto dari Supabase Storage
+  sambutan_pejabat_utama text,                      -- teks sambutan plaintext, opsional
 
   -- PPID (statis — tanpa form permohonan, DECISIONS #15)
   ppid_dasar_hukum text,

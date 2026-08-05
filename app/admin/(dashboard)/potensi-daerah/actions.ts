@@ -15,6 +15,7 @@ export async function createPotensiAction(formData: FormData) {
     deskripsi_en: formData.get("deskripsi_en") || undefined,
     lokasi: formData.get("lokasi") || undefined,
     gambar_url: formData.get("gambar_url") || undefined,
+    video_url: formData.get("video_url") || undefined,
     status: formData.get("status") || "published",
     urutan: parseInt(formData.get("urutan") as string) || 0,
   };
@@ -56,6 +57,7 @@ export async function updatePotensiAction(id: string, formData: FormData) {
     deskripsi_en: formData.get("deskripsi_en") || undefined,
     lokasi: formData.get("lokasi") || undefined,
     gambar_url: formData.get("gambar_url") || undefined,
+    video_url: formData.get("video_url") || undefined,
     status: formData.get("status") || "published",
     urutan: parseInt(formData.get("urutan") as string) || 0,
   };
@@ -74,7 +76,7 @@ export async function updatePotensiAction(id: string, formData: FormData) {
 
   const { data: oldData } = await supabase
     .from("potensi_daerah")
-    .select("gambar_url")
+    .select("gambar_url, video_url")
     .eq("id", id)
     .single();
 
@@ -87,6 +89,9 @@ export async function updatePotensiAction(id: string, formData: FormData) {
 
   if (oldData?.gambar_url && oldData.gambar_url !== parsed.data.gambar_url) {
     await deleteStorageFile(supabase, oldData.gambar_url);
+  }
+  if (oldData?.video_url && oldData.video_url !== parsed.data.video_url) {
+    await deleteStorageFile(supabase, oldData.video_url);
   }
 
   revalidatePath("/admin/potensi-daerah");
@@ -105,7 +110,7 @@ export async function deletePotensiAction(id: string) {
 
   const { data: oldData } = await supabase
     .from("potensi_daerah")
-    .select("gambar_url")
+    .select("gambar_url, video_url")
     .eq("id", id)
     .single();
 
@@ -118,6 +123,9 @@ export async function deletePotensiAction(id: string) {
 
   if (oldData?.gambar_url) {
     await deleteStorageFile(supabase, oldData.gambar_url);
+  }
+  if (oldData?.video_url) {
+    await deleteStorageFile(supabase, oldData.video_url);
   }
 
   revalidatePath("/admin/potensi-daerah");

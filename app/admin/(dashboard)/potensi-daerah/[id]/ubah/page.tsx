@@ -10,6 +10,7 @@ import { Card } from "@/components/ui/Card";
 import Link from "next/link";
 import { ArrowLeft, Globe, Trash2 } from "lucide-react";
 import { ImageUpload } from "@/components/ui/ImageUpload";
+import { VideoUpload } from "@/components/ui/VideoUpload";
 import { createClient } from "@/lib/supabase/client";
 import { useRouter } from "next/navigation";
 
@@ -47,6 +48,7 @@ export default function UbahPotensiPage({ params }: { params: Promise<{ id: stri
           deskripsi_en: data.deskripsi_en || undefined,
           lokasi: data.lokasi || undefined,
           gambar_url: data.gambar_url || undefined,
+          video_url: data.video_url || undefined,
           status: data.status,
           urutan: data.urutan || 0,
         });
@@ -71,6 +73,7 @@ export default function UbahPotensiPage({ params }: { params: Promise<{ id: stri
     if (data.deskripsi_en) formData.append("deskripsi_en", data.deskripsi_en);
     if (data.lokasi) formData.append("lokasi", data.lokasi);
     if (data.gambar_url) formData.append("gambar_url", data.gambar_url);
+    if (data.video_url) formData.append("video_url", data.video_url);
     formData.append("status", data.status);
     formData.append("urutan", String(data.urutan));
 
@@ -181,13 +184,23 @@ export default function UbahPotensiPage({ params }: { params: Promise<{ id: stri
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1.5">Gambar Potensi</label>
+            <label className="block text-sm font-medium mb-1.5">Gambar Potensi (Thumbnail)</label>
             <ImageUpload 
               value={gambarUrl}
               onChange={(url) => setValue("gambar_url", url, { shouldValidate: true })}
               folder="potensi"
             />
             {errors.gambar_url && <p className="text-red-500 text-xs mt-1">{errors.gambar_url.message}</p>}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1.5">Video Opsional</label>
+            <VideoUpload 
+              value={watch("video_url") || ""}
+              onChange={(url) => setValue("video_url", url, { shouldValidate: true })}
+              folder="potensi_videos"
+            />
+            {errors.video_url && <p className="text-red-500 text-xs mt-1">{errors.video_url.message}</p>}
           </div>
 
           {/* Section Bahasa Inggris */}

@@ -5,8 +5,9 @@ import { updateProfilAction } from "./actions";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { createClient } from "@/lib/supabase/client";
-import { CheckCircle, Globe } from "lucide-react";
+import { CheckCircle, Globe, UserCircle } from "lucide-react";
 import PejabatSection from "./PejabatSection";
+import { ImageUpload } from "@/components/ui/ImageUpload";
 
 export default function ProfilAdminPage() {
   const supabase = createClient();
@@ -39,6 +40,11 @@ export default function ProfilAdminPage() {
     ppid_jam_layanan: "",
     maklumat_pelayanan: "",
     maklumat_pelayanan_en: "",
+    // Pejabat utama — hero slide 2
+    nama_pejabat_utama: "",
+    jabatan_pejabat_utama: "",
+    foto_pejabat_utama_url: "",
+    sambutan_pejabat_utama: "",
   });
 
   useEffect(() => {
@@ -71,6 +77,10 @@ export default function ProfilAdminPage() {
           ppid_jam_layanan: data.ppid_jam_layanan || "",
           maklumat_pelayanan: data.maklumat_pelayanan || "",
           maklumat_pelayanan_en: data.maklumat_pelayanan_en || "",
+          nama_pejabat_utama: data.nama_pejabat_utama || "",
+          jabatan_pejabat_utama: data.jabatan_pejabat_utama || "",
+          foto_pejabat_utama_url: data.foto_pejabat_utama_url || "",
+          sambutan_pejabat_utama: data.sambutan_pejabat_utama || "",
         });
         // Auto-buka section EN jika sudah ada konten EN
         if (data.sejarah_en || data.visi_en || data.misi_en || data.maklumat_pelayanan_en) {
@@ -395,11 +405,81 @@ export default function ProfilAdminPage() {
           </div>
         </Card>
 
+        {/* Sambutan Pejabat Utama — untuk Hero Slide 2 */}
+        <Card padding="md" className="space-y-5">
+          <div className="border-b pb-2 mb-4 flex items-start gap-3">
+            <UserCircle size={20} className="text-secondary mt-0.5 flex-shrink-0" />
+            <div>
+              <h2 className="text-lg font-semibold text-primary">Sambutan Pejabat Utama</h2>
+              <p className="text-xs text-text/50 mt-0.5">
+                Ditampilkan di slide kedua halaman Beranda. Kosongkan semua field untuk menyembunyikan slide ini.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1.5">Nama Pejabat</label>
+              <input
+                type="text"
+                name="nama_pejabat_utama"
+                value={formData.nama_pejabat_utama}
+                onChange={handleChange}
+                className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
+                placeholder="Contoh: H. Ahmad Rifai, S.Sos"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1.5">Jabatan</label>
+              <input
+                type="text"
+                name="jabatan_pejabat_utama"
+                value={formData.jabatan_pejabat_utama}
+                onChange={handleChange}
+                className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
+                placeholder="Contoh: Camat Duampanua"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1.5">Teks Sambutan</label>
+            <textarea
+              name="sambutan_pejabat_utama"
+              value={formData.sambutan_pejabat_utama}
+              onChange={handleChange}
+              rows={4}
+              maxLength={500}
+              className="w-full p-3 border rounded focus:ring-2 focus:ring-primary outline-none resize-y"
+              placeholder="Selamat datang di website resmi Kecamatan Duampanua..."
+            />
+            <p className="text-xs text-text/40 mt-1 text-right">
+              {formData.sambutan_pejabat_utama.length}/500 karakter
+            </p>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1.5">Foto Pejabat</label>
+            <div className="max-w-xs">
+              <ImageUpload
+                value={formData.foto_pejabat_utama_url}
+                onChange={(url) => setFormData(prev => ({ ...prev, foto_pejabat_utama_url: url }))}
+                bucket="uploads"
+                folder="pejabat"
+                aspectRatio="aspect-square"
+              />
+            </div>
+            {/* Hidden input agar foto_url ikut di-submit ke FormData */}
+            <input type="hidden" name="foto_pejabat_utama_url" value={formData.foto_pejabat_utama_url} />
+          </div>
+        </Card>
+
         <div className="flex justify-end border-b pb-6 mb-6">
           <Button type="submit" loading={loading} size="lg">
             Simpan Semua Perubahan
           </Button>
         </div>
+
       </form>
 
       {/* Daftar Pejabat di luar form profil */}

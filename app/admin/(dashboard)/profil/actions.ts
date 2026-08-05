@@ -30,6 +30,12 @@ export async function updateProfilAction(formData: FormData) {
     ppid_jam_layanan: formData.get("ppid_jam_layanan") || null,
     maklumat_pelayanan: formData.get("maklumat_pelayanan") || null,
     maklumat_pelayanan_en: formData.get("maklumat_pelayanan_en") || null,
+
+    // Pejabat utama — hero slide 2
+    nama_pejabat_utama: formData.get("nama_pejabat_utama") || null,
+    jabatan_pejabat_utama: formData.get("jabatan_pejabat_utama") || null,
+    foto_pejabat_utama_url: formData.get("foto_pejabat_utama_url") || null,
+    sambutan_pejabat_utama: formData.get("sambutan_pejabat_utama") || null,
   };
 
   const supabase = await createClient();

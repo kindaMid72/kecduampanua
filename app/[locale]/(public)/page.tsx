@@ -1,6 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
-import { PapanInformasiPanel } from "@/components/ui/PapanInformasiPanel";
+import { HeroSlider } from "@/components/ui/HeroSlider";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { CategoryLabel } from "@/components/ui/CategoryLabel";
@@ -86,7 +86,7 @@ export default async function Beranda({
     const [profilRes, infoRes, statistikRes, beritaRes, potensiRes] = await Promise.all([
       supabase
         .from("profil_kecamatan")
-        .select("jam_operasional, nama_kecamatan")
+        .select("jam_operasional, nama_kecamatan, nama_pejabat_utama, jabatan_pejabat_utama, foto_pejabat_utama_url, sambutan_pejabat_utama")
         .limit(1)
         .single(),
       supabase
@@ -173,51 +173,51 @@ export default async function Beranda({
     { label: tNav("potensiDaerah"), href: `/${locale}/potensi` },
   ];
 
+  // Tentukan apakah slide 2 pejabat perlu ditampilkan
+  const hasPejabatData =
+    profil?.foto_pejabat_utama_url ||
+    profil?.sambutan_pejabat_utama ||
+    profil?.nama_pejabat_utama;
+
+  const slide2Data = hasPejabatData
+    ? {
+        fotoPejabatUrl: profil?.foto_pejabat_utama_url ?? null,
+        sambutan: profil?.sambutan_pejabat_utama ?? null,
+        namaPejabat: profil?.nama_pejabat_utama ?? null,
+        jabatanPejabat: profil?.jabatan_pejabat_utama ?? null,
+        labelSambutan: tBeranda("sambutanPejabat"),
+      }
+    : null;
+
   return (
     <>
-      {/* Hero section */}
-      <section className="relative px-4 py-12 sm:py-20 overflow-hidden">
-        {/* Background Image with Blur Overlay */}
-        <div className="absolute inset-0 -z-10">
-          <Image
-            src="/hero-web-duampanua.webp"
-            alt="Hero Background"
-            fill
-            priority
-            className="object-cover object-center"
-          />
-          <div className="absolute inset-0 bg-background/40 backdrop-blur-[2px]"></div>
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent"></div>
-        </div>
-
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className="mb-3">
-            <CategoryLabel label={tBeranda("selamatDatang")} />
-          </div>
-          <h1 className="font-display text-3xl sm:text-4xl lg:text-5xl font-semibold text-primary mb-4 drop-shadow-sm">
-            {profil?.nama_kecamatan ?? tMeta("siteName")}
-          </h1>
-          <p className="text-text/80 text-base sm:text-lg mb-8 max-w-xl font-medium drop-shadow-sm">
-            {tBeranda("tagline")}
-          </p>
-
-          {/* Papan Informasi */}
-          <PapanInformasiPanel
-          statusBuka={statusBuka}
-          jamLayanan={jamLayanan}
-          aksesCapt={aksesCapt}
-          labels={{
-            papanInformasi: tBeranda("papanInformasi"),
-            statusDiperbarui: tBeranda("statusKantorDiperbarui"),
-            kantorBuka: tBeranda("kantorBuka"),
-            kantorTutup: tBeranda("kantorTutup"),
-            jamLayanan: tBeranda("jamLayanan"),
-            jamLayananDiperbarui: tBeranda("jamLayananDiperbarui"),
-            aksesCepat: tBeranda("aksesCepat"),
-          }}
-        />
-        </div>
-      </section>
+      {/* Hero section — slider 2 slide */}
+      <HeroSlider
+        slide1={{
+          namaKecamatan: profil?.nama_kecamatan ?? tMeta("siteName"),
+          tagline: tBeranda("tagline"),
+          labelSelamatDatang: tBeranda("selamatDatang"),
+          papanInformasi: {
+            statusBuka,
+            jamLayanan,
+            aksesCapt,
+            labels: {
+              papanInformasi: tBeranda("papanInformasi"),
+              statusDiperbarui: tBeranda("statusKantorDiperbarui"),
+              kantorBuka: tBeranda("kantorBuka"),
+              kantorTutup: tBeranda("kantorTutup"),
+              jamLayanan: tBeranda("jamLayanan"),
+              jamLayananDiperbarui: tBeranda("jamLayananDiperbarui"),
+              aksesCepat: tBeranda("aksesCepat"),
+            },
+          },
+        }}
+        slide2={slide2Data}
+        labels={{
+          slideSebelumnya: tBeranda("slideSebelumnya"),
+          slideBerikutnya: tBeranda("slideBerikutnya"),
+        }}
+      />
 
       <SectionDivider className="mx-4 sm:mx-8" />
 

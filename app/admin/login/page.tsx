@@ -2,6 +2,7 @@
 
 import { useActionState, useState, startTransition, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Eye, EyeOff, LogIn } from "lucide-react";
@@ -46,8 +47,14 @@ function LoginForm() {
     <div className="w-full max-w-sm">
       {/* Header */}
       <div className="text-center mb-8">
-        <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-primary text-white font-mono font-bold text-lg mb-4">
-          KD
+        <div className="relative h-16 w-12 mx-auto mb-4">
+          <Image
+            src="/logo-kab-pinrang.png"
+            alt="Logo Kabupaten Pinrang"
+            fill
+            className="object-contain"
+            priority
+          />
         </div>
         <h1 className="font-display text-2xl font-semibold text-primary">
           Masuk ke Panel Admin

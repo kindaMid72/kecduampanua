@@ -94,7 +94,11 @@
     "luasWilayah": "Luas Wilayah",
     "fasilitasPendidikan": "Fasilitas Pendidikan",
     "fasilitasKesehatan": "Fasilitas Kesehatan",
-    "satuanLuas": "km²"
+    "satuanLuas": "km²",
+    "sambutanPejabat": "Sambutan",
+    "slideSebelumnya": "Slide sebelumnya",
+    "slideBerikutnya": "Slide berikutnya",
+    "sambutanPlaceholder": "Sambutan sedang diperbarui."
   },
   "profil": {
     "title": "Profil Kecamatan",

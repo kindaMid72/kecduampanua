@@ -8,8 +8,10 @@ export const potensiDaerahSchema = z.object({
   deskripsi_en: z.string().optional(),
   lokasi: z.string().optional(),
   gambar_url: z.string().optional(),
+  video_url: z.string().optional(),
   status: z.enum(["published", "diarsipkan"]),
   urutan: z.coerce.number().int().default(0),
 });
 
 export type PotensiDaerahInput = z.input<typeof potensiDaerahSchema>;
+

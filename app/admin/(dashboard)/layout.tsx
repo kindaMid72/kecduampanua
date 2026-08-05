@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import Link from "next/link";
+import Image from "next/image";
 import { LayoutDashboard, FileText, BookOpen, Users, Settings, LogOut, UserCog, Newspaper, Map, BarChart, FileBox, MessageSquareWarning } from "lucide-react";
 import { SectionDivider } from "@/components/ui/SectionDivider";
 
@@ -85,13 +86,24 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           aria-label="Navigasi admin"
         >
           {/* Logo/Brand */}
-          <div className="px-5 py-6 border-b border-white/10">
-            <p className="font-display font-semibold text-sm leading-tight">
-              Panel Admin
-            </p>
-            <p className="text-xs text-white/50 font-mono mt-0.5">
-              Kecamatan Duampanua
-            </p>
+          <div className="px-5 py-6 border-b border-white/10 flex items-center gap-3">
+            <div className="relative h-10 w-8 flex-shrink-0">
+              <Image
+                src="/logo-kab-pinrang.png"
+                alt="Logo Kabupaten Pinrang"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+            <div>
+              <p className="font-display font-semibold text-sm leading-tight">
+                Panel Admin
+              </p>
+              <p className="text-xs text-white/50 font-mono mt-0.5">
+                Kecamatan Duampanua
+              </p>
+            </div>
           </div>
 
           {/* Nav items */}

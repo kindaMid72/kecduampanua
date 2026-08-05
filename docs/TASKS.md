@@ -45,17 +45,17 @@ Update file ini setiap menyelesaikan item (centang `[x]`). Ini pengganti "ingata
 
 *Prasyarat: Fase 1 kriteria selesai terpenuhi — terutama auth & pola auto-translate sudah terbukti jalan di modul Informasi Publik, karena modul-modul Fase 2 mengikuti pola yang sama.*
 
-- [ ] Halaman Data Statistik
-- [ ] Halaman & admin Potensi Daerah (tab filter kategori)
+- [x] Halaman Data Statistik
+- [x] Halaman & admin Potensi Daerah (tab filter kategori)
 - [x] Halaman & admin Berita (artikel editorial & liputan kegiatan kecamatan)
-- [ ] Halaman & admin Edaran Dokumen (deskripsi wajib sebelum unduh)
-- [ ] Form Pengaduan (honeypot + rate limit + checkbox persetujuan data pribadi)
-- [ ] Halaman Cek Status Pengaduan (via RPC function, bukan direct select — lihat `.claude/skills/rls-review/SKILL.md`)
-- [ ] Dashboard admin Pengaduan (ubah status, catatan tindak lanjut)
-- [ ] Banner SP4N-LAPOR! di halaman Pengaduan & Kontak
-- [ ] Job terjadwal arsip otomatis data pengaduan (2 tahun setelah selesai)
+- [x] Halaman & admin Edaran Dokumen (deskripsi wajib sebelum unduh)
+- [x] Form Pengaduan (honeypot + rate limit + checkbox persetujuan data pribadi)
+- [x] Halaman Cek Status Pengaduan (via RPC function, bukan direct select — lihat `.claude/skills/rls-review/SKILL.md`)
+- [x] Dashboard admin Pengaduan (ubah status, catatan tindak lanjut)
+- [x] Banner SP4N-LAPOR! di halaman Pengaduan & Kontak
+- [x] Job terjadwal arsip otomatis data pengaduan (2 tahun setelah selesai)
 - [x] **Bilingual hibrida** — field `_en` opsional di form admin (Informasi Publik, Standar Pelayanan, Profil); tidak ada dependency API berbayar; halaman `/en/` fallback ke teks Indonesia otomatis (DECISIONS #10)
-- [ ] SEO: sitemap, robots.txt, hreflang, metadata per halaman
+- [x] SEO: sitemap, robots.txt, hreflang, metadata per halaman
 
 *Kriteria selesai: warga bisa submit pengaduan & cek status mandiri; RLS pengaduan lolos uji akses `anon` (tidak bisa listing data orang lain); semua modul Fase 1+2 punya versi `/en/` yang render (auto-translate atau fallback).*
 
@@ -69,5 +69,6 @@ Update file ini setiap menyelesaikan item (centang `[x]`). Ini pengganti "ingata
 - [ ] Domain go.id ter-pointing & SSL aktif
 - [ ] Training staf (target < 1 jam, PRD §10)
 - [ ] Review checklist `docs/DESIGN.md` §"Checklist Sebelum Merge UI Baru" di seluruh halaman
+- [x] **Hero Slider 2 slide** — slide 1: Papan Informasi (existing), slide 2: sambutan pejabat utama (foto + teks) dengan latar `hero-web-duampanua-2.webp`. Data diisi via admin panel `/admin/profil` → section "Sambutan Pejabat Utama". Slide 2 otomatis tersembunyi jika semua field kosong. Migrasi: `011_profil_pejabat_utama.sql`
 
 *Kriteria selesai: ini fase terakhir — "selesai" berarti live di domain resmi dan staf sudah pegang kendali penuh tanpa developer.*

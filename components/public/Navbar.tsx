@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import Image from "next/image";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { SectionDivider } from "@/components/ui/SectionDivider";
@@ -121,11 +122,14 @@ export function Navbar({ locale }: NavbarProps) {
           onClick={closeAllMenus}
           className="flex items-center gap-2 flex-shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent rounded"
         >
-          <div
-            className="h-8 w-8 rounded bg-white/20 flex items-center justify-center"
-            aria-hidden="true"
-          >
-            <span className="text-xs font-mono font-bold">KD</span>
+          <div className="relative h-8 w-8 lg:h-9 lg:w-9 flex-shrink-0" aria-hidden="true">
+            <Image
+              src="/logo-kab-pinrang.png"
+              alt="Logo Kabupaten Pinrang"
+              fill
+              className="object-contain"
+              priority
+            />
           </div>
           <span className="font-display font-semibold text-sm leading-tight hidden sm:block">
             {locale === "en" ? (

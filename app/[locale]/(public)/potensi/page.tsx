@@ -1,12 +1,10 @@
 import { createClient } from "@/lib/supabase/server";
 import { getTranslations } from "next-intl/server";
 import { Card } from "@/components/ui/Card";
-import { Badge } from "@/components/ui/Badge";
 import { CategoryLabel } from "@/components/ui/CategoryLabel";
 import { SectionDivider } from "@/components/ui/SectionDivider";
-import Image from "next/image";
+import { PotensiCard } from "@/components/public/PotensiCard";
 import Link from "next/link";
-import { MapPin } from "lucide-react";
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -40,7 +38,7 @@ export default async function PotensiDaerahPage({
   const supabase = await createClient();
   let query = supabase
     .from("potensi_daerah")
-    .select("id, judul, judul_en, kategori, deskripsi, deskripsi_en, lokasi, gambar_url")
+    .select("id, judul, judul_en, kategori, deskripsi, deskripsi_en, lokasi, gambar_url, video_url")
     .eq("status", "published")
     .order("urutan", { ascending: true })
     .order("created_at", { ascending: false });
@@ -64,12 +62,6 @@ export default async function PotensiDaerahPage({
     { id: "wisata", label: tPotensi("kategori.wisata") },
     { id: "pengolahan", label: tPotensi("kategori.pengolahan") },
   ];
-
-  const badgeColorMap: Record<string, "default" | "info" | "warning" | "success" | "inactive"> = {
-    ekonomi: "info",
-    wisata: "success",
-    pengolahan: "warning",
-  };
 
   return (
     <>
@@ -114,43 +106,17 @@ export default async function PotensiDaerahPage({
               const katId = item.kategori as "ekonomi" | "wisata" | "pengolahan";
 
               return (
-                <Card key={item.id} className="overflow-hidden flex flex-col group h-full">
-                  <div className="relative w-full h-48 bg-surface">
-                    {item.gambar_url ? (
-                      <Image
-                        src={item.gambar_url}
-                        alt={judul}
-                        fill
-                        unoptimized
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-text/20">
-                        <span className="font-display text-4xl">{judul.charAt(0)}</span>
-                      </div>
-                    )}
-                    <div className="absolute top-3 left-3">
-                      <Badge variant={badgeColorMap[katId] || "default"} className="shadow-sm backdrop-blur-sm bg-white/90">
-                        {tPotensi(`kategori.${katId}`)}
-                      </Badge>
-                    </div>
-                  </div>
-                  <div className="p-5 flex flex-col flex-1">
-                    <h3 className="font-display text-lg font-semibold text-text mb-2 line-clamp-2">
-                      {judul}
-                    </h3>
-                    {item.lokasi && (
-                      <div className="flex items-center gap-1.5 text-xs text-text/60 mb-3">
-                        <MapPin size={14} className="flex-shrink-0" />
-                        <span className="truncate">{item.lokasi}</span>
-                      </div>
-                    )}
-                    <p className="text-sm text-text/70 line-clamp-3 mb-4 leading-relaxed">
-                      {deskripsi}
-                    </p>
-                  </div>
-                </Card>
+                <PotensiCard
+                  key={item.id}
+                  id={item.id}
+                  judul={judul}
+                  deskripsi={deskripsi}
+                  katId={katId}
+                  lokasi={item.lokasi}
+                  gambarUrl={item.gambar_url}
+                  videoUrl={item.video_url}
+                  badgeLabel={tPotensi(`kategori.${katId}`)}
+                />
               );
             })}
           </div>

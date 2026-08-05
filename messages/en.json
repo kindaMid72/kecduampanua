@@ -94,7 +94,11 @@
     "luasWilayah": "Total Area",
     "fasilitasPendidikan": "Educational Facilities",
     "fasilitasKesehatan": "Healthcare Facilities",
-    "satuanLuas": "sq.km"
+    "satuanLuas": "sq.km",
+    "sambutanPejabat": "Greeting",
+    "slideSebelumnya": "Previous slide",
+    "slideBerikutnya": "Next slide",
+    "sambutanPlaceholder": "Greeting is being updated."
   },
   "profil": {
     "title": "Sub-District Profile",
