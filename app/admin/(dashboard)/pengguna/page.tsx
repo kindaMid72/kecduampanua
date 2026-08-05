@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import {
   getDaftarPenggunaAction,
   invitePenggunaAction,
@@ -25,7 +25,13 @@ import {
   Trash2,
   AlertTriangle,
   Lock,
+  Search,
+  X,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
+
+const PAGE_SIZE = 10;
 
 export default function PenggunaAdminPage() {
   const supabase = createClient();
@@ -39,6 +45,14 @@ export default function PenggunaAdminPage() {
   const [copied, setCopied] = useState(false);
   const [isSuperAccount, setIsSuperAccount] = useState(true);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  // Search & filter state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [filterRole, setFilterRole] = useState("");
+  const [filterStatus, setFilterStatus] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const searchDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [localSearch, setLocalSearch] = useState("");
 
   // State untuk modal edit
   const [editingUser, setEditingUser] = useState<PenggunaItem | null>(null);
@@ -262,6 +276,41 @@ export default function PenggunaAdminPage() {
     }
   }
 
+  // Computed: filter + paginate client-side
+  const filteredPengguna = useMemo(() => {
+    return pengguna.filter((p) => {
+      const matchSearch =
+        !searchQuery ||
+        p.nama_lengkap.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        p.email.toLowerCase().includes(searchQuery.toLowerCase());
+      const matchRole = !filterRole || p.role === filterRole;
+      const matchStatus = !filterStatus || p.status === filterStatus;
+      return matchSearch && matchRole && matchStatus;
+    });
+  }, [pengguna, searchQuery, filterRole, filterStatus]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredPengguna.length / PAGE_SIZE));
+  const paginatedPengguna = filteredPengguna.slice(
+    (currentPage - 1) * PAGE_SIZE,
+    currentPage * PAGE_SIZE
+  );
+
+  function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const val = e.target.value;
+    setLocalSearch(val);
+    if (searchDebounce.current) clearTimeout(searchDebounce.current);
+    searchDebounce.current = setTimeout(() => {
+      setSearchQuery(val);
+      setCurrentPage(1);
+    }, 350);
+  }
+
+  function handleFilterChange(key: "role" | "status", val: string) {
+    if (key === "role") setFilterRole(val);
+    if (key === "status") setFilterStatus(val);
+    setCurrentPage(1);
+  }
+
   if (fetching) return <p className="text-sm p-4 text-text/70">Memuat data pengguna...</p>;
 
   if (!isSuperAccount) {
@@ -359,6 +408,53 @@ export default function PenggunaAdminPage() {
         </form>
       </Card>
 
+      {/* Tabel Pengguna — Toolbar */}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Search */}
+          <div className="relative">
+            <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-text/40 pointer-events-none" />
+            <input
+              type="search"
+              value={localSearch}
+              onChange={handleSearchChange}
+              placeholder="Cari nama atau email..."
+              className="h-9 pl-9 pr-8 text-sm rounded-[var(--radius-button)] border border-surface bg-background text-text placeholder:text-text/40 focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/60 transition-colors w-56"
+            />
+            {localSearch && (
+              <button type="button" onClick={() => { setLocalSearch(""); setSearchQuery(""); setCurrentPage(1); }} className="absolute right-2 top-1/2 -translate-y-1/2 text-text/40 hover:text-text/70">
+                <X size={14} />
+              </button>
+            )}
+          </div>
+          {/* Filter Peran */}
+          <select
+            value={filterRole}
+            onChange={(e) => handleFilterChange("role", e.target.value)}
+            className={`h-9 px-3 text-sm rounded-[var(--radius-button)] border border-surface bg-background focus:outline-none focus:ring-2 focus:ring-primary/40 transition-colors cursor-pointer ${filterRole ? "border-primary/40 text-primary font-medium" : "text-text/60"}`}
+            aria-label="Filter Peran"
+          >
+            <option value="">Peran (Semua)</option>
+            <option value="super_account">Pengelola</option>
+            <option value="staf">Staf</option>
+          </select>
+          {/* Filter Status */}
+          <select
+            value={filterStatus}
+            onChange={(e) => handleFilterChange("status", e.target.value)}
+            className={`h-9 px-3 text-sm rounded-[var(--radius-button)] border border-surface bg-background focus:outline-none focus:ring-2 focus:ring-primary/40 transition-colors cursor-pointer ${filterStatus ? "border-primary/40 text-primary font-medium" : "text-text/60"}`}
+            aria-label="Filter Status"
+          >
+            <option value="">Status (Semua)</option>
+            <option value="aktif">Aktif</option>
+            <option value="nonaktif">Nonaktif</option>
+          </select>
+        </div>
+        <span className="font-mono text-xs text-text/50 whitespace-nowrap">
+          {filteredPengguna.length.toLocaleString("id-ID")} pengguna
+        </span>
+      </div>
+
       {/* Tabel Pengguna */}
       <Card padding="none">
         <div className="overflow-x-auto">
@@ -372,7 +468,16 @@ export default function PenggunaAdminPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-surface">
-              {pengguna.map((p) => {
+              {paginatedPengguna.length === 0 ? (
+                <tr>
+                  <td colSpan={4} className="px-6 py-10 text-center text-text/50 italic">
+                    {searchQuery || filterRole || filterStatus
+                      ? "Tidak ada pengguna yang cocok dengan filter ini."
+                      : "Belum ada pengguna terdaftar."}
+                  </td>
+                </tr>
+              ) : null}
+              {paginatedPengguna.map((p) => {
                 const isSelf = p.id === currentUserId;
                 return (
                   <tr key={p.id} className="hover:bg-surface/30">
@@ -464,6 +569,56 @@ export default function PenggunaAdminPage() {
           </table>
         </div>
       </Card>
+
+      {/* Pagination client-side */}
+      {totalPages > 1 && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mt-2 px-1">
+          <p className="font-mono text-xs text-text/50 order-2 sm:order-1">
+            Menampilkan{" "}
+            <span className="text-text/70 font-semibold">
+              {(currentPage - 1) * PAGE_SIZE + 1}–{Math.min(currentPage * PAGE_SIZE, filteredPengguna.length)}
+            </span>{" "}
+            dari{" "}
+            <span className="text-text/70 font-semibold">{filteredPengguna.length}</span>{" "}
+            pengguna
+          </p>
+          <nav className="flex items-center gap-1 order-1 sm:order-2">
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+              className="inline-flex items-center justify-center h-8 px-2 rounded-[var(--radius-button)] text-sm text-text/60 hover:bg-surface hover:text-text transition-colors border border-surface disabled:opacity-40 disabled:cursor-not-allowed"
+              aria-label="Halaman sebelumnya"
+            >
+              <ChevronLeft size={15} />
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((num) => (
+              <button
+                key={num}
+                type="button"
+                onClick={() => setCurrentPage(num)}
+                aria-current={num === currentPage ? "page" : undefined}
+                className={`inline-flex items-center justify-center h-8 w-8 rounded-[var(--radius-button)] text-sm font-medium transition-colors border ${
+                  num === currentPage
+                    ? "bg-primary text-white border-primary"
+                    : "text-text/60 border-surface hover:bg-surface hover:text-text"
+                }`}
+              >
+                {num}
+              </button>
+            ))}
+            <button
+              type="button"
+              onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+              className="inline-flex items-center justify-center h-8 px-2 rounded-[var(--radius-button)] text-sm text-text/60 hover:bg-surface hover:text-text transition-colors border border-surface disabled:opacity-40 disabled:cursor-not-allowed"
+              aria-label="Halaman berikutnya"
+            >
+              <ChevronRight size={15} />
+            </button>
+          </nav>
+        </div>
+      )}
 
       {/* Modal Edit Pengguna */}
       {editingUser && (

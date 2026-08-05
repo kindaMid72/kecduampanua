@@ -2,41 +2,82 @@ import { createClient } from "@/lib/supabase/server";
 import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import Link from "next/link";
-import { Plus, Edit } from "lucide-react";
-import { Button } from "@/components/ui/Button";
+import { Edit } from "lucide-react";
+import { AdminTableToolbar } from "@/components/admin/AdminTableToolbar";
+import { AdminPagination } from "@/components/admin/AdminPagination";
+import { parseAdminParams, pageToRange, calcTotalPages } from "@/lib/admin-query";
 
 export const revalidate = 0;
 
-export default async function BeritaAdminPage() {
+interface Props {
+  searchParams: Promise<Record<string, string | undefined>>;
+}
+
+export default async function BeritaAdminPage({ searchParams }: Props) {
+  const params = await searchParams;
+  const { search, page, pageSize } = parseAdminParams(params);
+  const { from, to } = pageToRange(page, pageSize);
+  const filterStatus = params.status || "";
+  const filterKategori = params.kategori || "";
+
   const supabase = await createClient();
 
-  const { data: beritaList, error } = await supabase
+  let query = supabase
     .from("berita")
-    .select("id, judul, kategori, status, created_at")
-    .order("created_at", { ascending: false });
+    .select("id, judul, kategori, status, created_at", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range(from, to);
+
+  if (search) query = query.ilike("judul", `%${search}%`);
+  if (filterStatus) query = query.eq("status", filterStatus);
+  if (filterKategori) query = query.ilike("kategori", `%${filterKategori}%`);
+
+  const { data: beritaList, count, error } = await query;
 
   if (error) {
-    return (
-      <div>
-        <p className="text-red-500">Error memuat data berita.</p>
-      </div>
-    );
+    return <p className="text-red-500">Error memuat data berita.</p>;
   }
 
+  const totalPages = calcTotalPages(count, pageSize);
+  const spString = new URLSearchParams(
+    Object.entries(params).filter(([k, v]) => k !== "page" && v != null) as [string, string][]
+  ).toString();
+
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="font-display text-2xl font-semibold text-primary">Berita</h1>
-          <p className="text-sm text-text/60">Kelola artikel dan liputan kegiatan kecamatan.</p>
-        </div>
-        <Button asChild>
-          <Link href="/admin/berita/tambah">
-            <Plus size={16} />
-            Tambah Berita
-          </Link>
-        </Button>
+    <div className="space-y-4">
+      <div>
+        <h1 className="font-display text-2xl font-semibold text-primary">Berita</h1>
+        <p className="text-sm text-text/60">Kelola artikel dan liputan kegiatan kecamatan.</p>
       </div>
+
+      <AdminTableToolbar
+        searchPlaceholder="Cari judul berita..."
+        searchValue={search}
+        totalCount={count ?? 0}
+        addHref="/admin/berita/tambah"
+        addLabel="Tambah Berita"
+        filters={[
+          {
+            key: "status",
+            label: "Status",
+            value: filterStatus,
+            options: [
+              { value: "published", label: "Terbit" },
+              { value: "diarsipkan", label: "Diarsipkan" },
+            ],
+          },
+          {
+            key: "kategori",
+            label: "Kategori",
+            value: filterKategori,
+            options: [
+              { value: "kegiatan", label: "Kegiatan" },
+              { value: "liputan", label: "Liputan" },
+              { value: "pengumuman", label: "Pengumuman" },
+            ],
+          },
+        ]}
+      />
 
       <Card padding="none">
         <div className="overflow-x-auto">
@@ -51,25 +92,27 @@ export default async function BeritaAdminPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-surface">
-              {beritaList?.length === 0 ? (
+              {!beritaList || beritaList.length === 0 ? (
                 <tr>
-                  <td colSpan={5} className="px-6 py-8 text-center text-text/50 italic">
-                    Belum ada berita yang diterbitkan.
+                  <td colSpan={5} className="px-6 py-10 text-center text-text/50 italic">
+                    {search || filterStatus || filterKategori
+                      ? "Tidak ada berita yang cocok dengan filter ini."
+                      : "Belum ada berita yang diterbitkan."}
                   </td>
                 </tr>
               ) : (
-                beritaList?.map((item) => (
+                beritaList.map((item) => (
                   <tr key={item.id} className="hover:bg-surface/30">
                     <td className="px-6 py-4 font-medium text-text">{item.judul}</td>
                     <td className="px-6 py-4 text-text/60">
                       {item.kategori ?? <span className="italic text-text/40">—</span>}
                     </td>
                     <td className="px-6 py-4">
-                      <Badge variant={item.status === "published" ? "success" : "default"}>
+                      <Badge variant={item.status === "published" ? "success" : "inactive"}>
                         {item.status === "published" ? "Terbit" : "Diarsipkan"}
                       </Badge>
                     </td>
-                    <td className="px-6 py-4">
+                    <td className="px-6 py-4 font-mono text-xs text-text/60">
                       {new Date(item.created_at).toLocaleDateString("id-ID")}
                     </td>
                     <td className="px-6 py-4 text-right">
@@ -87,6 +130,14 @@ export default async function BeritaAdminPage() {
           </table>
         </div>
       </Card>
+
+      <AdminPagination
+        currentPage={page}
+        totalPages={totalPages}
+        totalCount={count ?? 0}
+        pageSize={pageSize}
+        searchParamsString={spString}
+      />
     </div>
   );
 }
