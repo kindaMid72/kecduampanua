@@ -23,7 +23,7 @@ export default async function PotensiDaerahPage({ searchParams }: Props) {
 
   let query = supabase
     .from("potensi_daerah")
-    .select("id, judul, kategori, status, lokasi, gambar_url, updated_at, created_at", { count: "exact" })
+    .select("id, judul, kategori, status, lokasi, gambar_url, created_at", { count: "exact" })
     .order("urutan", { ascending: true })
     .order("created_at", { ascending: false })
     .range(from, to);
