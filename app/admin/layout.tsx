@@ -17,10 +17,10 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Admin Kecamatan Duampanua",
-    default: "Panel Admin | Kecamatan Duampanua",
+    template: "%s | Panel Admin — Kec. Duampanua",
+    default: "Panel Admin — Kecamatan Duampanua",
   },
-  description: "Panel admin website resmi Kecamatan Duampanua.",
+  description: "Panel administrasi website resmi Kecamatan Duampanua, Kabupaten Pinrang.",
 };
 
 export default function AdminRootLayout({

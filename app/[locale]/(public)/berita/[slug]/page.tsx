@@ -16,6 +16,7 @@ export async function generateMetadata({
   const isEn = locale === "en";
 
   try {
+    const t = await getTranslations({ locale, namespace: "metadata" });
     const supabase = await createClient();
     const { data } = await supabase
       .from("berita")
@@ -28,7 +29,7 @@ export async function generateMetadata({
     if (!data) return { title: "Berita" };
     const judul = isEn && data.judul_en ? data.judul_en : data.judul;
     return {
-      title: `${judul} — Kecamatan Duampanua`,
+      title: `${judul} — ${t("siteFullName")}`,
     };
   } catch {
     return { title: "Berita" };

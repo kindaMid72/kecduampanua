@@ -49,7 +49,7 @@ function LoginForm() {
       <div className="text-center mb-8">
         <div className="relative h-16 w-12 mx-auto mb-4">
           <Image
-            src="/logo-kab-pinrang.png"
+            src="/logo-kab-pinrang.webp"
             alt="Logo Kabupaten Pinrang"
             fill
             className="object-contain"
@@ -60,7 +60,7 @@ function LoginForm() {
           Masuk ke Panel Admin
         </h1>
         <p className="text-sm text-text/50 mt-1 font-mono">
-          Kecamatan Duampanua
+          Kecamatan Duampanua, Kab. Pinrang
         </p>
       </div>
 

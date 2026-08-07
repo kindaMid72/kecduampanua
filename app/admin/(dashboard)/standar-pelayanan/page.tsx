@@ -3,6 +3,7 @@ import { Card } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import Link from "next/link";
 import { Edit } from "lucide-react";
+import { ErrorState } from "@/components/ui/ErrorState";
 import { AdminTableToolbar } from "@/components/admin/AdminTableToolbar";
 import { AdminPagination } from "@/components/admin/AdminPagination";
 import { parseAdminParams, pageToRange, calcTotalPages } from "@/lib/admin-query";
@@ -33,7 +34,7 @@ export default async function LayananAdminPage({ searchParams }: Props) {
   const { data: layanan, count, error } = await query;
 
   if (error) {
-    return <p className="text-red-500">Error memuat data layanan.</p>;
+    return <ErrorState variant="inline" message="Error memuat data layanan." />;
   }
 
   const totalPages = calcTotalPages(count, pageSize);

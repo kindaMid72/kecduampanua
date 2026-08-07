@@ -1,6 +1,7 @@
 {
   "metadata": {
     "siteName": "Duampanua Sub-District",
+    "siteFullName": "Duampanua Sub-District — Pinrang Regency",
     "siteDescription": "Official Website of Duampanua Sub-District",
     "berandaTitle": "Home — Duampanua Sub-District",
     "berandaDesc": "Official website of Duampanua Sub-District. Public service information, announcements, and sub-district profile.",
@@ -24,6 +25,8 @@
     "pengaduanDesc": "Integrated public complaint service of Duampanua District."
   },
   "nav": {
+    "siteBrand": "Duampanua Sub-District",
+    "siteBrandSub": "Pinrang Regency",
     "beranda": "Home",
     "profil": "Profile",
     "sejarah": "History",
@@ -209,7 +212,7 @@
     "email": "Email",
     "jamOperasional": "Operating Hours",
     "peta": "Location on Map",
-    "bukaPeta": "Open in OpenStreetMap",
+    "bukaPeta": "Open in Google Maps",
     "iframeTitle": "Duampanua Sub-District Office Location",
     "placeholderAlamat": "Address is being updated",
     "placeholderTelepon": "Phone number is being updated",
@@ -227,7 +230,8 @@
     "placeholderAlamat": "Address is being updated",
     "ariaNavigasiFooter": "Footer navigation",
     "hakCipta": "© {year} {nama}. All rights reserved.",
-    "dikelola": "Managed by {nama}"
+    "dikelola": "Managed by {nama}",
+    "pengembang": "Developed by"
   },
   "berita": {
     "title": "News",
@@ -263,5 +267,16 @@
     "unduh": "Download Document",
     "lihat": "View Document",
     "emptyData": "No documents available for this category yet."
+  },
+  "errors": {
+    "404Title": "Page Not Found",
+    "404Desc": "The page you are looking for does not exist or has been moved.",
+    "404Action": "Back to Home",
+    "500Title": "An Error Occurred",
+    "500Desc": "There was a technical issue loading this page. Our team has been notified.",
+    "500Retry": "Try Again",
+    "500Home": "Back to Home",
+    "inlineError": "Failed to load data. Please refresh the page.",
+    "inlineErrorAdmin": "Failed to load data. Please contact support if the issue persists."
   }
 }

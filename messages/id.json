@@ -1,6 +1,7 @@
 {
   "metadata": {
     "siteName": "Kecamatan Duampanua",
+    "siteFullName": "Kecamatan Duampanua — Kab. Pinrang",
     "siteDescription": "Website Resmi Kecamatan Duampanua",
     "berandaTitle": "Beranda — Kecamatan Duampanua",
     "berandaDesc": "Website resmi Kecamatan Duampanua. Informasi layanan publik, pengumuman, dan profil kecamatan.",
@@ -24,6 +25,8 @@
     "pengaduanDesc": "Layanan pengaduan masyarakat terpadu Kecamatan Duampanua."
   },
   "nav": {
+    "siteBrand": "Kecamatan Duampanua",
+    "siteBrandSub": "Kab. Pinrang",
     "beranda": "Beranda",
     "profil": "Profil",
     "sejarah": "Sejarah",
@@ -209,7 +212,7 @@
     "email": "Email",
     "jamOperasional": "Jam Operasional",
     "peta": "Lokasi di Peta",
-    "bukaPeta": "Buka di OpenStreetMap",
+    "bukaPeta": "Buka di Google Maps",
     "iframeTitle": "Lokasi Kantor Kecamatan Duampanua",
     "placeholderAlamat": "Alamat sedang dilengkapi",
     "placeholderTelepon": "Nomor telepon sedang dilengkapi",
@@ -227,7 +230,8 @@
     "placeholderAlamat": "Alamat sedang dilengkapi",
     "ariaNavigasiFooter": "Navigasi footer",
     "hakCipta": "© {year} {nama}. Seluruh hak dilindungi.",
-    "dikelola": "Dikelola oleh {nama}"
+    "dikelola": "Dikelola oleh {nama}",
+    "pengembang": "Dikembangkan oleh"
   },
   "berita": {
     "title": "Berita",
@@ -263,5 +267,16 @@
     "unduh": "Unduh Dokumen",
     "lihat": "Lihat Dokumen",
     "emptyData": "Belum ada dokumen untuk kategori ini."
+  },
+  "errors": {
+    "404Title": "Halaman Tidak Ditemukan",
+    "404Desc": "Halaman yang Anda cari tidak ada atau sudah dipindahkan.",
+    "404Action": "Kembali ke Beranda",
+    "500Title": "Terjadi Kesalahan",
+    "500Desc": "Ada masalah teknis saat memuat halaman ini. Tim kami sudah diberitahu.",
+    "500Retry": "Muat Ulang",
+    "500Home": "Kembali ke Beranda",
+    "inlineError": "Gagal memuat data. Coba muat ulang halaman.",
+    "inlineErrorAdmin": "Gagal memuat data. Hubungi tim teknis jika masalah berlanjut."
   }
 }

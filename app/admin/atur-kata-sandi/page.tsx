@@ -4,6 +4,7 @@ import { useState, useEffect, Suspense } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter, useSearchParams } from "next/navigation";
+import Image from "next/image";
 import { Eye, EyeOff, CheckCircle, AlertCircle, ShieldCheck } from "lucide-react";
 import { setPasswordSchema, type SetPasswordInput } from "@/lib/validations/auth";
 import { Button } from "@/components/ui/Button";
@@ -154,14 +155,20 @@ function AturKataSandiForm() {
       <div className="w-full max-w-md bg-white p-8 rounded-[var(--radius-card)] border border-surface shadow-sm">
         {/* Header */}
         <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-primary text-white font-mono font-bold text-lg mb-3">
-            KD
+          <div className="relative h-14 w-11 mx-auto mb-3">
+            <Image
+              src="/logo-kab-pinrang.webp"
+              alt="Logo Kabupaten Pinrang"
+              fill
+              className="object-contain"
+              priority
+            />
           </div>
           <h1 className="font-display text-2xl font-semibold text-primary">
             {isReset ? "Reset Kata Sandi" : "Atur Kata Sandi"}
           </h1>
-          <p className="text-sm text-text/60 mt-1">
-            Kecamatan Duampanua
+          <p className="text-sm text-text/60 mt-1 font-mono">
+            Kecamatan Duampanua, Kab. Pinrang
           </p>
         </div>
 

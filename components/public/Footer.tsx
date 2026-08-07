@@ -120,9 +120,23 @@ export async function Footer({ locale, profil }: FooterProps) {
         </div>
 
         {/* Copyright */}
-        <div className="mt-10 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 text-xs text-white/40 font-mono">
+        <div className="mt-10 pt-6 border-t border-white/10 flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 text-xs text-white/40 font-mono">
           <p>{tFooter("hakCipta", { year, nama })}</p>
-          <p>{tFooter("dikelola", { nama })}</p>
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 sm:items-center">
+            <p>{tFooter("dikelola", { nama })}</p>
+            <p className="hidden sm:block">•</p>
+            <p>
+              {tFooter("pengembang")}{" "}
+              <a 
+                href="https://www.instagram.com/k_n_pgz/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="hover:text-accent transition-colors underline underline-offset-2"
+              >
+                @k_n_pgz
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </footer>

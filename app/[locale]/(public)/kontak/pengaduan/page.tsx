@@ -235,16 +235,16 @@ export default function PengaduanPage({ params }: { params: Promise<{ locale: st
           </div>
 
           <div>
-            <Card padding="md" className="bg-primary text-white border-none shadow-lg">
-              <h3 className="font-display text-lg font-semibold mb-3">{t("lapor.title")}</h3>
-              <p className="text-white/80 text-sm mb-6 leading-relaxed">
+            <Card padding="md" className="bg-surface/50 border border-surface shadow-sm">
+              <h3 className="font-display text-lg font-semibold mb-3 text-primary">{t("lapor.title")}</h3>
+              <p className="text-text/80 text-sm mb-6 leading-relaxed">
                 {t("lapor.desc")}
               </p>
               <a 
                 href="https://www.lapor.go.id/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 w-full px-4 py-3 bg-white text-primary rounded font-medium hover:bg-white/90 transition-colors"
+                className="inline-flex items-center justify-center gap-2 w-full px-4 py-3 bg-primary text-white rounded font-medium hover:bg-primary-hover transition-colors"
               >
                 <span>{t("lapor.btn")}</span>
                 <ExternalLink size={16} />

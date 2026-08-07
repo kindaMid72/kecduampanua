@@ -64,12 +64,13 @@ Update file ini setiap menyelesaikan item (centang `[x]`). Ini pengganti "ingata
 *Prasyarat: Fase 1 & Fase 2 kriteria selesai terpenuhi.*
 
 - [ ] Konfirmasi kebijakan hosting Diskominfo (Vercel vs PDN) — DECISIONS #2
-- [ ] Aset logo resmi terpasang (ganti placeholder)
+- [x] Aset logo resmi terpasang (ganti placeholder)
 - [ ] Semua konten Fase 1 & 2 terisi data asli (bukan placeholder)
 - [ ] Domain go.id ter-pointing & SSL aktif
 - [ ] Training staf (target < 1 jam, PRD §10)
 - [ ] Review checklist `docs/DESIGN.md` §"Checklist Sebelum Merge UI Baru" di seluruh halaman
 - [x] **Hero Slider 2 slide** — slide 1: Papan Informasi (existing), slide 2: sambutan pejabat utama (foto + teks) dengan latar `hero-web-duampanua-2.webp`. Data diisi via admin panel `/admin/profil` → section "Sambutan Pejabat Utama". Slide 2 otomatis tersembunyi jika semua field kosong. Migrasi: `011_profil_pejabat_utama.sql`
 - [x] **Pagination, Search & Filter admin dashboard** — semua 8 halaman list admin (`berita`, `informasi-publik`, `standar-pelayanan`, `potensi-daerah`, `edaran-dokumen`, `data-statistik`, `pengaduan`, `pengguna`) mendapat toolbar search + dropdown filter + pagination 10/hal. URL-driven untuk 7 halaman server component; client-side untuk `pengguna`. Komponen reusable: `AdminTableToolbar`, `AdminPagination`. Build ✓ tanpa TypeScript error.
+- [x] **Error pages & Loading states** — Halaman 404, 500, dan skeleton loading untuk seluruh area publik (bilingual) dan admin panel.
 
 *Kriteria selesai: ini fase terakhir — "selesai" berarti live di domain resmi dan staf sudah pegang kendali penuh tanpa developer.*

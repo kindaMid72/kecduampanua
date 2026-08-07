@@ -78,10 +78,10 @@ export default async function KontakPage({
   const hasCoords = profil?.koordinat_lat && profil?.koordinat_lng;
   const mapUrl = hasCoords
     ? `https://www.google.com/maps/search/?api=1&query=${profil?.koordinat_lat},${profil?.koordinat_lng}`
-    : null;
+    : `https://www.google.com/maps/search/?api=1&query=Kantor+Camat+Duampanua+Pinrang`;
   const embedUrl = hasCoords
     ? `https://maps.google.com/maps?q=${profil?.koordinat_lat},${profil?.koordinat_lng}&z=15&output=embed`
-    : null;
+    : `https://maps.google.com/maps?q=Kantor+Camat+Duampanua+Pinrang&z=15&output=embed`;
 
   return (
     <>

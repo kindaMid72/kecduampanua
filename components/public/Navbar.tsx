@@ -124,28 +124,21 @@ export function Navbar({ locale }: NavbarProps) {
         >
           <div className="relative h-8 w-8 lg:h-9 lg:w-9 flex-shrink-0" aria-hidden="true">
             <Image
-              src="/logo-kab-pinrang.png"
+              src="/logo-kab-pinrang.webp"
               alt="Logo Kabupaten Pinrang"
               fill
               className="object-contain"
               priority
             />
           </div>
-          <span className="font-display font-semibold text-sm leading-tight hidden sm:block">
-            {locale === "en" ? (
-              <>
-                Duampanua
-                <br />
-                Sub-District
-              </>
-            ) : (
-              <>
-                Kecamatan
-                <br />
-                Duampanua
-              </>
-            )}
-          </span>
+          <div className="flex flex-col">
+            <span className="font-display font-semibold text-xs sm:text-sm leading-tight">
+              {tNav("siteBrand")}
+            </span>
+            <span className="font-mono text-[10px] opacity-60 leading-tight">
+              {tNav("siteBrandSub")}
+            </span>
+          </div>
         </Link>
 
         {/* Desktop nav */}

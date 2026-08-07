@@ -89,7 +89,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           <div className="px-5 py-6 border-b border-white/10 flex items-center gap-3">
             <div className="relative h-10 w-8 flex-shrink-0">
               <Image
-                src="/logo-kab-pinrang.png"
+                src="/logo-kab-pinrang.webp"
                 alt="Logo Kabupaten Pinrang"
                 fill
                 className="object-contain"
@@ -100,8 +100,11 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
               <p className="font-display font-semibold text-sm leading-tight">
                 Panel Admin
               </p>
-              <p className="text-xs text-white/50 font-mono mt-0.5">
+              <p className="text-xs text-white/50 font-mono mt-0.5 leading-tight">
                 Kecamatan Duampanua
+              </p>
+              <p className="text-[10px] text-white/40 font-mono mt-0.5 leading-tight">
+                Kab. Pinrang
               </p>
             </div>
           </div>

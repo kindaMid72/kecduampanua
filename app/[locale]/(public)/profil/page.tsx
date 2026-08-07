@@ -231,16 +231,16 @@ export default async function ProfilPage({
 
       <SectionDivider className="mx-4 sm:mx-8" />
 
-      {profil?.jumlah_asn != null && (
-        <section
-          id="asn"
-          className="bg-primary text-background py-16 my-10 border-y-4 border-accent/80"
-          aria-labelledby="asn-heading"
-        >
-          <div className="max-w-6xl mx-auto px-4 text-center flex flex-col items-center justify-center">
-            <h2 id="asn-heading" className="font-mono text-sm uppercase tracking-widest text-background/60 mb-4">
-              {tProfil("jumlahAsn")}
-            </h2>
+      <section
+        id="asn"
+        className="max-w-6xl mx-auto px-4 py-10"
+        aria-labelledby="asn-heading"
+      >
+        <h2 id="asn-heading" className="font-display text-2xl font-semibold text-primary mb-6">
+          {tProfil("jumlahAsn")}
+        </h2>
+        {profil?.jumlah_asn != null ? (
+          <div className="bg-primary text-background py-16 rounded-[var(--radius-card)] text-center flex flex-col items-center justify-center border-y-4 border-accent/80">
             <div className="flex items-baseline gap-4 justify-center">
               <span className="font-display text-6xl md:text-8xl font-semibold text-accent">
                 {profil.jumlah_asn}
@@ -248,8 +248,10 @@ export default async function ProfilPage({
               <span className="text-background/80 text-lg md:text-xl font-mono uppercase tracking-wider">{tProfil("asnSuffix")}</span>
             </div>
           </div>
-        </section>
-      )}
+        ) : (
+          <Placeholder pesan={tProfil("asnPlaceholder")} />
+        )}
+      </section>
 
       {/* Data Statistik Penduduk */}
       <section
