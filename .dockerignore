@@ -1,0 +1,17 @@
+Dockerfile
+.dockerignore
+node_modules
+npm-debug.log
+README.md
+.next
+.git
+.github
+.env*.local
+.vercel
+e2e
+playwright-report
+test-results
+docs
+design
+supabase
+*.md

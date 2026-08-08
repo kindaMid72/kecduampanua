@@ -37,7 +37,7 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-  // output: 'standalone',
+  output: 'standalone', // local
   webpack: (config, { nextRuntime }) => {
     if (nextRuntime === "edge") {
       config.resolve.alias = {
