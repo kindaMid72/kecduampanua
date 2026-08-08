@@ -3,7 +3,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
-import { headers } from "next/headers";
 import { editPenggunaSchema } from "@/lib/validations/auth";
 import crypto from "crypto";
 
@@ -212,8 +211,9 @@ export async function invitePenggunaAction(formData: FormData) {
       return { error: "Gagal membuat tautan undangan. Terjadi kesalahan server." };
     }
 
-    const headersList = await headers();
-    const origin = headersList.get("origin") || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    // VULN-08 fix: Gunakan NEXT_PUBLIC_SITE_URL dari env — jangan pernah
+    // percaya Origin header karena bisa dimanipulasi oleh pemanggil.
+    const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
     const directLink = `${origin}/admin/atur-kata-sandi?token=${rawToken}`;
 
     revalidatePath("/admin/pengguna");
@@ -493,8 +493,9 @@ export async function resetKataSandiAction(userId: string) {
       return { error: "Gagal membuat tautan reset kata sandi." };
     }
 
-    const headersList = await headers();
-    const origin = headersList.get("origin") || process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000";
+    // VULN-08 fix: Gunakan NEXT_PUBLIC_SITE_URL dari env — jangan pernah
+    // percaya Origin header karena bisa dimanipulasi oleh pemanggil.
+    const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
     const directLink = `${origin}/admin/atur-kata-sandi?token=${rawToken}`;
 
     return { success: true, action_link: directLink };

@@ -27,8 +27,19 @@ export async function middleware(request: NextRequest) {
     // === Public routes: i18n handling ===
     return intlMiddleware(request);
   } catch (error) {
-    // Fallback: jika APAPUN error, biarkan request lewat tanpa crash
+    // VULN-07 fix: Fail-CLOSED — jangan pernah lewatkan request admin tanpa
+    // autentikasi saat terjadi error. Public routes tetap fail-open.
     console.error("Middleware top-level error:", error);
+
+    if (
+      request.nextUrl.pathname.startsWith("/admin") &&
+      !request.nextUrl.pathname.startsWith("/admin/login")
+    ) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/admin/login";
+      return NextResponse.redirect(url);
+    }
+
     return NextResponse.next();
   }
 }
