@@ -1,6 +1,19 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+/**
+ * VULN-01 fix: Validasi redirect hanya boleh ke path internal /admin/*.
+ * Mencegah open redirect ke domain eksternal.
+ */
+function isSafeRedirect(path: string): boolean {
+  return (
+    typeof path === "string" &&
+    path.startsWith("/admin") &&
+    !path.includes("//") &&
+    !path.includes(":")
+  );
+}
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -41,7 +54,11 @@ export async function updateSession(request: NextRequest) {
   if (!user && request.nextUrl.pathname.startsWith("/admin") && !isLoginRoute && !isResetRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/login";
-    url.searchParams.set("redirect", request.nextUrl.pathname);
+    // VULN-01 fix: hanya set redirect jika path aman (internal /admin/*)
+    const candidate = request.nextUrl.pathname;
+    if (isSafeRedirect(candidate)) {
+      url.searchParams.set("redirect", candidate);
+    }
     return NextResponse.redirect(url);
   }
   

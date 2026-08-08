@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { beritaSchema } from "@/lib/validations/berita";
 import { deleteStorageFile } from "@/lib/supabase/storage";
+import { randomBytes } from "crypto";
 
 export async function createBeritaAction(formData: FormData) {
   const raw = {
@@ -31,10 +32,13 @@ export async function createBeritaAction(formData: FormData) {
     return { error: "Anda belum login." };
   }
 
-  const slug = parsed.data.judul
+  const baseSlug = parsed.data.judul
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/(^-|-$)+/g, "");
+  // VULN-09 fix: Gunakan suffix acak kriptografis, bukan timestamp.
+  // Timestamp (Date.now) dapat diprediksi dan dienumerasi oleh penyerang.
+  const slugSuffix = randomBytes(4).toString("hex"); // 8 hex chars
 
   const { error } = await supabase.from("berita").insert({
     judul: parsed.data.judul,
@@ -43,7 +47,7 @@ export async function createBeritaAction(formData: FormData) {
     konten: parsed.data.konten,
     konten_en: parsed.data.konten_en || null,
     gambar_cover_url: parsed.data.gambar_cover_url,
-    slug: `${slug}-${Date.now()}`,
+    slug: `${baseSlug}-${slugSuffix}`,
     dibuat_oleh: user.id,
     status: parsed.data.status,
   });

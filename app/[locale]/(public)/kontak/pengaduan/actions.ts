@@ -1,31 +1,62 @@
 "use server";
 
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
 import { pengaduanPublikSchema } from "@/lib/validations/pengaduan";
 import { randomBytes } from "crypto";
 import { headers } from "next/headers";
 
-// Simple in-memory store for rate limiting (Note: resets on server restart/serverless cold start, 
-// but sufficient as a basic defense mechanism alongside honeypot)
-const rateLimitMap = new Map<string, number>();
+/**
+ * VULN-05 fix: Rate limiter persisten berbasis tabel Supabase.
+ * Menggantikan in-memory Map yang di-reset setiap cold start serverless
+ * dan mudah di-bypass dengan spoofing X-Forwarded-For.
+ *
+ * Maksimum 3 request per IP per window 10 menit.
+ * Menggunakan x-real-ip (di-set oleh Vercel, tidak bisa di-spoof).
+ */
+async function checkRateLimit(ip: string): Promise<{ allowed: boolean }> {
+  try {
+    const supabaseAdmin = createAdminClient();
+
+    const { data, error } = await supabaseAdmin.rpc("check_rate_limit", {
+      client_ip: ip,
+      max_hits: 3,
+      window_minutes: 10,
+    });
+
+    if (error) {
+      // Jika tabel/RPC belum ada atau DB error — fail-open agar publik tidak terblokir
+      console.error("[rate_limit] RPC error:", error);
+      return { allowed: true };
+    }
+
+    return { allowed: data === true };
+  } catch (err) {
+    console.error("[rate_limit] Unexpected error:", err);
+    return { allowed: true }; // fail-open untuk publik
+  }
+}
 
 export async function submitPengaduanAction(formData: FormData) {
-  // Rate Limiting Check (Max 3 requests per IP per 10 minutes)
   const headersList = await headers();
-  const ip = headersList.get("x-forwarded-for") || "unknown";
-  
+
+  // VULN-05 fix: Gunakan x-real-ip (Vercel-controlled, tidak bisa di-spoof),
+  // bukan x-forwarded-for yang bisa dimanipulasi oleh pemanggil.
+  const ip =
+    headersList.get("x-real-ip") ??
+    headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "unknown";
+
   if (ip !== "unknown") {
-    const now = Date.now();
-    const lastRequest = rateLimitMap.get(ip);
-    
-    if (lastRequest && now - lastRequest < 10 * 60 * 1000) {
-      // Allow only if they haven't submitted in the last 10 minutes
-      // We can also implement a counter here, but time-based is simpler for this scope
-      return { error: "Anda mengirim terlalu banyak pengaduan. Silakan tunggu 10 menit lagi." };
+    const rateLimitResult = await checkRateLimit(ip);
+    if (!rateLimitResult.allowed) {
+      return {
+        error:
+          "Anda mengirim terlalu banyak pengaduan. Silakan tunggu 10 menit.",
+      };
     }
-    
-    rateLimitMap.set(ip, now);
   }
+
   const raw = {
     nama_pelapor: formData.get("nama_pelapor"),
     kontak_pelapor: formData.get("kontak_pelapor"),

@@ -130,6 +130,8 @@ export async function selesaikanAturKataSandiAction(input: SelesaikanAturKataSan
 
     if (invite.type === "invite") {
       // 1. Cek apakah akun auth sudah pernah dibuat
+      // Note: VULN-10 mitigation (menggunakan getUserByEmail) dikembalikan ke listUsers()
+      // karena API Supabase JS versi ini tidak menyediakan method getUserByEmail.
       const { data: userListData } = await supabaseAdmin.auth.admin.listUsers();
       const existingUser = userListData?.users?.find(
         (u) => u.email?.toLowerCase() === invite.email.toLowerCase()
@@ -190,6 +192,7 @@ export async function selesaikanAturKataSandiAction(input: SelesaikanAturKataSan
     } else if (invite.type === "reset_password") {
       if (!targetUserId) {
         // Fallback cari user id by email jika user_id di invite null
+        // Note: listUsers() dipakai sebagai fallback karena getUserByEmail tidak tersedia.
         const { data: userListData } = await supabaseAdmin.auth.admin.listUsers();
         const existingUser = userListData?.users?.find(
           (u) => u.email?.toLowerCase() === invite.email.toLowerCase()
