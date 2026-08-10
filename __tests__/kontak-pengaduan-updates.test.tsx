@@ -8,7 +8,7 @@ import idMessages from "@/messages/id.json";
 vi.mock("next-intl/server", () => ({
   getTranslations: vi.fn(async ({ namespace }: { namespace?: string }) => {
     const nsObj = namespace
-      ? (idMessages as Record<string, Record<string, string>>)[namespace]
+      ? (idMessages as any)[namespace]
       : (idMessages as unknown as Record<string, string>);
     return (key: string, values?: Record<string, string>) => {
       let text = nsObj?.[key] ?? key;
@@ -24,7 +24,7 @@ vi.mock("next-intl/server", () => ({
 
 vi.mock("next-intl", () => ({
   useTranslations: (namespace: string) => {
-    const nsObj = (idMessages as Record<string, Record<string, string>>)[namespace];
+    const nsObj = (idMessages as any)[namespace];
     return (key: string) => {
       const parts = key.split(".");
       let val: any = nsObj;

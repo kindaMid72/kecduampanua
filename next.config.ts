@@ -10,7 +10,7 @@ const nextConfig: NextConfig = {
         protocol: "https",
         // VULN-02: Jangan hardcode hostname — baca dari env var agar tidak
         // terekspos di source code / git history.
-        hostname: new URL(process.env.NEXT_PUBLIC_SUPABASE_URL!).hostname,
+        hostname: process.env.NEXT_PUBLIC_SUPABASE_URL ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).hostname : "localhost",
         pathname: "/storage/v1/object/public/**",
       },
     ],
