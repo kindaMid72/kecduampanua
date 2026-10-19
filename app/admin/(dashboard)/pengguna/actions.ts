@@ -552,6 +552,19 @@ export async function ubahStatusPenggunaAction(userId: string, newStatus: "aktif
       }
     }
 
+    // Pengaktifan: cabut ban login DULU, baru aktifkan profil. Dengan begitu kalau
+    // langkah ini gagal, pengguna tetap terkunci (aman), bukan aktif tapi tak bisa masuk.
+    const BAN_SELAMANYA = "876000h"; // ~100 tahun
+    if (newStatus === "aktif") {
+      const { error: unbanError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
+        ban_duration: "none",
+      });
+      if (unbanError) {
+        console.error("Gagal mencabut ban pengguna:", unbanError);
+        return { error: "Gagal mengaktifkan pengguna. Silakan coba lagi." };
+      }
+    }
+
     const { error } = await supabaseAdmin
       .from("profiles")
       .update({ status: newStatus })
@@ -559,6 +572,20 @@ export async function ubahStatusPenggunaAction(userId: string, newStatus: "aktif
 
     if (error) {
       return { error: "Gagal mengubah status pengguna." };
+    }
+
+    // Penonaktifan: kunci juga login di GoTrue, bukan hanya status di profil.
+    // Tanpa ini pengguna nonaktif masih bisa memperoleh token dan memanggil API langsung.
+    if (newStatus === "nonaktif") {
+      const { error: banError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
+        ban_duration: BAN_SELAMANYA,
+      });
+      if (banError) {
+        console.error("Gagal mengunci login pengguna:", banError);
+        return {
+          error: "Status sudah dinonaktifkan, tetapi login belum terkunci. Silakan coba lagi.",
+        };
+      }
     }
 
     revalidatePath("/admin/pengguna");

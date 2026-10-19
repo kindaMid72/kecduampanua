@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { pesanGalatUpload } from "@/lib/upload-helpers";
 import { UploadCloud, X, Loader2 } from "lucide-react";
 import imageCompression from "browser-image-compression";
+
+const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/gif", "image/avif"];
 
 interface ImageUploadProps {
   value: string;
@@ -31,8 +34,10 @@ export function ImageUpload({
       const file = e.target.files?.[0];
       if (!file) return;
 
-      if (!file.type.startsWith("image/")) {
-        setError("File harus berupa gambar.");
+      // Harus sama dengan whitelist bucket 'uploads' (migrasi 013). SVG sengaja
+      // tidak diizinkan: bisa memuat script dan bucket ini publik.
+      if (!ALLOWED_IMAGE_TYPES.includes(file.type)) {
+        setError("Format gambar tidak didukung. Gunakan file JPG, PNG, atau WebP.");
         return;
       }
 
@@ -70,7 +75,7 @@ export function ImageUpload({
       onChange(publicUrl);
     } catch (err: any) {
       console.error("Upload error:", err);
-      setError(err.message || "Gagal mengunggah gambar.");
+      setError(pesanGalatUpload(err, "Gagal mengunggah gambar."));
     } finally {
       setIsUploading(false);
       // Reset input value so same file can be selected again
@@ -120,7 +125,7 @@ export function ImageUpload({
           <input 
             type="file" 
             className="hidden" 
-            accept="image/*" 
+            accept="image/jpeg,image/png,image/webp,image/gif,image/avif" 
             onChange={handleUpload}
             disabled={isUploading}
           />

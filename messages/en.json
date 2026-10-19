@@ -192,6 +192,8 @@
       "placeholder": "Tracking Number",
       "cek": "Check Status",
       "notFound": "Complaint not found. Please ensure the tracking number is correct.",
+      "rateLimited": "Too many attempts. Please try again in a few minutes.",
+      "unavailable": "The status check is temporarily unavailable. Please try again shortly.",
       "baru": "Newly Received",
       "diproses": "Being Processed",
       "selesai": "Completed",

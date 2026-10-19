@@ -4,13 +4,12 @@ import { useState, use } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { pengaduanPublikSchema, type PengaduanPublikInput } from "@/lib/validations/pengaduan";
-import { submitPengaduanAction } from "./actions";
+import { submitPengaduanAction, cekStatusPengaduanAction, type StatusPengaduan } from "./actions";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { useTranslations } from "next-intl";
 import { AlertCircle, CheckCircle2, Copy, ExternalLink, Search } from "lucide-react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/client";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 
@@ -28,7 +27,7 @@ export default function PengaduanPage({ params }: { params: Promise<{ locale: st
   const [checkMode, setCheckMode] = useState(false);
   const [checkTracking, setCheckTracking] = useState("");
   const [checkLoading, setCheckLoading] = useState(false);
-  const [checkResult, setCheckResult] = useState<any | null>(null);
+  const [checkResult, setCheckResult] = useState<StatusPengaduan | null>(null);
   const [checkError, setCheckError] = useState<string | null>(null);
 
   const { register, handleSubmit, watch, setValue, formState: { errors }, reset } = useForm<PengaduanPublikInput>({
@@ -74,19 +73,21 @@ export default function PengaduanPage({ params }: { params: Promise<{ locale: st
     setCheckError(null);
     setCheckResult(null);
 
-    const supabase = createClient();
-    const { data, error } = await supabase
-      .from("pengaduan")
-      .select("status, catatan_tindak_lanjut, created_at, kategori")
-      .eq("nomor_tracking", checkTracking.trim().toUpperCase())
-      .single();
+    // Query lewat Server Action (rate limit + RPC), bukan dari browser.
+    const res = await cekStatusPengaduanAction(checkTracking);
 
-    if (error || !data) {
-      setCheckError(t("status.notFound"));
+    if ("data" in res) {
+      setCheckResult(res.data);
     } else {
-      setCheckResult(data);
+      setCheckError(
+        res.error === "rateLimited"
+          ? t("status.rateLimited")
+          : res.error === "unavailable"
+            ? t("status.unavailable")
+            : t("status.notFound")
+      );
     }
-    
+
     setCheckLoading(false);
   }
 

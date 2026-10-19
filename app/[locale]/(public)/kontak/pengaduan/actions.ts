@@ -1,54 +1,124 @@
 "use server";
 
-import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { pengaduanPublikSchema } from "@/lib/validations/pengaduan";
+import { normalizeClientIp } from "@/lib/client-ip";
 import { randomBytes } from "crypto";
 import { headers } from "next/headers";
 
 /**
- * VULN-05 fix: Rate limiter persisten berbasis tabel Supabase.
- * Menggantikan in-memory Map yang di-reset setiap cold start serverless
- * dan mudah di-bypass dengan spoofing X-Forwarded-For.
+ * VULN-05 fix: Rate limiter persisten berbasis tabel Supabase (RPC check_rate_limit,
+ * hanya bisa dipanggil service_role).
  *
- * Maksimum 3 request per IP per window 10 menit.
- * Menggunakan x-real-ip (di-set oleh Vercel, tidak bisa di-spoof).
+ * Default: maksimum 3 request per key per window 10 menit. Key = IP dari header
+ * x-real-ip yang DITIMPA reverse proxy (nginx: `proxy_set_header X-Real-IP
+ * $remote_addr`). Port aplikasi tidak boleh terbuka langsung ke internet, kalau
+ * tidak header ini bisa dipalsukan.
+ *
+ * failClosed: bila pengecekan gagal (RPC error / service key salah), tolak
+ * permintaan. Dipakai untuk cek status (rawan enumerasi nomor); submit tetap
+ * fail-open supaya warga tidak terblokir karena gangguan, tapi dicatat di log.
  */
-async function checkRateLimit(ip: string): Promise<{ allowed: boolean }> {
+async function checkRateLimit(
+  key: string,
+  maxHits: number,
+  windowMinutes: number,
+  failClosed: boolean
+): Promise<{ allowed: boolean; unavailable?: boolean }> {
   try {
     const supabaseAdmin = createAdminClient();
 
     const { data, error } = await supabaseAdmin.rpc("check_rate_limit", {
-      client_ip: ip,
-      max_hits: 3,
-      window_minutes: 10,
+      client_ip: key,
+      max_hits: maxHits,
+      window_minutes: windowMinutes,
     });
 
-    if (error) {
-      // Jika tabel/RPC belum ada atau DB error — fail-open agar publik tidak terblokir
-      console.error("[rate_limit] RPC error:", error);
-      return { allowed: true };
-    }
-
+    if (error) throw error;
     return { allowed: data === true };
   } catch (err) {
-    console.error("[rate_limit] Unexpected error:", err);
-    return { allowed: true }; // fail-open untuk publik
+    console.error("[rate_limit] gagal memeriksa, failClosed =", failClosed, err);
+    return failClosed ? { allowed: false, unavailable: true } : { allowed: true };
+  }
+}
+
+/**
+ * Key rate limit dari x-real-ip (diringkas, IPv6 ke /64). Sengaja TIDAK
+ * jatuh ke x-forwarded-for: header itu dikendalikan klien.
+ * Tanpa x-real-ip: di produksi berarti proxy belum terpasang benar, jadi semua
+ * permintaan berbagi satu key "unknown" (ketat) alih-alih lolos tanpa limit;
+ * di development rate limit dilewati.
+ */
+async function getRateLimitKey(): Promise<string | null> {
+  const headersList = await headers();
+  const ip = normalizeClientIp(headersList.get("x-real-ip"));
+  if (ip) return ip;
+  return process.env.NODE_ENV === "production" ? "unknown" : null;
+}
+
+export type StatusPengaduan = {
+  status: string;
+  catatan_tindak_lanjut: string | null;
+  created_at: string;
+  kategori: string | null;
+};
+
+// Nomor baru: PND- + 12 hex (48 bit). Nomor lama PND- + 8 hex tetap valid.
+const TRACKING_FORMAT = /^PND-(?:[0-9A-F]{8}|[0-9A-F]{12})$/;
+
+/**
+ * Cek status pengaduan. Satu-satunya jalan baca data pengaduan untuk publik
+ * (aturan #10): RPC get_pengaduan_by_tracking dengan nomor_tracking exact match.
+ * RPC itu HANYA bisa dipanggil service_role (migrasi 013), jadi tidak ada jalan
+ * lewat REST langsung yang melewati validasi dan rate limit di sini.
+ */
+export async function cekStatusPengaduanAction(
+  nomorTracking: string
+): Promise<
+  { data: StatusPengaduan } | { error: "invalid" | "notFound" | "rateLimited" | "unavailable" }
+> {
+  const nomor = String(nomorTracking ?? "").trim().toUpperCase();
+  if (!TRACKING_FORMAT.test(nomor)) return { error: "invalid" };
+
+  const key = await getRateLimitKey();
+  if (key) {
+    // Fail-closed: lebih baik menolak sementara daripada membuka enumerasi nomor.
+    const limit = await checkRateLimit(`cek:${key}`, 20, 10, true);
+    if (limit.unavailable) return { error: "unavailable" };
+    if (!limit.allowed) return { error: "rateLimited" };
+  }
+
+  try {
+    const supabaseAdmin = createAdminClient();
+    const { data, error } = await supabaseAdmin.rpc("get_pengaduan_by_tracking", {
+      nomor,
+    });
+
+    if (error) throw error;
+
+    const row = Array.isArray(data) ? data[0] : data;
+    if (!row) return { error: "notFound" };
+
+    return {
+      data: {
+        status: row.status,
+        catatan_tindak_lanjut: row.catatan_tindak_lanjut,
+        created_at: row.created_at,
+        kategori: row.kategori,
+      },
+    };
+  } catch (err) {
+    // Beda dari "tidak ditemukan": warga perlu tahu ini gangguan, bukan nomor salah.
+    console.error("[cek_status_pengaduan] gagal:", err);
+    return { error: "unavailable" };
   }
 }
 
 export async function submitPengaduanAction(formData: FormData) {
-  const headersList = await headers();
+  const key = await getRateLimitKey();
 
-  // VULN-05 fix: Gunakan x-real-ip (Vercel-controlled, tidak bisa di-spoof),
-  // bukan x-forwarded-for yang bisa dimanipulasi oleh pemanggil.
-  const ip =
-    headersList.get("x-real-ip") ??
-    headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ??
-    "unknown";
-
-  if (ip !== "unknown") {
-    const rateLimitResult = await checkRateLimit(ip);
+  if (key) {
+    const rateLimitResult = await checkRateLimit(key, 3, 10, false);
     if (!rateLimitResult.allowed) {
       return {
         error:
@@ -77,46 +147,44 @@ export async function submitPengaduanAction(formData: FormData) {
     return { success: true, trackingId: "PND-12345678" };
   }
 
-  const supabase = await createClient();
-
-  // Generate unique tracking number (e.g. PND-8A7B6C)
-  const generateTrackingId = () => {
-    return `PND-${randomBytes(4).toString("hex").toUpperCase()}`;
-  };
-
-  let trackingId = generateTrackingId();
-  let unique = false;
-  let attempts = 0;
-
-  // Ensure uniqueness
-  while (!unique && attempts < 5) {
-    const { data } = await supabase.from("pengaduan").select("id").eq("nomor_tracking", trackingId).single();
-    if (!data) {
-      unique = true;
-    } else {
-      trackingId = generateTrackingId();
-      attempts++;
-    }
-  }
-
-  if (!unique) {
-    return { error: "Terjadi kesalahan internal. Silakan coba lagi." };
-  }
-
-  const { error } = await supabase.from("pengaduan").insert({
-    nomor_tracking: trackingId,
-    nama_pelapor: parsed.data.nama_pelapor,
-    kontak_pelapor: parsed.data.kontak_pelapor,
-    kategori: parsed.data.kategori,
-    deskripsi: parsed.data.deskripsi,
-    setuju_data_pribadi: parsed.data.setuju_data_pribadi,
-    status: "baru",
-  });
-
-  if (error) {
-    console.error(error);
+  // Insert dari server dengan service role: anon TIDAK punya hak INSERT langsung
+  // ke tabel pengaduan (migrasi 014), supaya kolom staf (status, catatan,
+  // diarsipkan_pada, ...) dan nomor_tracking tidak bisa diisi pihak luar. Hanya
+  // kolom di bawah ini yang diteruskan, semuanya sudah divalidasi zod.
+  let supabase: ReturnType<typeof createAdminClient>;
+  try {
+    supabase = createAdminClient();
+  } catch (err) {
+    console.error("[pengaduan] admin client tidak tersedia:", err);
     return { error: "Gagal mengirim pengaduan. Silakan coba lagi nanti." };
   }
 
-  return { success: true, trackingId };
+  // Tracking number acak (mis. PND-8A7B6C5D9E0F). Keunikan dijamin constraint
+  // UNIQUE di database, bukan SELECT dulu. Kalau bentrok (kode 23505), ulangi
+  // dengan nomor baru.
+  const generateTrackingId = () =>
+    `PND-${randomBytes(6).toString("hex").toUpperCase()}`;
+
+  for (let attempt = 0; attempt < 5; attempt++) {
+    const trackingId = generateTrackingId();
+
+    const { error } = await supabase.from("pengaduan").insert({
+      nomor_tracking: trackingId,
+      nama_pelapor: parsed.data.nama_pelapor,
+      kontak_pelapor: parsed.data.kontak_pelapor,
+      kategori: parsed.data.kategori,
+      deskripsi: parsed.data.deskripsi,
+      setuju_data_pribadi: parsed.data.setuju_data_pribadi,
+      status: "baru",
+    });
+
+    if (!error) return { success: true, trackingId };
+
+    if (error.code !== "23505") {
+      console.error(error);
+      return { error: "Gagal mengirim pengaduan. Silakan coba lagi nanti." };
+    }
+  }
+
+  return { error: "Terjadi kesalahan internal. Silakan coba lagi." };
 }

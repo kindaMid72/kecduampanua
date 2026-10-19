@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { withMime, pesanGalatUpload } from "@/lib/upload-helpers";
 import { UploadCloud, X, Loader2 } from "lucide-react";
 
 interface VideoUploadProps {
@@ -30,8 +31,10 @@ export function VideoUpload({
       const file = e.target.files?.[0];
       if (!file) return;
 
-      if (!file.type.startsWith("video/")) {
-        setError("File harus berupa video.");
+      // Sama dengan whitelist bucket (migrasi 013). Video .mov dari iPhone ditolak server.
+      const fileUpload = withMime(file);
+      if (!["video/mp4", "video/webm"].includes(fileUpload.type)) {
+        setError("Format video harus MP4 atau WebM.");
         return;
       }
 
@@ -47,7 +50,7 @@ export function VideoUpload({
 
       const { data, error: uploadError } = await supabase.storage
         .from(bucket)
-        .upload(fileName, file, {
+        .upload(fileName, fileUpload, {
           cacheControl: '3600',
           upsert: false
         });
@@ -63,7 +66,7 @@ export function VideoUpload({
       onChange(publicUrl);
     } catch (err: any) {
       console.error("Upload error:", err);
-      setError(err.message || "Gagal mengunggah video.");
+      setError(pesanGalatUpload(err, "Gagal mengunggah video."));
     } finally {
       setIsUploading(false);
       e.target.value = '';

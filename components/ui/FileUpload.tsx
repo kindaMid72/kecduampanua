@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { withMime, pesanGalatUpload } from "@/lib/upload-helpers";
 import { UploadCloud, X, Loader2, FileText } from "lucide-react";
 
 interface FileUploadProps {
@@ -43,7 +44,7 @@ export function FileUpload({
 
       const { data, error: uploadError } = await supabase.storage
         .from(bucket)
-        .upload(fileName, file, {
+        .upload(fileName, withMime(file), {
           cacheControl: '3600',
           upsert: false
         });
@@ -60,7 +61,7 @@ export function FileUpload({
       onChange(publicUrl);
     } catch (err: any) {
       console.error("Upload error:", err);
-      setError(err.message || "Gagal mengunggah dokumen.");
+      setError(pesanGalatUpload(err, "Gagal mengunggah dokumen."));
     } finally {
       setIsUploading(false);
       e.target.value = '';

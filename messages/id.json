@@ -192,6 +192,8 @@
       "placeholder": "Nomor Tracking",
       "cek": "Cek Status",
       "notFound": "Pengaduan tidak ditemukan. Pastikan nomor tracking benar.",
+      "rateLimited": "Terlalu banyak percobaan. Silakan coba lagi dalam beberapa menit.",
+      "unavailable": "Layanan cek status sedang tidak tersedia. Silakan coba lagi beberapa saat lagi.",
       "baru": "Baru Masuk",
       "diproses": "Sedang Diproses",
       "selesai": "Selesai",
