@@ -1,25 +1,64 @@
+# Stack aplikasi web saja. Reverse proxy (nginx/TLS) dan Supabase dikelola di
+# repo infra terpisah; container ini hanya bicara dengan keduanya lewat
+# jaringan Docker eksternal. Lihat docs/DEPLOYMENT.md.
+#
+# Satu kali di server:  docker network create edge-net
+# Jaringan Supabase dibuat otomatis oleh compose Supabase; nama defaultnya
+# <nama-folder>_default (mis. supabase-project_default). Cek: docker network ls
 services:
   web-duampanua:
     build:
       context: .
       dockerfile: Dockerfile
+      # Nilai publik yang di-inline Next.js saat build.
+      args:
+        NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL:?isi NEXT_PUBLIC_SUPABASE_URL di .env}
+        NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY:?isi NEXT_PUBLIC_SUPABASE_ANON_KEY di .env}
+        NEXT_PUBLIC_SITE_URL: ${NEXT_PUBLIC_SITE_URL:?isi NEXT_PUBLIC_SITE_URL di .env}
+    image: web-duampanua:latest
     container_name: web-duampanua
     restart: unless-stopped
-    # Tidak publish port ke host. Reverse proxy (repo infra) mengakses
-    # container ini lewat jaringan eksternal `edge-net`.
+    init: true
+    # Tidak publish port ke host: hanya reverse proxy di edge-net yang boleh
+    # menjangkau container ini (header X-Real-IP dipercaya oleh rate limiter).
     expose:
       - "3000"
     environment:
-      # Koneksi ke Supabase (isi nilai ini di environment VPS atau .env)
-      - NEXT_PUBLIC_SUPABASE_URL=${NEXT_PUBLIC_SUPABASE_URL}
-      - NEXT_PUBLIC_SUPABASE_ANON_KEY=${NEXT_PUBLIC_SUPABASE_ANON_KEY}
-      - SUPABASE_SERVICE_ROLE_KEY=${SUPABASE_SERVICE_ROLE_KEY}
-      - GOOGLE_TRANSLATE_API_KEY=${GOOGLE_TRANSLATE_API_KEY}
+      # Secret runtime — hanya ada di server, tidak pernah masuk image/bundle.
+      SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
+      GOOGLE_TRANSLATE_API_KEY: ${GOOGLE_TRANSLATE_API_KEY:-}
+      REVALIDATE_SECRET: ${REVALIDATE_SECRET:-}
+      # Akses Supabase dari sisi server lewat jaringan internal (tanpa memutar
+      # lewat internet). Kosongkan untuk memakai NEXT_PUBLIC_SUPABASE_URL.
+      SUPABASE_INTERNAL_URL: ${SUPABASE_INTERNAL_URL:-}
+    # Hardening container. Root filesystem sengaja TIDAK read-only: Next.js menulis
+    # hasil ISR (revalidatePath) ke .next/server saat runtime; kalau dikunci,
+    # halaman yang sudah dipublikasikan staf hilang setelah container restart.
+    volumes:
+      - next-cache:/app/.next/cache
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    mem_limit: 1g
+    cpus: 1.5
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
     networks:
       - edge-net
+      # Jaringan stack Supabase, agar SUPABASE_INTERNAL_URL
+      # (mis. http://kong:8000) bisa dijangkau tanpa lewat internet.
+      - supabase-net
+
+volumes:
+  next-cache:
 
 networks:
-  # Dibuat sekali di server: `docker network create edge-net`
-  # Dipakai bersama reverse proxy yang dikelola di repo infra.
   edge-net:
     external: true
+  supabase-net:
+    external: true
+    name: ${SUPABASE_NETWORK:-supabase-project_default}

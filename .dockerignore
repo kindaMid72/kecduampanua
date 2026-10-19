@@ -6,7 +6,9 @@ README.md
 .next
 .git
 .github
-.env*.local
+.env
+.env.*
+!.env.example
 .vercel
 e2e
 playwright-report
@@ -15,3 +17,7 @@ docs
 design
 supabase
 *.md
+certs
+certbot
+combined_schema.sql
+tsconfig.tsbuildinfo

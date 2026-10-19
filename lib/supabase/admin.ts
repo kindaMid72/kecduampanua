@@ -1,4 +1,5 @@
 import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { getServerSupabaseUrl } from "./config";
 
 /**
  * Supabase Admin client — HANYA untuk server-side operations yang butuh bypass RLS:
@@ -9,7 +10,7 @@ import { createClient as createSupabaseClient } from "@supabase/supabase-js";
  * JANGAN PERNAH import file ini di client component atau expose ke browser.
  */
 export function createAdminClient() {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const url = getServerSupabaseUrl();
   const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
   if (!url || !serviceRoleKey) {

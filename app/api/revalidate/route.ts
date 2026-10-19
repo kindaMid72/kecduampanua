@@ -1,14 +1,25 @@
 import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
+import { timingSafeEqual } from "crypto";
+
+// Bandingkan secret dengan waktu konstan agar tidak bisa ditebak lewat timing.
+function secretMatches(provided: string | null, expected: string): boolean {
+  if (!provided) return false;
+  const a = Buffer.from(provided);
+  const b = Buffer.from(`Bearer ${expected}`);
+  return a.length === b.length && timingSafeEqual(a, b);
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const authHeader = request.headers.get("Authorization");
-    if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-       return NextResponse.json({ error: "Service role key tidak ada" }, { status: 500 });
+    // Secret khusus endpoint ini (REVALIDATE_SECRET). Jangan pakai service role
+    // key sebagai secret webhook: key itu bypass RLS dan tidak boleh dikirim lewat jaringan.
+    const secret = process.env.REVALIDATE_SECRET;
+    if (!secret) {
+      return NextResponse.json({ error: "REVALIDATE_SECRET belum diset" }, { status: 500 });
     }
 
-    if (authHeader !== `Bearer ${process.env.SUPABASE_SERVICE_ROLE_KEY}`) {
+    if (!secretMatches(request.headers.get("Authorization"), secret)) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
