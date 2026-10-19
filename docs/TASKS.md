@@ -63,7 +63,16 @@ Update file ini setiap menyelesaikan item (centang `[x]`). Ini pengganti "ingata
 
 *Prasyarat: Fase 1 & Fase 2 kriteria selesai terpenuhi.*
 
-- [ ] Konfirmasi kebijakan hosting Diskominfo (Vercel vs PDN) — DECISIONS #2
+- [ ] Konfirmasi kebijakan hosting Diskominfo (Vercel vs PDN vs VPS sendiri) — DECISIONS #2, #28
+- [x] Container web siap produksi: build arg `NEXT_PUBLIC_*`, healthcheck `/api/health`, hardening (non-root, cap_drop, no-new-privileges, batas resource), Node 22 — `docs/DEPLOYMENT.md`
+- [x] Cek status pengaduan dipindah dari query browser ke Server Action + RPC (rate limit); retry keunikan nomor tracking via UNIQUE constraint
+- [x] Tulis & uji `013` + `014` di Postgres Supabase (anon/staf/Pengelola/service_role) — DECISIONS #34
+- [ ] **Review ulang `rls-reviewer` atas 014, lalu terapkan 013 + 014** (sebagai `supabase_admin`, per transaksi) dan verifikasi `has_function_privilege`
+- [x] Tutup temuan audit RLS (DECISIONS #33 → #34): profiles self-update, INSERT anon `pengaduan`, EXECUTE anon pada RPC, SELECT bucket, rate limit fail-closed — **di kode; menunggu diterapkan ke DB**
+- [x] Perbaiki upload: MIME dari ekstensi, galat Storage berbahasa Indonesia, `VideoUpload`/`ImageUpload` selaras whitelist
+- [x] Nomor tracking baru `PND-` + 12 hex (nomor lama 8 hex tetap valid) — DECISIONS #34
+- [ ] `DISABLE_SIGNUP=true` di GoTrue + audit objek lama di bucket `uploads` terhadap whitelist
+- [ ] Repo infra `duampanua-infra`: isi domain, terbitkan sertifikat, uji nginx/override Supabase/backup di VPS, uji restore backup
 - [x] Aset logo resmi terpasang (ganti placeholder)
 - [ ] Semua konten Fase 1 & 2 terisi data asli (bukan placeholder)
 - [ ] Domain go.id ter-pointing & SSL aktif

@@ -92,7 +92,13 @@ Sebelum mengubah arsitektur, mengubah database, atau menambahkan fitur baru, **w
 
 ## 🌐 Deployment
 
-Proyek ini dioptimalkan untuk di-deploy di **Vercel** melalui integrasi GitHub (*auto-deploy* dari branch `main`). 
+Produksi direncanakan **self-hosted di VPS** (web + Supabase berdampingan, di belakang satu reverse proxy). Panduan dan daftar periksa lengkap: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md). Konfigurasi nginx, override Supabase, dan skrip backup ada di repo infra terpisah (`duampanua-infra`).
 
-**Perhatian Khusus Deployment Resmi**: 
-Pendelegasian domain pemerintah (`.go.id`) dan kebijakan infrastruktur wajib disesuaikan dengan instruksi *Diskominfo* daerah setempat (harap referensikan `DECISIONS.md #2` untuk detail mengenai opsi *Vercel vs PDN*).
+```bash
+cp .env.example .env        # isi nilainya, chmod 600
+docker network create edge-net
+docker compose build && docker compose up -d
+```
+
+**Perhatian Khusus Deployment Resmi**:
+Pendelegasian domain pemerintah (`.go.id`) dan kebijakan infrastruktur wajib disesuaikan dengan instruksi *Diskominfo* daerah setempat (lihat `DECISIONS.md` #2). Jangan deploy ke domain produksi sebelum ada konfirmasi.

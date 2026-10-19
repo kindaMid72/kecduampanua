@@ -180,7 +180,7 @@ create policy "Staf kelola" on dokumen_edaran for all using (is_staf_aktif());
 ```sql
 create table pengaduan (
   id uuid primary key default gen_random_uuid(),
-  nomor_tracking text not null unique, -- format PGD-XXXXXXXX
+  nomor_tracking text not null unique, -- format PND-XXXXXXXX (lama, 8 hex) atau PND-XXXXXXXXXXXX (baru, 12 hex), DECISIONS #29 #34
   nama_pelapor text not null,
   kontak_pelapor text not null,
   kategori text,
@@ -196,7 +196,8 @@ create table pengaduan (
 
 alter table pengaduan enable row level security;
 
-create policy "Publik bisa insert" on pengaduan for insert with check (setuju_data_pribadi = true);
+-- Policy "Publik bisa insert" DICABUT di migrasi 014: anon tidak punya hak INSERT. Insert dilakukan
+-- server dengan service role setelah validasi + rate limit (DECISIONS #34).
 
 create policy "Publik bisa cek status via nomor tracking exact match"
   on pengaduan for select
@@ -310,9 +311,47 @@ create policy "Super account bisa kelola user invitations"
 ## 11. Catatan Implementasi
 
 - Trigger `updated_at` otomatis via extension `moddatetime` di semua tabel yang punya kolom itu.
-- Generate `nomor_tracking`: alfanumerik 8 karakter, exclude karakter ambigu (`0/O`, `1/I`), cek `unique`, retry kalau collision.
+- Generate `nomor_tracking`: `PND-` + 12 hex uppercase (`randomBytes(6)`); nomor lama 8 hex tetap valid; keunikan dijamin constraint `UNIQUE`, retry saat error `23505` (DECISIONS #29). Bukan SELECT dulu: `anon` tidak boleh membaca tabel `pengaduan`.
 - Job terjadwal (Supabase Edge Function + `pg_cron`) untuk set `diarsipkan_pada` otomatis 2 tahun setelah `status = 'selesai'` (DECISIONS #12) — bukan hapus permanen, cukup flag arsip.
 - Storage bucket policy diatur terpisah dari RLS tabel: bucket gambar publik boleh dibaca umum, upload hanya via signed request dari staf yang login.
 - **`profil_kecamatan` adalah single-row** — upsert, bukan insert biasa. Seed 1 baris kosong via `001_initial_schema.sql`, lalu staf mengisi via admin panel `/admin/profil`.
 - **Kolom kontak kantor** (`alamat`, `telepon`, `email`, `jam_operasional`, `koordinat_lat/lng`, `nama_kecamatan`) di `profil_kecamatan` dikelola via admin panel — **tidak pernah hardcode di kode**. Jika sudah menjalankan `001`, jalankan juga `002_profil_kontak.sql` untuk menambah kolom ini ke environment yang sudah ada.
 
+## 12. `rate_limits` (migrasi 012)
+
+```sql
+create table public.rate_limits (
+  ip text primary key,            -- key bebas: "<ip>" untuk submit, "cek:<ip>" untuk cek status
+  hits int not null default 1,
+  window_start timestamptz not null default now()
+);
+alter table public.rate_limits enable row level security; -- tanpa policy: hanya service_role
+```
+
+Satu baris per key (fixed window), diperbarui atomik oleh `check_rate_limit(client_ip, max_hits, window_minutes)`. Tabel tumbuh tanpa batas kalau tidak dibersihkan — jadwalkan `delete from public.rate_limits where window_start < now() - interval '1 day'` (`duampanua-infra/backup/backup.sh` sudah melakukannya).
+
+## 13. Function `SECURITY DEFINER` dan hak EXECUTE
+
+Setiap function di schema `public` otomatis bisa dipanggil lewat PostgREST (`/rest/v1/rpc/<nama>`) oleh siapa pun yang punya anon key; default privileges Supabase memberi EXECUTE eksplisit ke `anon`, `authenticated`, `service_role`. Karena function ini bypass RLS, hak EXECUTE adalah bagian dari model keamanan.
+
+| Function | Dipanggil oleh | Hak EXECUTE |
+|---|---|---|
+| `is_staf_aktif()`, `is_super_account()` | evaluasi policy RLS | terbuka (hanya mengembalikan boolean milik pemanggil) |
+| `get_pengaduan_by_tracking(text)` | server (cek status) | hanya `service_role` (013) |
+| `check_rate_limit(text,int,int)` | server | hanya `service_role` (013) |
+| `protect_profile_privileged_columns()` | trigger pada `profiles` | dicabut dari semua role (014); trigger tetap berjalan |
+
+Wajib `set search_path = public, pg_temp` pada semua function `SECURITY DEFINER` (013). Function baru: cabut EXECUTE dari `public, anon, authenticated` kecuali memang untuk publik.
+
+## 14. Storage bucket `uploads` (migrasi 009, 013)
+
+- Bucket publik: URL `/storage/v1/object/public/uploads/...` bisa dibuka siapa saja tanpa policy SELECT.
+- Policy (013): INSERT/UPDATE/DELETE hanya `is_staf_aktif()`; SELECT hanya `authenticated` + `is_staf_aktif()` (diperlukan oleh `INSERT ... RETURNING`). Anon tidak bisa me-list isi bucket. Dulu: `auth.role()='authenticated'` untuk tulis dan SELECT terbuka untuk semua.
+- `file_size_limit` 20 MB dan `allowed_mime_types`: JPEG/PNG/WebP/GIF/AVIF, MP4/WebM, PDF, DOC, DOCX. SVG sengaja tidak diizinkan. Validasi di browser (`lib/upload-helpers.ts`, komponen `*Upload`) hanya kenyamanan.
+- Isi bucket tidak ikut `pg_dump`; backup folder Storage terpisah.
+
+## 15. Kondisi keamanan skema
+
+Migrasi 013 dan 014 menutup temuan DECISIONS #33 (eskalasi hak lewat `profiles`, INSERT anon pada `pengaduan`, RPC terbuka untuk anon, list bucket). Keduanya **sudah diuji di Postgres Supabase tetapi belum diterapkan ke database mana pun**; sampai diterapkan, skema yang berjalan di environment Anda masih memuat kelemahan itu.
+
+Trigger `protect_profile_privileged_columns` (014) menjaga `profiles.role`, `status`, dan `id`: hanya `postgres`/`supabase_admin`/`service_role` atau Pengelola aktif yang boleh mengubahnya. `profiles` tetap bisa diubah user sendiri untuk `nama_lengkap` dan `password_set` (policy 004).

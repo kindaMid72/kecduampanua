@@ -4,7 +4,7 @@ Rujukan alasan keputusan: `docs/DECISIONS.md`. Skema tabel lengkap: `docs/DATABA
 
 ## 1. Stack
 
-Next.js (App Router, TS) + Tailwind + Supabase (Postgres, Auth, Storage) + Vercel + `next-intl` (routing `/id`, `/en`) + Google Cloud Translation API.
+Next.js (App Router, TS) + Tailwind + Supabase (Postgres, Auth, Storage; self-hosted) + Docker/nginx di VPS + `next-intl` (routing `/id`, `/en`) + Google Cloud Translation API.
 
 ## 2. Prinsip Desain Arsitektur
 
@@ -101,13 +101,16 @@ Field syarat/alur di Standar Pelayanan: tampilkan badge "Terjemahan otomatis —
 
 **Publish konten**: `Staf/Super Account isi form → submit → insert/update status published langsung (tidak ada approval layer) → auto-translate → revalidatePath dipanggil → halaman publik ter-update`.
 
-**Pengaduan**: `Warga isi form (lolos honeypot + rate limit) → insert (status: baru, nomor_tracking di-generate unik) → tampil nomor tracking ke warga → staf lihat/ubah status di dashboard admin → warga cek status lewat /pengaduan/cek-status`. Cek status **wajib** lewat RPC function `get_pengaduan_by_tracking(nomor text)` (bukan direct table SELECT) — lihat `docs/DATABASE_SCHEMA.md` §7 dan `.claude/skills/rls-review/SKILL.md` poin 4 untuk alasannya (RLS Postgres biasa tidak bisa membatasi "hanya boleh WHERE tertentu").
+**Pengaduan**: `Warga isi form (lolos honeypot + rate limit) → insert (status: baru, nomor_tracking di-generate unik) → tampil nomor tracking ke warga → staf lihat/ubah status di dashboard admin → warga cek status lewat tab "Cek Status" di /kontak/pengaduan (Server Action → RPC)`. Cek status **wajib** lewat RPC function `get_pengaduan_by_tracking(nomor text)` (bukan direct table SELECT) — lihat `docs/DATABASE_SCHEMA.md` §7 dan `.claude/skills/rls-review/SKILL.md` poin 4 untuk alasannya (RLS Postgres biasa tidak bisa membatasi "hanya boleh WHERE tertentu").
 
 ## 7. Deployment & Domain
 
-1. GitHub → Vercel auto-deploy (preview per branch, production di `main`).
-2. Domain go.id → DNS pointing ke Vercel — **tunduk konfirmasi Diskominfo** (DECISIONS #2). Kalau wajib PDN, bagian ini perlu direvisi total (kemungkinan container/VM manual, bukan PaaS).
-3. Env vars di Vercel Project Settings, tidak pernah commit ke repo.
+Rencana saat ini: **self-hosted di satu VPS** — container web (repo ini) dan stack Supabase berdampingan, satu reverse proxy (nginx) sebagai satu-satunya pintu masuk. Detail lengkap, kontrak edge, dan daftar port di `docs/DEPLOYMENT.md`; keputusan pemisahan repo infra di `DECISIONS.md` #28.
+
+1. Build image dari `Dockerfile` (`NEXT_PUBLIC_*` sebagai build arg), jalankan via `docker-compose.yml` di jaringan `edge-net` + jaringan Supabase.
+2. Domain go.id → DNS ke VPS — **tunduk konfirmasi Diskominfo** (DECISIONS #2). Kalau wajib PDN, topologi ini bisa dipakai ulang di VM PDN.
+3. Env vars di `.env` server (`chmod 600`), tidak pernah commit ke repo.
+4. Vercel hanya dipakai untuk preview deployment per branch (aturan repo), bukan produksi.
 
 ## 8. Storage & Performa Gambar
 
@@ -115,7 +118,7 @@ Client-side compress (`browser-image-compression`, target ~400KB, max 1600px) se
 
 ## 9. Anti-Spam Pengaduan
 
-Honeypot field tersembunyi (bot mengisi, manusia tidak) + rate limit per IP (maks 3 submit/jam) via Vercel Edge Middleware. Tidak pakai Cloudflare Turnstile (DECISIONS #14).
+Honeypot field tersembunyi (bot mengisi, manusia tidak) + rate limit per IP lewat RPC `check_rate_limit` (tabel `rate_limits`, maks 3 submit/10 menit; cek status 20/10 menit), IP dari header `x-real-ip` yang ditimpa reverse proxy. Tidak pakai Cloudflare Turnstile (DECISIONS #14).
 
 ## 10. SEO Dasar
 
@@ -125,6 +128,18 @@ Metadata per halaman via Next.js Metadata API, `sitemap.xml` auto dari data info
 
 Vitest untuk unit/component test (`/components/ui`, helper `/lib`), Playwright untuk E2E (DECISIONS #23). Playwright wajib mencakup: emulasi viewport 360px di setiap halaman publik baru, pemanggilan RPC `get_pengaduan_by_tracking` sebagai user anonim untuk memverifikasi tidak bisa listing data, dan uji validasi form Pengaduan (kosong/invalid). Command ada di `AGENTS.md`.
 
-## 12. Hal yang Sengaja Tidak Dibangun di Fase 1
+## 12. Batas Akses Data: Browser vs Server
+
+Anon key ada di bundle browser, jadi PostgREST harus dianggap terbuka untuk siapa pun. Keamanan berasal dari RLS dan hak EXECUTE function, bukan dari "tidak ada query di client". Aturan kerja:
+
+| Jalur | Boleh dipakai untuk | Tidak boleh |
+|---|---|---|
+| Server Component / Server Action / Route Handler (`lib/supabase/server.ts`) | semua pembacaan data publik, pengaduan (insert, cek status), rate limit | – |
+| Admin client (`lib/supabase/admin.ts`, service role) | invite/ban user, rate limit, operasi yang memang harus bypass RLS | diimpor di komponen client |
+| Browser client (`lib/supabase/client.ts`) | upload ke Storage, pembacaan data admin yang dilindungi RLS (`[id]/ubah`, `profil`), `auth.getUser()` | membaca `pengaduan`, memanggil RPC apa pun, data publik |
+
+Server memakai `SUPABASE_INTERNAL_URL`, browser memakai URL publik; cookie sesi bernama tetap (DECISIONS #30). Setiap tabel/function baru: tanyakan "apa yang bisa dilakukan `anon` lewat REST langsung?" dan uji dengan role itu (`.claude/skills/rls-review/SKILL.md`). Temuan audit yang masih terbuka: DECISIONS #33.
+
+## 13. Hal yang Sengaja Tidak Dibangun di Fase 1
 
 Notifikasi email/WA otomatis pengaduan, form permohonan informasi PPID digital, integrasi API SP4N-LAPOR!, search full-text kompleks (cukup filter kategori + `ilike` judul).
