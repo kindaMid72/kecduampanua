@@ -123,6 +123,14 @@ const generateTrackingId = () =>
 const BATAS_GLOBAL_PENGADUAN_PER_JAM = 50;
 
 export async function submitPengaduanAction(formData: FormData) {
+  // Honeypot dicek paling awal: jalur ini tidak menulis apa pun, jadi tidak perlu
+  // menghabiskan batas kiriman. Bot yang mengisinya menerima balasan sukses palsu
+  // dan tidak pernah tahu bahwa dia tertangkap.
+  const honeypot = formData.get("honeypot");
+  if (typeof honeypot === "string" && honeypot !== "") {
+    return { success: true, trackingId: generateTrackingId() };
+  }
+
   const key = await getRateLimitKey();
 
   if (key) {
@@ -145,14 +153,6 @@ export async function submitPengaduanAction(formData: FormData) {
     return {
       error: "Saat ini terlalu banyak pengaduan masuk. Silakan coba lagi nanti.",
     };
-  }
-
-  const honeypot = formData.get("honeypot");
-
-  // Honeypot dicek sebelum validasi: bot yang mengisi field tersembunyi
-  // menerima balasan sukses palsu, tidak pernah tahu bahwa dia tertangkap.
-  if (typeof honeypot === "string" && honeypot !== "") {
-    return { success: true, trackingId: generateTrackingId() };
   }
 
   const raw = {

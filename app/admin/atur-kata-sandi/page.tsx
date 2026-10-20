@@ -15,6 +15,8 @@ function AturKataSandiForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get("token") || "";
+  // Tautan yang sudah basi kadang datang dengan error_code dari layanan auth, tanpa token.
+  const kodeErrorTautan = searchParams.get("error_code");
 
   const [showPassword, setShowPassword] = useState(false);
   const [showKonfirmasi, setShowKonfirmasi] = useState(false);
@@ -45,7 +47,9 @@ function AturKataSandiForm() {
         if (isMounted) {
           setTokenInfo({
             valid: false,
-            error: "Tautan tidak memiliki token. Pastikan Anda membuka tautan lengkap yang diberikan oleh Pengelola.",
+            error: kodeErrorTautan === "otp_expired"
+              ? "Tautan ini sudah kedaluwarsa. Silakan minta tautan baru kepada Pengelola."
+              : "Tautan tidak memiliki token. Pastikan Anda membuka tautan lengkap yang diberikan oleh Pengelola.",
           });
           setCheckingToken(false);
         }
@@ -64,7 +68,7 @@ function AturKataSandiForm() {
     return () => {
       isMounted = false;
     };
-  }, [token]);
+  }, [token, kodeErrorTautan]);
 
   async function onSubmit(data: SetPasswordInput) {
     setSubmitting(true);

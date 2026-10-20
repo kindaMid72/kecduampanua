@@ -6,7 +6,7 @@ export default function InformasiLoading() {
     <div className="container mx-auto px-4 py-8 max-w-6xl">
       <div className="mb-8">
         <div className="h-8 bg-surface/50 rounded w-48 mb-2"></div>
-        <div className="h-4 bg-surface/30 rounded w-96"></div>
+        <div className="h-4 bg-surface/30 rounded w-full max-w-md"></div>
       </div>
       <SectionDivider className="mb-8" />
       <SkeletonLoader variant="list" count={4} />
