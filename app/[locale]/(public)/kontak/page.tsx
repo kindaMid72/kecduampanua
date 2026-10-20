@@ -20,7 +20,6 @@ export async function generateMetadata({
   };
 }
 
-export const revalidate = false;
 
 function InfoRow({
   icon: Icon,

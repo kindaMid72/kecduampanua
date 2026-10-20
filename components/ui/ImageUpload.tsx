@@ -73,7 +73,7 @@ export function ImageUpload({
         .getPublicUrl(data.path);
 
       onChange(publicUrl);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Upload error:", err);
       setError(pesanGalatUpload(err, "Gagal mengunggah gambar."));
     } finally {

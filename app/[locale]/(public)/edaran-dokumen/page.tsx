@@ -23,7 +23,6 @@ export async function generateMetadata({
   };
 }
 
-export const revalidate = false;
 
 export default async function EdaranDokumenPage({
   params,

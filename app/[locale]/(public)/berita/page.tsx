@@ -20,7 +20,6 @@ export async function generateMetadata({
   };
 }
 
-export const revalidate = false;
 
 export default async function BeritaListPage({
   params,

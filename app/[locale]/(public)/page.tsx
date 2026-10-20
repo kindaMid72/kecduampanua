@@ -19,6 +19,30 @@ import {
   TrendingUp,
   MapPin,
 } from "lucide-react";
+import type { StatistikRow } from "@/lib/types/statistik";
+
+// Bentuk baris hasil select di beranda (sesuai kolom yang diminta di query).
+type BeritaRingkas = {
+  id: string;
+  judul: string;
+  judul_en: string | null;
+  kategori: string;
+  created_at: string;
+  gambar_cover_url: string | null;
+  slug: string;
+};
+
+type PotensiRingkas = {
+  id: string;
+  judul: string;
+  judul_en: string | null;
+  kategori: string;
+  deskripsi: string;
+  deskripsi_en: string | null;
+  lokasi: string | null;
+  gambar_url: string | null;
+};
+
 import type { Metadata } from "next";
 
 export async function generateMetadata({
@@ -34,7 +58,6 @@ export async function generateMetadata({
   };
 }
 
-export const revalidate = false;
 
 type KategoriInfoMap = {
   pengumuman: "default";
@@ -75,10 +98,10 @@ export default async function Beranda({
   };
 
   let profil = null;
-  let infos: any[] = [];
-  let beritaTerkini: any[] = [];
-  let potensiUnggulan: any[] = [];
-  let dataStatistik: any[] = [];
+  let infos: BeritaRingkas[] = [];
+  let beritaTerkini: BeritaRingkas[] = [];
+  let potensiUnggulan: PotensiRingkas[] = [];
+  let dataStatistik: StatistikRow[] = [];
 
   try {
     const supabase = await createClient();
@@ -137,7 +160,7 @@ export default async function Beranda({
 
     aggStatistik = latestData.reduce((acc, curr) => {
       acc.totalPenduduk += curr.jumlah_penduduk || 0;
-      acc.luasWilayah += parseFloat(curr.luas_wilayah_km2 || 0);
+      acc.luasWilayah += curr.luas_wilayah_km2 ?? 0;
       acc.fasilitasPendidikan += curr.jumlah_sekolah || 0;
       // Gabungkan semua faskes
       acc.fasilitasKesehatan += (curr.jumlah_rumah_sakit || 0) + (curr.jumlah_puskesmas || 0) + (curr.jumlah_posyandu || 0) + (curr.jumlah_klinik_apotek || 0);

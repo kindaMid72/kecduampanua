@@ -23,7 +23,7 @@ export async function updatePengaduanAction(id: string, formData: FormData) {
     return { error: "Anda belum login." };
   }
 
-  const updateData: any = {
+  const updateData: Record<string, unknown> = {
     ...parsed.data,
     ditangani_oleh: user.id,
     updated_at: new Date().toISOString(),

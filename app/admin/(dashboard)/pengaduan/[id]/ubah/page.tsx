@@ -14,6 +14,18 @@ import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { id as localeId } from "date-fns/locale";
 
+// Kolom pengaduan yang ditampilkan di halaman detail (select "*" dari tabel pengaduan).
+type PengaduanDetail = {
+  nomor_tracking: string;
+  nama_pelapor: string;
+  kontak_pelapor: string;
+  kategori: string;
+  deskripsi: string;
+  created_at: string;
+  status: "baru" | "diproses" | "selesai";
+  catatan_tindak_lanjut: string | null;
+};
+
 export default function UbahPengaduanPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const router = useRouter();
@@ -21,7 +33,7 @@ export default function UbahPengaduanPage({ params }: { params: Promise<{ id: st
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [pengaduan, setPengaduan] = useState<any>(null);
+  const [pengaduan, setPengaduan] = useState<PengaduanDetail | null>(null);
 
   const { register, handleSubmit, formState: { errors }, reset } = useForm<PengaduanAdminInput>({
     resolver: zodResolver(pengaduanAdminSchema),

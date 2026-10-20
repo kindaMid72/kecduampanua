@@ -37,7 +37,6 @@ export async function generateMetadata({
   }
 }
 
-export const revalidate = false;
 
 type KategoriInfoMap = {
   pengumuman: "default";

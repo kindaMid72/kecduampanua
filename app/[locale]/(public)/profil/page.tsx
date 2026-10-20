@@ -5,6 +5,7 @@ import { CategoryLabel } from "@/components/ui/CategoryLabel";
 import { SectionDivider } from "@/components/ui/SectionDivider";
 import Image from "next/image";
 import type { Metadata } from "next";
+import type { AngkaStatistik, StatistikRow } from "@/lib/types/statistik";
 
 export async function generateMetadata({
   params,
@@ -19,7 +20,6 @@ export async function generateMetadata({
   };
 }
 
-export const revalidate = false;
 
 function Placeholder({ pesan }: { pesan: string }) {
   return (
@@ -156,7 +156,7 @@ export default async function ProfilPage({
           <div className="flex-1">
             <h3 className="font-mono text-xs uppercase tracking-widest text-secondary mb-4">{tProfil("visi")}</h3>
             {visi ? (
-              <p className="text-primary font-display text-xl sm:text-2xl leading-relaxed italic">"{visi}"</p>
+              <p className="text-primary font-display text-xl sm:text-2xl leading-relaxed italic">&ldquo;{visi}&rdquo;</p>
             ) : (
               <Placeholder pesan={tProfil("visiPlaceholder")} />
             )}
@@ -314,7 +314,7 @@ export default async function ProfilPage({
                             key={stat.id} 
                             title={stat.nama_desa_kelurahan} 
                             tahunData={stat.tahun_data} 
-                            stat={stat as any} 
+                            stat={stat}
                           />
                         ))}
                       </div>
@@ -330,7 +330,7 @@ export default async function ProfilPage({
   );
 }
 
-function InsightCard({ title, tahunData, stat, isHighlight = false }: { title: string, tahunData: number, stat: any, isHighlight?: boolean }) {
+function InsightCard({ title, tahunData, stat, isHighlight = false }: { title: string, tahunData: number, stat: AngkaStatistik, isHighlight?: boolean }) {
   // Kalkulasi Insight
   const penduduk = Number(stat.jumlah_penduduk) || 0;
   const p0_14 = Number(stat.penduduk_usia_0_14) || 0;

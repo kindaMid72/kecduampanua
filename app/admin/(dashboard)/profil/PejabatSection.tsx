@@ -17,7 +17,7 @@ type Pejabat = {
 };
 
 export default function PejabatSection() {
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
   const [pejabats, setPejabats] = useState<Pejabat[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,9 +47,26 @@ export default function PejabatSection() {
     setLoading(false);
   };
 
+  // Muat awal. State baru diubah setelah await, bukan sinkron di dalam effect.
   useEffect(() => {
-    fetchPejabat();
-  }, []);
+    let aktif = true;
+    supabase
+      .from("struktur_organisasi")
+      .select("*")
+      .order("urutan", { ascending: true })
+      .then(({ data, error }) => {
+        if (!aktif) return;
+        if (error) {
+          setError("Gagal memuat data pejabat.");
+        } else {
+          setPejabats(data || []);
+        }
+        setLoading(false);
+      });
+    return () => {
+      aktif = false;
+    };
+  }, [supabase]);
 
   const openForm = (pejabat?: Pejabat) => {
     if (pejabat) {

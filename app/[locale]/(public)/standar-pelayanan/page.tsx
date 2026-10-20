@@ -19,7 +19,6 @@ export async function generateMetadata({
   };
 }
 
-export const revalidate = false;
 
 function Placeholder({ pesan }: { pesan: string }) {
   return <p className="text-sm text-text/50 italic py-2">{pesan}</p>;
