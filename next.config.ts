@@ -8,6 +8,8 @@ const withNextIntl = createNextIntlPlugin("./lib/i18n/request.ts");
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   ? new URL(process.env.NEXT_PUBLIC_SUPABASE_URL)
   : null;
+// Jika API Supabase berada di bawah path (mis. https://domain/sb), prefix path itu ikut.
+const supabasePath = supabaseUrl ? supabaseUrl.pathname.replace(/\/$/, "") : "";
 
 const nextConfig: NextConfig = {
   // Jangan beritahu versi framework lewat header X-Powered-By.
@@ -19,7 +21,7 @@ const nextConfig: NextConfig = {
         // VULN-02: Jangan hardcode hostname — baca dari env var agar tidak
         // terekspos di source code / git history.
         hostname: supabaseUrl?.hostname ?? "localhost",
-        pathname: "/storage/v1/object/public/**",
+        pathname: `${supabasePath}/storage/v1/object/public/**`,
       },
     ],
   },
