@@ -48,7 +48,8 @@
     "ariaNavigasiUtama": "Main Navigation",
     "ariaNavigasiMobile": "Mobile Navigation",
     "bukaMenu": "Open menu",
-    "tutupMenu": "Close menu"
+    "tutupMenu": "Close menu",
+    "skipLink": "Skip to main content"
   },
   "common": {
     "selengkapnya": "Read More",
@@ -101,7 +102,15 @@
     "sambutanPejabat": "Greeting",
     "slideSebelumnya": "Previous slide",
     "slideBerikutnya": "Next slide",
-    "sambutanPlaceholder": "Greeting is being updated."
+    "sambutanPlaceholder": "Greeting is being updated.",
+    "sorotan": "Highlights",
+    "latarKecamatan": "Duampanua District background",
+    "latarSambutan": "Official welcome background",
+    "pilihSlide": "Choose slide",
+    "slideNomor": "Slide {nomor}",
+    "jedaSlide": "Pause slide rotation",
+    "lanjutSlide": "Resume slide rotation",
+    "fotoPejabat": "Official photo"
   },
   "profil": {
     "title": "Sub-District Profile",
@@ -176,7 +185,9 @@
       "successDesc": "Save the following tracking number to check your report status:",
       "copy": "Copy",
       "copied": "Copied",
-      "cekStatus": "Check Report Status"
+      "cekStatus": "Check Report Status",
+      "honeypot": "Leave this field empty",
+      "buatBaru": "Create New Report"
     },
     "kategori": {
       "pilih": "-- Select Category --",
@@ -198,7 +209,8 @@
       "diproses": "Being Processed",
       "selesai": "Completed",
       "catatan": "Follow-up Note:",
-      "tanggal": "Report Date:"
+      "tanggal": "Report Date:",
+      "label": "Report Status"
     },
     "lapor": {
       "title": "SP4N-LAPOR!",
@@ -280,5 +292,30 @@
     "500Home": "Back to Home",
     "inlineError": "Failed to load data. Please refresh the page.",
     "inlineErrorAdmin": "Failed to load data. Please contact support if the issue persists."
+  },
+  "profilStatistik": {
+    "judul": "Population Statistics",
+    "belumTersedia": "Statistics data is not available yet.",
+    "totalKecamatan": "Whole District",
+    "rincianDesa": "Details per Village",
+    "tahunData": "Data year: {tahun}",
+    "belumDiisi": "Not filled in yet",
+    "totalPenduduk": "Total Population",
+    "kepadatan": "{nilai} people/km²",
+    "rasioKetergantungan": "Dependency Ratio",
+    "bebanTinggi": "High burden",
+    "bonusDemografi": "Demographic bonus",
+    "rasioJenisKelamin": "Sex Ratio",
+    "lakiPer100": "males per 100 females",
+    "rasioMuridGuru": "Student-Teacher Ratio",
+    "overload": "Overloaded",
+    "ideal": "Ideal",
+    "bebanFaskes": "Health Facility Load",
+    "wargaPerFaskes": "residents per facility",
+    "hasilPanen": "Harvest Yield",
+    "tonPerHektar": "tons per hectare",
+    "tangkapanIkan": "Fish Catch",
+    "tonSatuan": "tons",
+    "nelayan": "by {jumlah} fishermen"
   }
 }

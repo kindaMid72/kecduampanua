@@ -64,20 +64,20 @@ export default function TambahLayananPage() {
       <Card padding="md">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {error && (
-            <div className="p-3 bg-red-50 text-red-700 text-sm rounded border border-red-200">
+            <div className="p-3 bg-danger/10 text-danger text-sm rounded border border-danger/30">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium mb-1.5">Nama Layanan <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium mb-1.5">Nama Layanan <span className="text-danger">*</span></label>
             <input
               type="text"
               {...register("nama_layanan")}
               className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
               placeholder="Contoh: Pembuatan KTP Baru"
             />
-            {errors.nama_layanan && <p className="text-red-500 text-xs mt-1">{errors.nama_layanan.message}</p>}
+            {errors.nama_layanan && <p className="text-danger text-xs mt-1">{errors.nama_layanan.message}</p>}
           </div>
 
           <div>
@@ -109,7 +109,7 @@ export default function TambahLayananPage() {
                         newSyarat.splice(index, 1);
                         setValue("syarat_dokumen", newSyarat);
                       }}
-                      className="p-2 text-red-500 hover:bg-red-50 rounded"
+                      className="p-2 text-danger hover:bg-danger/10 rounded"
                     >
                       <Trash2 size={18} />
                     </button>
@@ -166,7 +166,7 @@ export default function TambahLayananPage() {
                 className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
                 placeholder="https://..."
               />
-              {errors.link_formulir_url && <p className="text-red-500 text-xs mt-1">{errors.link_formulir_url.message}</p>}
+              {errors.link_formulir_url && <p className="text-danger text-xs mt-1">{errors.link_formulir_url.message}</p>}
             </div>
             <div>
               <label className="block text-sm font-medium mb-1.5">Dokumen Standar (opsional)</label>
@@ -176,7 +176,7 @@ export default function TambahLayananPage() {
                 folder="dokumen"
                 accept=".pdf,.doc,.docx"
               />
-              {errors.dokumen_standar_pelayanan_url && <p className="text-red-500 text-xs mt-1">{errors.dokumen_standar_pelayanan_url.message}</p>}
+              {errors.dokumen_standar_pelayanan_url && <p className="text-danger text-xs mt-1">{errors.dokumen_standar_pelayanan_url.message}</p>}
             </div>
           </div>
 
@@ -184,7 +184,7 @@ export default function TambahLayananPage() {
             <label className="block text-sm font-medium mb-1.5">Status</label>
             <select
               {...register("status")}
-              className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none bg-white"
+              className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none bg-paper"
             >
               <option value="aktif">Aktif (Ditampilkan)</option>
               <option value="nonaktif">Nonaktif (Disembunyikan)</option>

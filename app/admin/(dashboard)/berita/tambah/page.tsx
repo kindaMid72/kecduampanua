@@ -62,14 +62,14 @@ export default function TambahBeritaPage() {
       <Card padding="md">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {error && (
-            <div className="p-3 bg-red-50 text-red-700 text-sm rounded border border-red-200">
+            <div className="p-3 bg-danger/10 text-danger text-sm rounded border border-danger/30">
               {error}
             </div>
           )}
 
           <div>
             <label className="block text-sm font-medium mb-1.5">
-              Judul Berita <span className="text-red-500">*</span>
+              Judul Berita <span className="text-danger">*</span>
             </label>
             <input
               type="text"
@@ -77,7 +77,7 @@ export default function TambahBeritaPage() {
               className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
               placeholder="Contoh: Kecamatan Duampanua Adakan Musrenbang 2025"
             />
-            {errors.judul && <p className="text-red-500 text-xs mt-1">{errors.judul.message}</p>}
+            {errors.judul && <p className="text-danger text-xs mt-1">{errors.judul.message}</p>}
           </div>
 
           <div>
@@ -91,13 +91,13 @@ export default function TambahBeritaPage() {
               placeholder="Contoh: Musrenbang, Kesehatan, Infrastruktur..."
             />
             {errors.kategori && (
-              <p className="text-red-500 text-xs mt-1">{errors.kategori.message}</p>
+              <p className="text-danger text-xs mt-1">{errors.kategori.message}</p>
             )}
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-1.5">
-              Gambar Cover <span className="text-red-500">*</span>
+              Gambar Cover <span className="text-danger">*</span>
             </label>
             <ImageUpload 
               value={gambarCoverUrl}
@@ -105,13 +105,13 @@ export default function TambahBeritaPage() {
               folder="berita"
             />
             {errors.gambar_cover_url && (
-              <p className="text-red-500 text-xs mt-1">{errors.gambar_cover_url.message}</p>
+              <p className="text-danger text-xs mt-1">{errors.gambar_cover_url.message}</p>
             )}
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-1.5">
-              Isi Berita <span className="text-red-500">*</span>
+              Isi Berita <span className="text-danger">*</span>
             </label>
             <textarea
               {...register("konten")}
@@ -119,7 +119,7 @@ export default function TambahBeritaPage() {
               className="w-full p-3 border rounded focus:ring-2 focus:ring-primary outline-none resize-y"
               placeholder="Tuliskan isi artikel di sini..."
             />
-            {errors.konten && <p className="text-red-500 text-xs mt-1">{errors.konten.message}</p>}
+            {errors.konten && <p className="text-danger text-xs mt-1">{errors.konten.message}</p>}
           </div>
 
           {/* Section Bahasa Inggris */}

@@ -151,7 +151,7 @@ export default function PejabatSection() {
       </div>
 
       {error && (
-        <div className="p-3 bg-red-50 text-red-700 text-sm rounded border border-red-200">
+        <div className="p-3 bg-danger/10 text-danger text-sm rounded border border-danger/30">
           {error}
         </div>
       )}
@@ -231,7 +231,7 @@ export default function PejabatSection() {
                   <button type="button" onClick={() => openForm(pejabat)} className="p-2 text-text/50 hover:text-primary transition-colors" title="Ubah">
                     <Edit size={16} />
                   </button>
-                  <button type="button" onClick={() => handleDelete(pejabat.id)} className="p-2 text-text/50 hover:text-red-500 transition-colors" title="Hapus">
+                  <button type="button" onClick={() => handleDelete(pejabat.id)} className="p-2 text-text/50 hover:text-danger transition-colors" title="Hapus">
                     <Trash2 size={16} />
                   </button>
                 </div>

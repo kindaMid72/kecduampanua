@@ -48,7 +48,8 @@
     "ariaNavigasiUtama": "Navigasi Utama",
     "ariaNavigasiMobile": "Navigasi mobile",
     "bukaMenu": "Buka menu",
-    "tutupMenu": "Tutup menu"
+    "tutupMenu": "Tutup menu",
+    "skipLink": "Lewati ke konten utama"
   },
   "common": {
     "selengkapnya": "Selengkapnya",
@@ -101,7 +102,15 @@
     "sambutanPejabat": "Sambutan",
     "slideSebelumnya": "Slide sebelumnya",
     "slideBerikutnya": "Slide berikutnya",
-    "sambutanPlaceholder": "Sambutan sedang diperbarui."
+    "sambutanPlaceholder": "Sambutan sedang diperbarui.",
+    "sorotan": "Sorotan utama",
+    "latarKecamatan": "Latar Kecamatan Duampanua",
+    "latarSambutan": "Latar sambutan pejabat",
+    "pilihSlide": "Pilih slide",
+    "slideNomor": "Slide {nomor}",
+    "jedaSlide": "Jeda pergantian slide",
+    "lanjutSlide": "Lanjutkan pergantian slide",
+    "fotoPejabat": "Foto pejabat"
   },
   "profil": {
     "title": "Profil Kecamatan",
@@ -176,7 +185,9 @@
       "successDesc": "Simpan nomor tracking berikut untuk mengecek status laporan Anda:",
       "copy": "Salin",
       "copied": "Tersalin",
-      "cekStatus": "Cek Status Laporan"
+      "cekStatus": "Cek Status Laporan",
+      "honeypot": "Kosongkan kolom ini",
+      "buatBaru": "Buat Laporan Baru"
     },
     "kategori": {
       "pilih": "-- Pilih Kategori --",
@@ -198,7 +209,8 @@
       "diproses": "Sedang Diproses",
       "selesai": "Selesai",
       "catatan": "Catatan Tindak Lanjut:",
-      "tanggal": "Tanggal Laporan:"
+      "tanggal": "Tanggal Laporan:",
+      "label": "Status Laporan"
     },
     "lapor": {
       "title": "SP4N-LAPOR!",
@@ -280,5 +292,30 @@
     "500Home": "Kembali ke Beranda",
     "inlineError": "Gagal memuat data. Coba muat ulang halaman.",
     "inlineErrorAdmin": "Gagal memuat data. Hubungi tim teknis jika masalah berlanjut."
+  },
+  "profilStatistik": {
+    "judul": "Data Statistik Penduduk",
+    "belumTersedia": "Data statistik belum tersedia.",
+    "totalKecamatan": "Total Kecamatan",
+    "rincianDesa": "Rincian per Desa/Kelurahan",
+    "tahunData": "Tahun data: {tahun}",
+    "belumDiisi": "Belum diisi",
+    "totalPenduduk": "Total Penduduk",
+    "kepadatan": "{nilai} jiwa/km²",
+    "rasioKetergantungan": "Rasio Ketergantungan",
+    "bebanTinggi": "Beban tinggi",
+    "bonusDemografi": "Bonus demografi",
+    "rasioJenisKelamin": "Rasio Jenis Kelamin",
+    "lakiPer100": "laki-laki per 100 perempuan",
+    "rasioMuridGuru": "Rasio Murid-Guru",
+    "overload": "Kelebihan beban",
+    "ideal": "Ideal",
+    "bebanFaskes": "Beban Fasilitas Kesehatan",
+    "wargaPerFaskes": "warga per fasilitas",
+    "hasilPanen": "Hasil Panen",
+    "tonPerHektar": "ton per hektar",
+    "tangkapanIkan": "Hasil Tangkapan Ikan",
+    "tonSatuan": "ton",
+    "nelayan": "oleh {jumlah} nelayan"
   }
 }

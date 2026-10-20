@@ -95,7 +95,7 @@ export default async function EdaranDokumenPage({
               href={`/${locale}/edaran-dokumen${kat.id === "semua" ? "" : `?k=${kat.id}`}`}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 kategoriParam === kat.id
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-paper"
                   : "bg-surface/50 text-text/60 hover:bg-surface hover:text-text"
               }`}
             >
@@ -159,7 +159,7 @@ export default async function EdaranDokumenPage({
                       href={item.file_url} 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="inline-flex items-center gap-2 px-4 py-2 rounded bg-primary text-white text-sm font-medium hover:bg-primary-hover transition-colors w-full sm:w-auto justify-center"
+                      className="inline-flex items-center gap-2 px-4 py-2 rounded bg-primary text-paper text-sm font-medium hover:bg-primary-hover transition-colors w-full sm:w-auto justify-center"
                     >
                       <Download size={16} />
                       <span>{tEdaran("lihat")}</span>

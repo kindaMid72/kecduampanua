@@ -107,7 +107,7 @@ export default function PengaduanPage({ params }: { params: Promise<{ locale: st
           <button
             onClick={() => setCheckMode(false)}
             className={`px-6 py-2 text-sm font-medium rounded-md transition-colors ${
-              !checkMode ? "bg-white text-primary shadow-sm" : "text-text/60 hover:text-text"
+              !checkMode ? "bg-paper text-primary shadow-sm" : "text-text/60 hover:text-text"
             }`}
           >
             Formulir Laporan
@@ -115,7 +115,7 @@ export default function PengaduanPage({ params }: { params: Promise<{ locale: st
           <button
             onClick={() => setCheckMode(true)}
             className={`px-6 py-2 text-sm font-medium rounded-md transition-colors ${
-              checkMode ? "bg-white text-primary shadow-sm" : "text-text/60 hover:text-text"
+              checkMode ? "bg-paper text-primary shadow-sm" : "text-text/60 hover:text-text"
             }`}
           >
             {t("form.cekStatus")}
@@ -127,14 +127,14 @@ export default function PengaduanPage({ params }: { params: Promise<{ locale: st
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="md:col-span-2">
             {success ? (
-              <Card padding="lg" className="text-center bg-green-50/50 border-green-100">
-                <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Card padding="lg" className="text-center bg-status-success/10/50 border-status-success">
+                <div className="w-16 h-16 bg-status-success/10 text-status-success-ink rounded-full flex items-center justify-center mx-auto mb-4">
                   <CheckCircle2 size={32} />
                 </div>
-                <h3 className="text-xl font-semibold text-green-800 mb-2">{t("form.success")}</h3>
-                <p className="text-green-700/80 mb-6">{t("form.successDesc")}</p>
+                <h3 className="text-xl font-semibold text-status-success-ink mb-2">{t("form.success")}</h3>
+                <p className="text-status-success-ink/80 mb-6">{t("form.successDesc")}</p>
                 
-                <div className="bg-white border border-green-200 rounded-lg p-4 flex items-center justify-between max-w-sm mx-auto mb-6">
+                <div className="bg-paper border border-status-success/30 rounded-lg p-4 flex items-center justify-between max-w-sm mx-auto mb-6">
                   <span className="font-mono text-xl font-bold tracking-widest text-primary">
                     {success.trackingId}
                   </span>
@@ -143,19 +143,19 @@ export default function PengaduanPage({ params }: { params: Promise<{ locale: st
                     className="p-2 text-text/50 hover:text-primary transition-colors bg-surface/50 hover:bg-surface rounded"
                     title={t("form.copy")}
                   >
-                    {copied ? <span className="text-xs font-medium text-green-600">{t("form.copied")}</span> : <Copy size={18} />}
+                    {copied ? <span className="text-xs font-medium text-status-success-ink">{t("form.copied")}</span> : <Copy size={18} />}
                   </button>
                 </div>
 
                 <Button onClick={() => setSuccess(null)} variant="ghost">
-                  Buat Laporan Baru
+                  {t("form.buatBaru")}
                 </Button>
               </Card>
             ) : (
               <Card padding="lg">
                 <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                   {error && (
-                    <div className="p-3 bg-red-50 text-red-700 text-sm rounded border border-red-200 flex items-start gap-2">
+                    <div role="alert" className="p-3 bg-danger/10 text-danger text-sm rounded border border-danger/30 flex items-start gap-2">
                       <AlertCircle size={16} className="mt-0.5 flex-shrink-0" />
                       <span>{error}</span>
                     </div>
@@ -163,36 +163,45 @@ export default function PengaduanPage({ params }: { params: Promise<{ locale: st
 
                   {/* Honeypot field (hidden from users) */}
                   <div className="hidden" aria-hidden="true">
-                    <label>DO NOT FILL THIS OUT</label>
-                    <input type="text" {...register("honeypot")} tabIndex={-1} autoComplete="off" />
+                    <label htmlFor="pengaduan-honeypot">{t("form.honeypot")}</label>
+                    <input id="pengaduan-honeypot" type="text" {...register("honeypot")} tabIndex={-1} autoComplete="off" />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                     <div>
-                      <label className="block text-sm font-medium mb-1.5">{t("form.nama")} <span className="text-red-500">*</span></label>
+                      <label htmlFor="pengaduan-nama" className="block text-sm font-medium mb-1.5">{t("form.nama")} <span className="text-danger">*</span></label>
                       <input
+                        id="pengaduan-nama"
                         type="text"
+                        aria-invalid={errors.nama_pelapor ? true : undefined}
+                        aria-describedby={errors.nama_pelapor ? "pengaduan-nama-galat" : undefined}
                         {...register("nama_pelapor")}
                         className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
                       />
-                      {errors.nama_pelapor && <p className="text-red-500 text-xs mt-1">{errors.nama_pelapor.message}</p>}
+                      {errors.nama_pelapor && <p id="pengaduan-nama-galat" role="alert" className="text-danger text-xs mt-1">{errors.nama_pelapor.message}</p>}
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1.5">{t("form.kontak")} <span className="text-red-500">*</span></label>
+                      <label htmlFor="pengaduan-kontak" className="block text-sm font-medium mb-1.5">{t("form.kontak")} <span className="text-danger">*</span></label>
                       <input
+                        id="pengaduan-kontak"
                         type="text"
+                        aria-invalid={errors.kontak_pelapor ? true : undefined}
+                        aria-describedby={errors.kontak_pelapor ? "pengaduan-kontak-galat" : undefined}
                         {...register("kontak_pelapor")}
                         className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
                       />
-                      {errors.kontak_pelapor && <p className="text-red-500 text-xs mt-1">{errors.kontak_pelapor.message}</p>}
+                      {errors.kontak_pelapor && <p id="pengaduan-kontak-galat" role="alert" className="text-danger text-xs mt-1">{errors.kontak_pelapor.message}</p>}
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1.5">{t("form.kategori")} <span className="text-red-500">*</span></label>
+                    <label htmlFor="pengaduan-kategori" className="block text-sm font-medium mb-1.5">{t("form.kategori")} <span className="text-danger">*</span></label>
                     <select
+                      id="pengaduan-kategori"
+                      aria-invalid={errors.kategori ? true : undefined}
+                      aria-describedby={errors.kategori ? "pengaduan-kategori-galat" : undefined}
                       {...register("kategori")}
-                      className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none bg-white"
+                      className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none bg-paper"
                     >
                       <option value="" disabled>{t("kategori.pilih")}</option>
                       <option value="infrastruktur">{t("kategori.infrastruktur")}</option>
@@ -201,28 +210,34 @@ export default function PengaduanPage({ params }: { params: Promise<{ locale: st
                       <option value="lingkungan">{t("kategori.lingkungan")}</option>
                       <option value="lainnya">{t("kategori.lainnya")}</option>
                     </select>
-                    {errors.kategori && <p className="text-red-500 text-xs mt-1">{errors.kategori.message}</p>}
+                    {errors.kategori && <p id="pengaduan-kategori-galat" role="alert" className="text-danger text-xs mt-1">{errors.kategori.message}</p>}
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium mb-1.5">{t("form.deskripsi")} <span className="text-red-500">*</span></label>
+                    <label htmlFor="pengaduan-deskripsi" className="block text-sm font-medium mb-1.5">{t("form.deskripsi")} <span className="text-danger">*</span></label>
                     <textarea
+                      id="pengaduan-deskripsi"
+                      aria-invalid={errors.deskripsi ? true : undefined}
+                      aria-describedby={errors.deskripsi ? "pengaduan-deskripsi-galat" : undefined}
                       {...register("deskripsi")}
                       className="w-full h-32 px-3 py-2 border rounded focus:ring-2 focus:ring-primary outline-none resize-y"
                     />
-                    {errors.deskripsi && <p className="text-red-500 text-xs mt-1">{errors.deskripsi.message}</p>}
+                    {errors.deskripsi && <p id="pengaduan-deskripsi-galat" role="alert" className="text-danger text-xs mt-1">{errors.deskripsi.message}</p>}
                   </div>
 
                   <div className="pt-2">
                     <label className="flex items-start gap-3 p-3 bg-surface/30 rounded border border-surface cursor-pointer">
                       <input
+                        id="pengaduan-setuju"
                         type="checkbox"
+                        aria-invalid={errors.setuju_data_pribadi ? true : undefined}
+                        aria-describedby={errors.setuju_data_pribadi ? "pengaduan-setuju-galat" : undefined}
                         {...register("setuju_data_pribadi")}
                         className="mt-1"
                       />
                       <span className="text-sm text-text/70">{t("form.pdp")}</span>
                     </label>
-                    {errors.setuju_data_pribadi && <p className="text-red-500 text-xs mt-1">{errors.setuju_data_pribadi.message}</p>}
+                    {errors.setuju_data_pribadi && <p id="pengaduan-setuju-galat" role="alert" className="text-danger text-xs mt-1">{errors.setuju_data_pribadi.message}</p>}
                   </div>
 
                   <div className="pt-4 border-t border-surface">
@@ -245,7 +260,7 @@ export default function PengaduanPage({ params }: { params: Promise<{ locale: st
                 href="https://www.lapor.go.id/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="inline-flex items-center justify-center gap-2 w-full px-4 py-3 bg-primary text-white rounded font-medium hover:bg-primary-hover transition-colors"
+                className="inline-flex items-center justify-center gap-2 w-full px-4 py-3 bg-primary text-paper rounded font-medium hover:bg-primary-hover transition-colors"
               >
                 <span>{t("lapor.btn")}</span>
                 <ExternalLink size={16} />
@@ -276,7 +291,7 @@ export default function PengaduanPage({ params }: { params: Promise<{ locale: st
             </form>
 
             {checkError && (
-              <div className="p-4 bg-red-50 text-red-700 text-sm rounded border border-red-200 text-center">
+              <div className="p-4 bg-danger/10 text-danger text-sm rounded border border-danger/30 text-center">
                 {checkError}
               </div>
             )}
@@ -290,11 +305,11 @@ export default function PengaduanPage({ params }: { params: Promise<{ locale: st
                 
                 <div className="p-5 space-y-4">
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-text/60">Status Laporan</span>
+                    <span className="text-sm text-text/60">{t("status.label")}</span>
                     <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold ${
-                      checkResult.status === 'baru' ? 'bg-red-100 text-red-700' : 
-                      checkResult.status === 'diproses' ? 'bg-amber-100 text-amber-700' :
-                      'bg-green-100 text-green-700'
+                      checkResult.status === 'baru' ? 'bg-danger/10 text-danger' : 
+                      checkResult.status === 'diproses' ? 'bg-status-warning/10 text-status-warning-ink' :
+                      'bg-status-success/10 text-status-success-ink'
                     }`}>
                       {t(`status.${checkResult.status}`)}
                     </span>

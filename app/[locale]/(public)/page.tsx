@@ -239,6 +239,14 @@ export default async function Beranda({
         labels={{
           slideSebelumnya: tBeranda("slideSebelumnya"),
           slideBerikutnya: tBeranda("slideBerikutnya"),
+          sorotan: tBeranda("sorotan"),
+          latarKecamatan: tBeranda("latarKecamatan"),
+          latarSambutan: tBeranda("latarSambutan"),
+          pilihSlide: tBeranda("pilihSlide"),
+          slideNomor: tBeranda("slideNomor"),
+          jedaSlide: tBeranda("jedaSlide"),
+          lanjutSlide: tBeranda("lanjutSlide"),
+          fotoPejabat: tBeranda("fotoPejabat"),
         }}
       />
 
@@ -464,7 +472,7 @@ export default async function Beranda({
                         </div>
                       )}
                       <div className="absolute top-4 left-4">
-                        <Badge variant={potensiBadgeMap[katId] || "default"} className="shadow-sm border-white/20 bg-background/95 backdrop-blur font-mono uppercase tracking-wider text-[10px]">
+                        <Badge variant={potensiBadgeMap[katId] || "default"} className="shadow-sm border-paper/20 bg-background/95 backdrop-blur font-mono uppercase tracking-wider text-[10px]">
                           {tPotensi(`kategori.${katId}`)}
                         </Badge>
                       </div>

@@ -37,7 +37,7 @@ function DropdownMenu({ item, locale, onClose }: DropdownMenuProps) {
     <div
       ref={ref}
       role="menu"
-      className="absolute top-full left-0 mt-1 min-w-[200px] bg-white border border-surface shadow-lg rounded-[var(--radius-card)] py-1 z-50"
+      className="absolute top-full left-0 mt-1 min-w-[200px] bg-paper border border-surface shadow-lg rounded-[var(--radius-card)] py-1 z-50"
     >
       {item.children?.map((child) => (
         <Link
@@ -45,7 +45,7 @@ function DropdownMenu({ item, locale, onClose }: DropdownMenuProps) {
           href={`/${locale}${child.href}`}
           role="menuitem"
           onClick={onClose}
-          className="block px-4 py-2.5 text-sm text-text hover:bg-primary hover:text-white transition-colors duration-150"
+          className="block px-4 py-2.5 text-sm text-text hover:bg-primary hover:text-paper transition-colors duration-150"
         >
           {child.label}
         </Link>
@@ -111,7 +111,7 @@ export function Navbar({ locale }: NavbarProps) {
   }
 
   return (
-    <header className="bg-primary text-white sticky top-0 z-40 shadow-sm">
+    <header className="bg-primary text-paper sticky top-0 z-40 shadow-sm">
       <nav
         className="max-w-6xl mx-auto px-4 flex items-center justify-between h-16"
         aria-label={tNav("ariaNavigasiUtama")}
@@ -152,10 +152,10 @@ export function Navbar({ locale }: NavbarProps) {
                   aria-current={isActive(item.href) ? "page" : undefined}
                   className={[
                     "flex items-center h-16 px-3 text-sm font-medium transition-colors duration-150",
-                    "hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-primary",
+                    "hover:text-paper/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-primary",
                     isActive(item.href)
-                      ? "border-b-2 border-accent text-white"
-                      : "text-white/80",
+                      ? "border-b-2 border-accent text-paper"
+                      : "text-paper/80",
                   ].join(" ")}
                 >
                   {item.label}
@@ -168,8 +168,8 @@ export function Navbar({ locale }: NavbarProps) {
                     aria-expanded={openDropdown === item.label}
                     className={[
                       "flex items-center gap-1 h-16 px-3 text-sm font-medium transition-colors duration-150",
-                      "hover:text-white/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-primary",
-                      "text-white/80",
+                      "hover:text-paper/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent focus-visible:ring-offset-2 focus-visible:ring-offset-primary",
+                      "text-paper/80",
                     ].join(" ")}
                   >
                     {item.label}
@@ -197,19 +197,19 @@ export function Navbar({ locale }: NavbarProps) {
         </ul>
 
         {/* Bahasa switcher */}
-        <div className="hidden md:flex items-center gap-1 text-xs font-mono text-white/60">
+        <div className="hidden md:flex items-center gap-1 text-xs font-mono text-paper/60">
           <Link
             href={`/id${pathname.replace(/^\/(id|en)/, "")}`}
             onClick={closeAllMenus}
-            className={`hover:text-white transition-colors ${locale === "id" ? "text-white font-bold" : ""}`}
+            className={`hover:text-paper transition-colors ${locale === "id" ? "text-paper font-bold" : ""}`}
           >
             ID
           </Link>
-          <span className="text-white/30">|</span>
+          <span className="text-paper/30">|</span>
           <Link
             href={`/en${pathname.replace(/^\/(id|en)/, "")}`}
             onClick={closeAllMenus}
-            className={`hover:text-white transition-colors ${locale === "en" ? "text-white font-bold" : ""}`}
+            className={`hover:text-paper transition-colors ${locale === "en" ? "text-paper font-bold" : ""}`}
           >
             EN
           </Link>
@@ -234,7 +234,7 @@ export function Navbar({ locale }: NavbarProps) {
       {mobileOpen && (
         <div
           id="mobile-nav"
-          className="md:hidden bg-primary border-t border-white/10 px-4 pb-4"
+          className="md:hidden bg-primary border-t border-paper/10 px-4 pb-4"
           role="navigation"
           aria-label={tNav("ariaNavigasiMobile")}
         >
@@ -246,13 +246,13 @@ export function Navbar({ locale }: NavbarProps) {
                     href={`/${locale}${item.href === "/" ? "" : item.href}`}
                     onClick={closeAllMenus}
                     aria-current={isActive(item.href) ? "page" : undefined}
-                    className="block px-3 py-3 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded transition-colors min-h-[44px]"
+                    className="block px-3 py-3 text-sm text-paper/80 hover:text-paper hover:bg-paper/10 rounded transition-colors min-h-[44px]"
                   >
                     {item.label}
                   </Link>
                 ) : (
                   <details className="group">
-                    <summary className="flex items-center justify-between px-3 py-3 text-sm text-white/80 hover:text-white hover:bg-white/10 rounded cursor-pointer list-none min-h-[44px]">
+                    <summary className="flex items-center justify-between px-3 py-3 text-sm text-paper/80 hover:text-paper hover:bg-paper/10 rounded cursor-pointer list-none min-h-[44px]">
                       {item.label}
                       <ChevronDown
                         size={14}
@@ -266,7 +266,7 @@ export function Navbar({ locale }: NavbarProps) {
                           <Link
                             href={`/${locale}${child.href}`}
                             onClick={closeAllMenus}
-                            className="block px-3 py-2.5 text-sm text-white/70 hover:text-white hover:bg-white/10 rounded transition-colors min-h-[44px]"
+                            className="block px-3 py-2.5 text-sm text-paper/70 hover:text-paper hover:bg-paper/10 rounded transition-colors min-h-[44px]"
                           >
                             {child.label}
                           </Link>
@@ -280,18 +280,18 @@ export function Navbar({ locale }: NavbarProps) {
           </ul>
 
           {/* Bahasa switcher mobile */}
-          <div className="mt-4 pt-4 border-t border-white/10 flex gap-4 px-3">
+          <div className="mt-4 pt-4 border-t border-paper/10 flex gap-4 px-3">
             <Link
               href={`/id${pathname.replace(/^\/(id|en)/, "")}`}
               onClick={closeAllMenus}
-              className={`text-sm font-mono ${locale === "id" ? "text-white font-bold" : "text-white/60 hover:text-white"}`}
+              className={`text-sm font-mono ${locale === "id" ? "text-paper font-bold" : "text-paper/60 hover:text-paper"}`}
             >
               Indonesia
             </Link>
             <Link
               href={`/en${pathname.replace(/^\/(id|en)/, "")}`}
               onClick={closeAllMenus}
-              className={`text-sm font-mono ${locale === "en" ? "text-white font-bold" : "text-white/60 hover:text-white"}`}
+              className={`text-sm font-mono ${locale === "en" ? "text-paper font-bold" : "text-paper/60 hover:text-paper"}`}
             >
               English
             </Link>

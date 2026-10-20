@@ -110,7 +110,7 @@ export function AdminPagination({
                 "inline-flex items-center justify-center h-8 w-8 rounded-[var(--radius-button)]",
                 "text-sm font-medium transition-colors border",
                 num === currentPage
-                  ? "bg-primary text-white border-primary"
+                  ? "bg-primary text-paper border-primary"
                   : "text-text/60 border-surface hover:bg-surface hover:text-text",
               ].join(" ")}
             >

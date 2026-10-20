@@ -90,14 +90,14 @@ export function ImageUpload({
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img 
             src={value} 
-            alt="Uploaded preview" 
+            alt="Pratinjau gambar yang diunggah" 
             className={`w-full ${aspectRatio} object-cover`}
           />
-          <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+          <div className="absolute inset-0 bg-primary/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <button
               type="button"
               onClick={() => onChange("")}
-              className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors"
+              className="bg-danger text-paper p-2 rounded-full hover:bg-danger transition-colors"
             >
               <X size={20} />
             </button>
@@ -132,7 +132,7 @@ export function ImageUpload({
         </label>
       )}
       
-      {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
+      {error && <p className="text-danger text-xs mt-2">{error}</p>}
     </div>
   );
 }

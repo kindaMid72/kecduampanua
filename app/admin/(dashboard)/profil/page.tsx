@@ -129,7 +129,7 @@ export default function ProfilAdminPage() {
 
       <form onSubmit={handleSubmit} className="space-y-8">
         {error && (
-          <div className="p-3 bg-red-50 text-red-700 text-sm rounded border border-red-200">
+          <div className="p-3 bg-danger/10 text-danger text-sm rounded border border-danger/30">
             {error}
           </div>
         )}
@@ -426,7 +426,7 @@ export default function ProfilAdminPage() {
                 value={formData.nama_pejabat_utama}
                 onChange={handleChange}
                 className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
-                placeholder="Contoh: H. Ahmad Rifai, S.Sos"
+                placeholder="Contoh: Nama lengkap beserta gelar"
               />
             </div>
             <div>

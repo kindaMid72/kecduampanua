@@ -5,7 +5,7 @@ import { CategoryLabel } from "@/components/ui/CategoryLabel";
 import { SectionDivider } from "@/components/ui/SectionDivider";
 import Image from "next/image";
 import type { Metadata } from "next";
-import type { AngkaStatistik, StatistikRow } from "@/lib/types/statistik";
+import { KOLOM_ANGKA_STATISTIK, type AngkaStatistik, type StatistikRow } from "@/lib/types/statistik";
 
 export async function generateMetadata({
   params,
@@ -37,6 +37,7 @@ export default async function ProfilPage({
   const { locale } = await params;
 
   const tProfil = await getTranslations({ locale, namespace: "profil" });
+  const tStat = await getTranslations({ locale, namespace: "profilStatistik" });
 
   let profil = null;
   let struktur: {
@@ -260,10 +261,10 @@ export default async function ProfilPage({
         aria-labelledby="statistik-heading"
       >
         <h2 id="statistik-heading" className="font-display text-2xl font-semibold text-primary mb-6">
-          Data Statistik Penduduk
+          {tStat("judul")}
         </h2>
         {statistik.length === 0 ? (
-          <Placeholder pesan="Data statistik belum tersedia." />
+          <Placeholder pesan={tStat("belumTersedia")} />
         ) : (
           <div className="space-y-8">
             {/* Aggregate Kecamatan */}
@@ -271,39 +272,24 @@ export default async function ProfilPage({
               const latestYear = Math.max(...statistik.map(s => s.tahun_data));
               const latestStats = statistik.filter(s => s.tahun_data === latestYear);
               
-              const kecStat = latestStats.reduce((acc, curr) => ({
-                jumlah_penduduk: (acc.jumlah_penduduk || 0) + (curr.jumlah_penduduk || 0),
-                penduduk_usia_0_14: (acc.penduduk_usia_0_14 || 0) + (curr.penduduk_usia_0_14 || 0),
-                penduduk_usia_15_64: (acc.penduduk_usia_15_64 || 0) + (curr.penduduk_usia_15_64 || 0),
-                penduduk_usia_65_ke_atas: (acc.penduduk_usia_65_ke_atas || 0) + (curr.penduduk_usia_65_ke_atas || 0),
-                penduduk_laki_laki: (acc.penduduk_laki_laki || 0) + (curr.penduduk_laki_laki || 0),
-                penduduk_perempuan: (acc.penduduk_perempuan || 0) + (curr.penduduk_perempuan || 0),
-                jumlah_murid_sd_smp: (acc.jumlah_murid_sd_smp || 0) + (curr.jumlah_murid_sd_smp || 0),
-                jumlah_guru_sd_smp: (acc.jumlah_guru_sd_smp || 0) + (curr.jumlah_guru_sd_smp || 0),
-                jumlah_puskesmas: (acc.jumlah_puskesmas || 0) + (curr.jumlah_puskesmas || 0),
-                jumlah_posyandu: (acc.jumlah_posyandu || 0) + (curr.jumlah_posyandu || 0),
-                jumlah_klinik_apotek: (acc.jumlah_klinik_apotek || 0) + (curr.jumlah_klinik_apotek || 0),
-                jumlah_rumah_sakit: (acc.jumlah_rumah_sakit || 0) + (curr.jumlah_rumah_sakit || 0),
-                luas_wilayah_km2: (acc.luas_wilayah_km2 || 0) + (curr.luas_wilayah_km2 || 0),
-                produksi_panen_ton: (acc.produksi_panen_ton || 0) + (curr.produksi_panen_ton || 0),
-                luas_panen_ha: (acc.luas_panen_ha || 0) + (curr.luas_panen_ha || 0),
-                tangkapan_ikan_ton: (acc.tangkapan_ikan_ton || 0) + (curr.tangkapan_ikan_ton || 0),
-                jumlah_nelayan: (acc.jumlah_nelayan || 0) + (curr.jumlah_nelayan || 0),
-              }), {} as Record<string, number>);
+              const kecStat = Object.fromEntries(
+                KOLOM_ANGKA_STATISTIK.map((kolom) => [kolom, jumlahKolom(latestStats, kolom)])
+              ) as AngkaStatistik;
 
               return (
                 <>
                   <InsightCard 
-                    title="Total Kecamatan" 
+                    title={tStat("totalKecamatan")} 
                     tahunData={latestYear} 
                     stat={kecStat} 
+                    locale={locale}
                     isHighlight={true} 
                   />
                   
                   <div className="pt-6">
                     <details className="group border border-surface rounded-xl overflow-hidden bg-background">
                       <summary className="font-display text-lg font-semibold text-primary px-5 py-4 cursor-pointer flex justify-between items-center hover:bg-surface/30 transition-colors">
-                        Rincian per Desa/Kelurahan
+                        {tStat("rincianDesa")}
                         <span className="text-text/50 transform transition-transform group-open:rotate-180">
                           ▼
                         </span>
@@ -315,6 +301,7 @@ export default async function ProfilPage({
                             title={stat.nama_desa_kelurahan} 
                             tahunData={stat.tahun_data} 
                             stat={stat}
+                            locale={locale}
                           />
                         ))}
                       </div>
@@ -330,40 +317,76 @@ export default async function ProfilPage({
   );
 }
 
-function InsightCard({ title, tahunData, stat, isHighlight = false }: { title: string, tahunData: number, stat: AngkaStatistik, isHighlight?: boolean }) {
-  // Kalkulasi Insight
-  const penduduk = Number(stat.jumlah_penduduk) || 0;
-  const p0_14 = Number(stat.penduduk_usia_0_14) || 0;
-  const p15_64 = Number(stat.penduduk_usia_15_64) || 0;
-  const p65 = Number(stat.penduduk_usia_65_ke_atas) || 0;
-  const depRatio = p15_64 > 0 ? ((p0_14 + p65) / p15_64) * 100 : 0;
-  
-  const laki = Number(stat.penduduk_laki_laki) || 0;
-  const perempuan = Number(stat.penduduk_perempuan) || 0;
-  const sexRatio = perempuan > 0 ? (laki / perempuan) * 100 : 0;
+// Jumlah satu kolom dari beberapa baris. Kalau semua baris kosong, hasilnya tetap kosong (null),
+// supaya total tidak tampil "0" padahal datanya belum diisi.
+function jumlahKolom(rows: StatistikRow[], kolom: (typeof KOLOM_ANGKA_STATISTIK)[number]): number | null {
+  const isi = rows.map((r) => r[kolom]).filter((v): v is number => typeof v === "number");
+  return isi.length > 0 ? isi.reduce((a, b) => a + b, 0) : null;
+}
 
-  const murid = Number(stat.jumlah_murid_sd_smp) || 0;
-  const guru = Number(stat.jumlah_guru_sd_smp) || 0;
-  const muridGuru = guru > 0 ? (murid / guru) : 0;
+// Angka kosong (null) tampil "Belum diisi". Nol sungguhan tetap tampil sebagai nol.
+async function InsightCard({
+  title,
+  tahunData,
+  stat,
+  locale,
+  isHighlight = false,
+}: {
+  title: string;
+  tahunData: number;
+  stat: AngkaStatistik;
+  locale: string;
+  isHighlight?: boolean;
+}) {
+  const t = await getTranslations({ locale, namespace: "profilStatistik" });
+  const fmt = new Intl.NumberFormat(locale === "en" ? "en-GB" : "id-ID");
+  const belumDiisi = (
+    <span className="text-sm text-text/50 font-mono">{t("belumDiisi")}</span>
+  );
 
-  const luas = Number(stat.luas_wilayah_km2) || 0;
-  const kepadatan = luas > 0 ? (penduduk / luas) : 0;
+  // Setiap metrik hanya dihitung bila semua input-nya terisi dan pembaginya tidak nol.
+  const penduduk = stat.jumlah_penduduk;
+  const p0_14 = stat.penduduk_usia_0_14;
+  const p15_64 = stat.penduduk_usia_15_64;
+  const p65 = stat.penduduk_usia_65_ke_atas;
+  const depRatio =
+    p0_14 != null && p15_64 != null && p65 != null && p15_64 > 0
+      ? ((p0_14 + p65) / p15_64) * 100
+      : null;
 
-  const panenTon = Number(stat.produksi_panen_ton) || 0;
-  const panenHa = Number(stat.luas_panen_ha) || 0;
-  const yieldTani = panenHa > 0 ? (panenTon / panenHa) : 0;
+  const laki = stat.penduduk_laki_laki;
+  const perempuan = stat.penduduk_perempuan;
+  const sexRatio = laki != null && perempuan != null && perempuan > 0 ? (laki / perempuan) * 100 : null;
 
-  const rs = Number(stat.jumlah_rumah_sakit) || 0;
-  const pkm = Number(stat.jumlah_puskesmas) || 0;
-  const posyandu = Number(stat.jumlah_posyandu) || 0;
-  const klinik = Number(stat.jumlah_klinik_apotek) || 0;
-  const totalFaskes = rs + pkm + posyandu + klinik;
-  const faskesBurden = totalFaskes > 0 ? (penduduk / totalFaskes) : 0;
+  const murid = stat.jumlah_murid_sd_smp;
+  const guru = stat.jumlah_guru_sd_smp;
+  const muridGuru = murid != null && guru != null && guru > 0 ? murid / guru : null;
 
-  const wrapperClass = isHighlight 
+  const luas = stat.luas_wilayah_km2;
+  const kepadatan = penduduk != null && luas != null && luas > 0 ? penduduk / luas : null;
+
+  const panenTon = stat.produksi_panen_ton;
+  const panenHa = stat.luas_panen_ha;
+  const yieldTani = panenTon != null && panenHa != null && panenHa > 0 ? panenTon / panenHa : null;
+
+  const faskes = [
+    stat.jumlah_rumah_sakit,
+    stat.jumlah_puskesmas,
+    stat.jumlah_posyandu,
+    stat.jumlah_klinik_apotek,
+  ];
+  const totalFaskes = faskes.every((n) => n != null)
+    ? faskes.reduce<number>((a, n) => a + (n ?? 0), 0)
+    : null;
+  const faskesBurden = penduduk != null && totalFaskes != null && totalFaskes > 0 ? penduduk / totalFaskes : null;
+
+  const ikanTon = stat.tangkapan_ikan_ton;
+  const nelayan = stat.jumlah_nelayan;
+
+  const wrapperClass = isHighlight
     ? "border-2 border-primary rounded overflow-hidden bg-background"
     : "border border-surface rounded overflow-hidden bg-background";
-    
+
   const headerClass = isHighlight
     ? "bg-primary text-background px-5 py-4 border-b border-primary flex justify-between items-center flex-wrap gap-2"
     : "bg-surface/50 px-5 py-3 border-b border-surface flex justify-between items-center flex-wrap gap-2";
@@ -371,99 +394,99 @@ function InsightCard({ title, tahunData, stat, isHighlight = false }: { title: s
   return (
     <div className={wrapperClass}>
       <div className={headerClass}>
-        <h3 className={`font-display text-xl font-semibold ${isHighlight ? 'text-background' : 'text-primary'}`}>{title}</h3>
-        <span className={`text-xs px-2 py-1 rounded-sm border font-mono ${isHighlight ? 'text-primary font-medium bg-background border-background' : 'text-text/70 bg-background border-surface'}`}>
-          Tahun Data: {tahunData}
+        <h3 className={`font-display text-xl font-semibold ${isHighlight ? "text-background" : "text-primary"}`}>{title}</h3>
+        <span className={`text-xs px-2 py-1 rounded-sm border font-mono ${isHighlight ? "text-primary font-medium bg-background border-background" : "text-text/70 bg-background border-surface"}`}>
+          {t("tahunData", { tahun: tahunData })}
         </span>
       </div>
-      
+
       <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Penduduk & Kepadatan */}
         <div className="flex flex-col gap-1">
-          <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">Total Penduduk</span>
+          <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">{t("totalPenduduk")}</span>
           <span className="text-2xl font-mono font-semibold text-text">
-            {stat.jumlah_penduduk ? new Intl.NumberFormat("id-ID").format(stat.jumlah_penduduk) : "-"}
+            {penduduk != null ? fmt.format(penduduk) : belumDiisi}
           </span>
-          {kepadatan > 0 && (
-            <span className="text-xs text-text/50 font-mono">{new Intl.NumberFormat("id-ID").format(Math.round(kepadatan))} jiwa/km²</span>
+          {kepadatan != null && (
+            <span className="text-xs text-text/50 font-mono">{t("kepadatan", { nilai: fmt.format(Math.round(kepadatan)) })}</span>
           )}
         </div>
 
-        {/* Dependency Ratio */}
+        {/* Rasio ketergantungan */}
         <div className="flex flex-col gap-1">
-          <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">Dependency Ratio</span>
+          <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">{t("rasioKetergantungan")}</span>
           <div className="flex items-end gap-2">
             <span className="text-2xl font-mono font-semibold text-text">
-              {depRatio > 0 ? depRatio.toFixed(1) : "-"}
+              {depRatio != null ? depRatio.toFixed(1) : belumDiisi}
             </span>
-            {depRatio > 0 && (
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-medium ${depRatio > 50 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
-                {depRatio > 50 ? "Beban Tinggi" : "Bonus Demografi"}
+            {depRatio != null && (
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-medium ${depRatio > 50 ? "bg-status-warning/10 text-status-warning-ink" : "bg-status-success/10 text-status-success-ink"}`}>
+                {depRatio > 50 ? t("bebanTinggi") : t("bonusDemografi")}
               </span>
             )}
           </div>
         </div>
 
-        {/* Sex Ratio */}
+        {/* Rasio jenis kelamin */}
         <div className="flex flex-col gap-1">
-          <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">Sex Ratio</span>
+          <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">{t("rasioJenisKelamin")}</span>
           <span className="text-2xl font-mono font-semibold text-text">
-            {sexRatio > 0 ? sexRatio.toFixed(0) : "-"}
+            {sexRatio != null ? sexRatio.toFixed(0) : belumDiisi}
           </span>
-          {sexRatio > 0 && (
-            <span className="text-xs text-text/50 font-mono">L per 100 P</span>
+          {sexRatio != null && (
+            <span className="text-xs text-text/50 font-mono">{t("lakiPer100")}</span>
           )}
         </div>
 
         {/* Pendidikan */}
         <div className="flex flex-col gap-1">
-          <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">Rasio Murid-Guru</span>
+          <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">{t("rasioMuridGuru")}</span>
           <div className="flex items-end gap-2">
             <span className="text-2xl font-mono font-semibold text-text">
-              {muridGuru > 0 ? muridGuru.toFixed(0) : "-"}
+              {muridGuru != null ? muridGuru.toFixed(0) : belumDiisi}
             </span>
-            {muridGuru > 0 && (
-              <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-medium ${muridGuru > 30 ? 'bg-red-100 text-red-700' : 'bg-surface text-text/70'}`}>
-                {muridGuru > 30 ? "Overload" : "Ideal"}
+            {muridGuru != null && (
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-sm font-medium ${muridGuru > 30 ? "bg-danger/10 text-danger" : "bg-surface text-text/70"}`}>
+                {muridGuru > 30 ? t("overload") : t("ideal")}
               </span>
             )}
           </div>
         </div>
 
-        {/* Kesehatan (Faskes Burden) */}
+        {/* Kesehatan */}
         <div className="flex flex-col gap-1">
-          <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">Beban Faskes</span>
+          <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">{t("bebanFaskes")}</span>
           <span className="text-2xl font-mono font-semibold text-text">
-            {faskesBurden > 0 ? new Intl.NumberFormat("id-ID").format(Math.round(faskesBurden)) : "-"}
+            {faskesBurden != null ? fmt.format(Math.round(faskesBurden)) : belumDiisi}
           </span>
-          {faskesBurden > 0 && (
-            <span className="text-xs text-text/50 font-mono">Warga / faskes</span>
+          {faskesBurden != null && (
+            <span className="text-xs text-text/50 font-mono">{t("wargaPerFaskes")}</span>
           )}
         </div>
 
-        {/* Pertanian */}
-        {(yieldTani > 0 || (stat.luas_panen_ha && stat.luas_panen_ha > 0)) && (
+        {/* Pertanian: tampil bila datanya ada */}
+        {(panenTon != null || panenHa != null) && (
           <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">Yield Pertanian</span>
+            <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">{t("hasilPanen")}</span>
             <span className="text-2xl font-mono font-semibold text-text">
-              {yieldTani > 0 ? yieldTani.toFixed(1) : "-"}
+              {yieldTani != null ? yieldTani.toFixed(1) : belumDiisi}
             </span>
-            <span className="text-xs text-text/50 font-mono">Ton / Hektar</span>
+            <span className="text-xs text-text/50 font-mono">{t("tonPerHektar")}</span>
           </div>
         )}
-        
-        {/* Kelautan (Tangkapan Ikan) */}
-        {(stat.tangkapan_ikan_ton && stat.tangkapan_ikan_ton > 0) ? (
+
+        {/* Kelautan: tampil bila ada hasil tangkapan */}
+        {ikanTon != null && ikanTon > 0 && (
           <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">Tangkapan Ikan</span>
+            <span className="text-[10px] font-mono text-text/60 uppercase tracking-widest">{t("tangkapanIkan")}</span>
             <span className="text-2xl font-mono font-semibold text-text">
-              {new Intl.NumberFormat("id-ID").format(stat.tangkapan_ikan_ton)} Ton
+              {fmt.format(ikanTon)} {t("tonSatuan")}
             </span>
-            {(stat.jumlah_nelayan && stat.jumlah_nelayan > 0) ? (
-              <span className="text-xs text-text/50 font-mono">Oleh {stat.jumlah_nelayan} Nelayan</span>
-            ) : null}
+            {nelayan != null && nelayan > 0 && (
+              <span className="text-xs text-text/50 font-mono">{t("nelayan", { jumlah: fmt.format(nelayan) })}</span>
+            )}
           </div>
-        ) : null}
+        )}
       </div>
     </div>
   );

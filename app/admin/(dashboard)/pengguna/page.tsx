@@ -335,7 +335,7 @@ export default function PenggunaAdminPage() {
       </div>
 
       {error && (
-        <div className="p-3 bg-red-50 text-red-700 text-sm rounded border border-red-200">
+        <div className="p-3 bg-danger/10 text-danger text-sm rounded border border-danger/30">
           {error}
         </div>
       )}
@@ -348,7 +348,7 @@ export default function PenggunaAdminPage() {
                 type="text"
                 readOnly
                 value={actionLink}
-                className="flex-1 bg-white/70 border border-[color:var(--color-status-success)]/30 rounded px-3 py-2 text-xs font-mono text-text outline-none"
+                className="flex-1 bg-paper/70 border border-[color:var(--color-status-success)]/30 rounded px-3 py-2 text-xs font-mono text-text outline-none"
               />
               <Button
                 type="button"
@@ -394,7 +394,7 @@ export default function PenggunaAdminPage() {
             <label className="block text-sm font-medium mb-1.5">Peran</label>
             <select
               name="role"
-              className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none text-sm bg-white"
+              className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none text-sm bg-paper"
             >
               <option value="staf">Staf (Editor)</option>
               <option value="super_account">Pengelola (Admin)</option>
@@ -519,7 +519,7 @@ export default function PenggunaAdminPage() {
                           type="button"
                           onClick={() => handleResetPassword(p)}
                           disabled={resetLoadingId === p.id}
-                          className="inline-flex items-center gap-1 text-xs font-medium text-blue-600 hover:text-blue-700 transition-colors disabled:opacity-50"
+                          className="inline-flex items-center gap-1 text-xs font-medium text-status-info-ink hover:text-status-info-ink-ink transition-colors disabled:opacity-50"
                           title="Buat tautan reset kata sandi"
                         >
                           <KeyRound size={14} />{" "}
@@ -534,8 +534,8 @@ export default function PenggunaAdminPage() {
                               onClick={() => handleToggleStatus(p.id, p.status)}
                               className={`inline-flex items-center gap-1 text-xs font-medium transition-colors ${
                                 p.status === "aktif"
-                                  ? "text-amber-600 hover:text-amber-700"
-                                  : "text-green-600 hover:text-green-700"
+                                  ? "text-status-warning-ink hover:text-status-warning-ink-ink"
+                                  : "text-status-success-ink hover:text-status-success-ink-ink"
                               }`}
                               title={p.status === "aktif" ? "Nonaktifkan akun" : "Aktifkan akun"}
                             >
@@ -553,7 +553,7 @@ export default function PenggunaAdminPage() {
                             <button
                               type="button"
                               onClick={() => openDeleteModal(p)}
-                              className="inline-flex items-center gap-1 text-xs font-medium text-red-600 hover:text-red-700 transition-colors"
+                              className="inline-flex items-center gap-1 text-xs font-medium text-danger hover:text-danger transition-colors"
                               title="Hapus akun pengguna"
                             >
                               <Trash2 size={14} /> Hapus
@@ -600,7 +600,7 @@ export default function PenggunaAdminPage() {
                 aria-current={num === currentPage ? "page" : undefined}
                 className={`inline-flex items-center justify-center h-8 w-8 rounded-[var(--radius-button)] text-sm font-medium transition-colors border ${
                   num === currentPage
-                    ? "bg-primary text-white border-primary"
+                    ? "bg-primary text-paper border-primary"
                     : "text-text/60 border-surface hover:bg-surface hover:text-text"
                 }`}
               >
@@ -626,9 +626,9 @@ export default function PenggunaAdminPage() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-edit-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/50 backdrop-blur-sm"
         >
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-4">
+          <div className="bg-paper rounded-lg shadow-xl max-w-md w-full p-6 space-y-4">
             <div className="flex items-center justify-between border-b pb-3">
               <h3 id="modal-edit-title" className="font-display font-semibold text-lg text-primary">
                 Edit Pengguna
@@ -643,7 +643,7 @@ export default function PenggunaAdminPage() {
             </div>
 
             {editError && (
-              <div className="p-3 bg-red-50 text-red-700 text-xs rounded border border-red-200">
+              <div className="p-3 bg-danger/10 text-danger text-xs rounded border border-danger/30">
                 {editError}
               </div>
             )}
@@ -681,7 +681,7 @@ export default function PenggunaAdminPage() {
                 <select
                   value={editRole}
                   onChange={(e) => setEditRole(e.target.value as "super_account" | "staf")}
-                  className="w-full h-10 px-3 border rounded focus:ring-2 focus:ring-primary outline-none text-sm bg-white"
+                  className="w-full h-10 px-3 border rounded focus:ring-2 focus:ring-primary outline-none text-sm bg-paper"
                 >
                   <option value="staf">Staf (Editor)</option>
                   <option value="super_account">Pengelola (Admin)</option>
@@ -690,8 +690,8 @@ export default function PenggunaAdminPage() {
 
               {/* Warning saat mengubah peran diri sendiri */}
               {editingUser.id === currentUserId && editRole === "staf" && (
-                <div className="p-3 bg-amber-50 text-amber-800 text-xs rounded border border-amber-200 flex items-start gap-2">
-                  <AlertTriangle size={16} className="shrink-0 mt-0.5 text-amber-600" />
+                <div className="p-3 bg-status-warning/10 text-status-warning-ink text-xs rounded border border-status-warning/30 flex items-start gap-2">
+                  <AlertTriangle size={16} className="shrink-0 mt-0.5 text-status-warning-ink" />
                   <span>
                     <strong>Peringatan:</strong> Anda sedang mengubah peran Anda sendiri menjadi{" "}
                     <strong>Staf</strong>. Anda akan kehilangan akses ke menu Kelola Pengguna ini
@@ -725,12 +725,12 @@ export default function PenggunaAdminPage() {
           role="dialog"
           aria-modal="true"
           aria-labelledby="modal-delete-title"
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/50 backdrop-blur-sm"
         >
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6 space-y-4">
-            <div className="flex items-center gap-3 text-red-600 border-b pb-3">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
-                <Trash2 size={20} className="text-red-600" />
+          <div className="bg-paper rounded-lg shadow-xl max-w-md w-full p-6 space-y-4">
+            <div className="flex items-center gap-3 text-danger border-b pb-3">
+              <div className="w-10 h-10 rounded-full bg-danger/10 flex items-center justify-center shrink-0">
+                <Trash2 size={20} className="text-danger" />
               </div>
               <div>
                 <h3 id="modal-delete-title" className="font-display font-semibold text-lg text-primary">
@@ -741,7 +741,7 @@ export default function PenggunaAdminPage() {
             </div>
 
             {deleteError && (
-              <div className="p-3 bg-red-50 text-red-700 text-xs rounded border border-red-200">
+              <div className="p-3 bg-danger/10 text-danger text-xs rounded border border-danger/30">
                 {deleteError}
               </div>
             )}

@@ -91,8 +91,8 @@ function AturKataSandiForm() {
   if (isSuccess) {
     return (
       <main className="min-h-screen flex items-center justify-center px-4 bg-background">
-        <div className="w-full max-w-sm text-center space-y-4 bg-white p-8 rounded-[var(--radius-card)] border border-surface shadow-sm">
-          <div className="inline-flex items-center justify-center h-14 w-14 rounded-full bg-emerald-100 text-emerald-600 mb-2">
+        <div className="w-full max-w-sm text-center space-y-4 bg-paper p-8 rounded-[var(--radius-card)] border border-surface shadow-sm">
+          <div className="inline-flex items-center justify-center h-14 w-14 rounded-full bg-status-success/10 text-status-success-ink mb-2">
             <CheckCircle size={32} />
           </div>
           <h1 className="font-display text-xl font-semibold text-primary">
@@ -123,8 +123,8 @@ function AturKataSandiForm() {
   if (!tokenInfo?.valid) {
     return (
       <main className="min-h-screen flex items-center justify-center px-4 bg-background py-8">
-        <div className="w-full max-w-md text-center space-y-4 bg-white p-8 rounded-[var(--radius-card)] border border-surface shadow-sm">
-          <div className="inline-flex items-center justify-center h-14 w-14 rounded-full bg-red-100 text-red-600 mb-2">
+        <div className="w-full max-w-md text-center space-y-4 bg-paper p-8 rounded-[var(--radius-card)] border border-surface shadow-sm">
+          <div className="inline-flex items-center justify-center h-14 w-14 rounded-full bg-danger/10 text-danger mb-2">
             <AlertCircle size={30} />
           </div>
           <h1 className="font-display text-xl font-semibold text-primary">Tautan Tidak Valid</h1>
@@ -152,7 +152,7 @@ function AturKataSandiForm() {
 
   return (
     <main className="min-h-screen flex items-center justify-center px-4 bg-background py-8">
-      <div className="w-full max-w-md bg-white p-8 rounded-[var(--radius-card)] border border-surface shadow-sm">
+      <div className="w-full max-w-md bg-paper p-8 rounded-[var(--radius-card)] border border-surface shadow-sm">
         {/* Header */}
         <div className="text-center mb-6">
           <div className="relative h-14 w-11 mx-auto mb-3">
@@ -187,7 +187,7 @@ function AturKataSandiForm() {
           {submitError && (
             <div
               role="alert"
-              className="px-4 py-3 rounded-[var(--radius-card)] bg-red-50 border border-red-200 text-red-700 text-sm"
+              className="px-4 py-3 rounded-[var(--radius-card)] bg-danger/10 border border-danger/30 text-danger text-sm"
             >
               {submitError}
             </div>
@@ -207,8 +207,8 @@ function AturKataSandiForm() {
                 aria-invalid={!!errors.password}
                 className={[
                   "w-full h-11 px-3 pr-10 rounded-[var(--radius-button)] border text-sm",
-                  "bg-white text-text focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 transition-colors",
-                  errors.password ? "border-red-400" : "border-surface hover:border-text/30",
+                  "bg-paper text-text focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 transition-colors",
+                  errors.password ? "border-danger/60" : "border-surface hover:border-text/30",
                 ].join(" ")}
                 placeholder="Masukkan kata sandi baru"
                 {...register("password")}
@@ -229,23 +229,23 @@ function AturKataSandiForm() {
                 <ShieldCheck size={13} className="text-primary" /> Syarat kata sandi:
               </p>
               <div className="grid grid-cols-1 gap-1 text-text/60">
-                <div className={`flex items-center gap-1.5 ${hasMinLength ? "text-emerald-700 font-medium" : ""}`}>
-                  <span className={`inline-block w-1.5 h-1.5 rounded-full ${hasMinLength ? "bg-emerald-600" : "bg-text/30"}`}></span>
+                <div className={`flex items-center gap-1.5 ${hasMinLength ? "text-status-success-ink font-medium" : ""}`}>
+                  <span className={`inline-block w-1.5 h-1.5 rounded-full ${hasMinLength ? "bg-status-success" : "bg-text/30"}`}></span>
                   Minimal 8 karakter
                 </div>
-                <div className={`flex items-center gap-1.5 ${hasUppercase ? "text-emerald-700 font-medium" : ""}`}>
-                  <span className={`inline-block w-1.5 h-1.5 rounded-full ${hasUppercase ? "bg-emerald-600" : "bg-text/30"}`}></span>
+                <div className={`flex items-center gap-1.5 ${hasUppercase ? "text-status-success-ink font-medium" : ""}`}>
+                  <span className={`inline-block w-1.5 h-1.5 rounded-full ${hasUppercase ? "bg-status-success" : "bg-text/30"}`}></span>
                   Setidaknya 1 huruf kapital (A-Z)
                 </div>
-                <div className={`flex items-center gap-1.5 ${hasNumber ? "text-emerald-700 font-medium" : ""}`}>
-                  <span className={`inline-block w-1.5 h-1.5 rounded-full ${hasNumber ? "bg-emerald-600" : "bg-text/30"}`}></span>
+                <div className={`flex items-center gap-1.5 ${hasNumber ? "text-status-success-ink font-medium" : ""}`}>
+                  <span className={`inline-block w-1.5 h-1.5 rounded-full ${hasNumber ? "bg-status-success" : "bg-text/30"}`}></span>
                   Setidaknya 1 angka (0-9)
                 </div>
               </div>
             </div>
 
             {errors.password && (
-              <p id="password-error" role="alert" className="mt-1 text-xs text-red-600">
+              <p id="password-error" role="alert" className="mt-1 text-xs text-danger">
                 {errors.password.message}
               </p>
             )}
@@ -264,8 +264,8 @@ function AturKataSandiForm() {
                 aria-invalid={!!errors.konfirmasi}
                 className={[
                   "w-full h-11 px-3 pr-10 rounded-[var(--radius-button)] border text-sm",
-                  "bg-white text-text focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 transition-colors",
-                  errors.konfirmasi ? "border-red-400" : "border-surface hover:border-text/30",
+                  "bg-paper text-text focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1 transition-colors",
+                  errors.konfirmasi ? "border-danger/60" : "border-surface hover:border-text/30",
                 ].join(" ")}
                 placeholder="Ulangi kata sandi baru"
                 {...register("konfirmasi")}
@@ -280,7 +280,7 @@ function AturKataSandiForm() {
               </button>
             </div>
             {errors.konfirmasi && (
-              <p role="alert" className="mt-1 text-xs text-red-600">
+              <p role="alert" className="mt-1 text-xs text-danger">
                 {errors.konfirmasi.message}
               </p>
             )}

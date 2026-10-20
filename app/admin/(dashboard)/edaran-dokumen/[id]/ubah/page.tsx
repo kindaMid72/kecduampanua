@@ -97,20 +97,20 @@ export default function UbahEdaranPage({ params }: { params: Promise<{ id: strin
       <Card padding="md">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {error && (
-            <div className="p-3 bg-red-50 text-red-700 text-sm rounded border border-red-200">
+            <div className="p-3 bg-danger/10 text-danger text-sm rounded border border-danger/30">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium mb-1.5">Judul Dokumen <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium mb-1.5">Judul Dokumen <span className="text-danger">*</span></label>
             <input
               type="text"
               {...register("judul")}
               className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
               placeholder="Contoh: Peraturan Camat No 1 Tahun 2026"
             />
-            {errors.judul && <p className="text-red-500 text-xs mt-1">{errors.judul.message}</p>}
+            {errors.judul && <p className="text-danger text-xs mt-1">{errors.judul.message}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -128,45 +128,45 @@ export default function UbahEdaranPage({ params }: { params: Promise<{ id: strin
               <input
                 type="text"
                 {...register("kategori")}
-                className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none bg-white"
+                className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none bg-paper"
                 placeholder="Contoh: Regulasi, Panduan, dll"
               />
-              {errors.kategori && <p className="text-red-500 text-xs mt-1">{errors.kategori.message}</p>}
+              {errors.kategori && <p className="text-danger text-xs mt-1">{errors.kategori.message}</p>}
             </div>
           </div>
           
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1.5">Tanggal Terbit <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium mb-1.5">Tanggal Terbit <span className="text-danger">*</span></label>
               <input
                 type="date"
                 {...register("tanggal_terbit")}
                 className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
               />
-              {errors.tanggal_terbit && <p className="text-red-500 text-xs mt-1">{errors.tanggal_terbit.message}</p>}
+              {errors.tanggal_terbit && <p className="text-danger text-xs mt-1">{errors.tanggal_terbit.message}</p>}
             </div>
           </div>
           
           <div>
-            <label className="block text-sm font-medium mb-1.5">Deskripsi Ringkas <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium mb-1.5">Deskripsi Ringkas <span className="text-danger">*</span></label>
             <textarea
               {...register("deskripsi")}
               rows={3}
               className="w-full p-3 border rounded focus:ring-2 focus:ring-primary outline-none"
               placeholder="Jelaskan isi atau tujuan dari dokumen ini..."
             />
-            {errors.deskripsi && <p className="text-red-500 text-xs mt-1">{errors.deskripsi.message}</p>}
+            {errors.deskripsi && <p className="text-danger text-xs mt-1">{errors.deskripsi.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1.5">File Dokumen (PDF, max 10MB) <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium mb-1.5">File Dokumen (PDF, max 10MB) <span className="text-danger">*</span></label>
             <FileUpload 
               value={fileUrl}
               onChange={(url) => setValue("file_url", url, { shouldValidate: true })}
               folder="dokumen"
               accept=".pdf"
             />
-            {errors.file_url && <p className="text-red-500 text-xs mt-1">{errors.file_url.message}</p>}
+            {errors.file_url && <p className="text-danger text-xs mt-1">{errors.file_url.message}</p>}
           </div>
 
           <div className="pt-4 flex justify-between gap-3 border-t border-surface mt-6">

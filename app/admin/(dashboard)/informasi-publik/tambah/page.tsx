@@ -56,44 +56,44 @@ export default function TambahInformasiPage() {
       <Card padding="md">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {error && (
-            <div className="p-3 bg-red-50 text-red-700 text-sm rounded border border-red-200">
+            <div className="p-3 bg-danger/10 text-danger text-sm rounded border border-danger/30">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium mb-1.5">Judul Informasi <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium mb-1.5">Judul Informasi <span className="text-danger">*</span></label>
             <input
               type="text"
               {...register("judul")}
               className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
               placeholder="Contoh: Jadwal Posyandu Bulan Ini"
             />
-            {errors.judul && <p className="text-red-500 text-xs mt-1">{errors.judul.message}</p>}
+            {errors.judul && <p className="text-danger text-xs mt-1">{errors.judul.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1.5">Kategori <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium mb-1.5">Kategori <span className="text-danger">*</span></label>
             <select
               {...register("kategori")}
-              className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none bg-white"
+              className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none bg-paper"
             >
               <option value="pengumuman">Pengumuman</option>
               <option value="kegiatan">Kegiatan</option>
               <option value="jadwal_rapat">Jadwal Rapat</option>
             </select>
-            {errors.kategori && <p className="text-red-500 text-xs mt-1">{errors.kategori.message}</p>}
+            {errors.kategori && <p className="text-danger text-xs mt-1">{errors.kategori.message}</p>}
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1.5">Isi Konten <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium mb-1.5">Isi Konten <span className="text-danger">*</span></label>
             <textarea
               {...register("konten")}
               rows={6}
               className="w-full p-3 border rounded focus:ring-2 focus:ring-primary outline-none resize-y"
               placeholder="Tuliskan isi informasi di sini..."
             ></textarea>
-            {errors.konten && <p className="text-red-500 text-xs mt-1">{errors.konten.message}</p>}
+            {errors.konten && <p className="text-danger text-xs mt-1">{errors.konten.message}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -123,7 +123,7 @@ export default function TambahInformasiPage() {
               onChange={(url) => setValue("gambar_cover_url", url, { shouldValidate: true })}
               folder="informasi"
             />
-            {errors.gambar_cover_url && <p className="text-red-500 text-xs mt-1">{errors.gambar_cover_url.message}</p>}
+            {errors.gambar_cover_url && <p className="text-danger text-xs mt-1">{errors.gambar_cover_url.message}</p>}
           </div>
 
           {/* Section Bahasa Inggris */}

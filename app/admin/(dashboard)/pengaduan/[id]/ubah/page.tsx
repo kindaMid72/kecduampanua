@@ -100,7 +100,7 @@ export default function UbahPengaduanPage({ params }: { params: Promise<{ id: st
       </div>
 
       {error && (
-        <div className="p-3 bg-red-50 text-red-700 text-sm rounded border border-red-200">
+        <div className="p-3 bg-danger/10 text-danger text-sm rounded border border-danger/30">
           {error}
         </div>
       )}
@@ -139,7 +139,7 @@ export default function UbahPengaduanPage({ params }: { params: Promise<{ id: st
                 </div>
                 <div>
                   <p className="text-xs text-text/50 uppercase tracking-wider mb-1">Deskripsi Pengaduan</p>
-                  <div className="bg-white p-3 rounded border border-surface text-sm text-text/80 whitespace-pre-wrap">
+                  <div className="bg-paper p-3 rounded border border-surface text-sm text-text/80 whitespace-pre-wrap">
                     {pengaduan.deskripsi}
                   </div>
                 </div>
@@ -156,16 +156,16 @@ export default function UbahPengaduanPage({ params }: { params: Promise<{ id: st
               
               <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium mb-1.5">Status Pengaduan <span className="text-red-500">*</span></label>
+                  <label className="block text-sm font-medium mb-1.5">Status Pengaduan <span className="text-danger">*</span></label>
                   <select
                     {...register("status")}
-                    className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none bg-white"
+                    className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none bg-paper"
                   >
                     <option value="baru">Baru Masuk</option>
                     <option value="diproses">Sedang Diproses</option>
                     <option value="selesai">Selesai / Selesai Ditangani</option>
                   </select>
-                  {errors.status && <p className="text-red-500 text-xs mt-1">{errors.status.message}</p>}
+                  {errors.status && <p className="text-danger text-xs mt-1">{errors.status.message}</p>}
                 </div>
 
                 <div>
@@ -178,7 +178,7 @@ export default function UbahPengaduanPage({ params }: { params: Promise<{ id: st
                     className="w-full h-32 px-3 py-2 border rounded focus:ring-2 focus:ring-primary outline-none resize-y"
                     placeholder="Contoh: Laporan sedang ditinjau oleh pihak terkait..."
                   />
-                  {errors.catatan_tindak_lanjut && <p className="text-red-500 text-xs mt-1">{errors.catatan_tindak_lanjut.message}</p>}
+                  {errors.catatan_tindak_lanjut && <p className="text-danger text-xs mt-1">{errors.catatan_tindak_lanjut.message}</p>}
                 </div>
 
                 <div className="pt-4 flex justify-between gap-3 border-t border-surface mt-6">
