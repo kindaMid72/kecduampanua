@@ -1,12 +1,13 @@
 import { MetadataRoute } from 'next';
 import { createClient } from '@/lib/supabase/server';
+import { getSiteUrl } from '@/lib/site-url';
 
 // Wajib dinamis: createClient memakai cookies(). Tanpa ini, try/catch di bawah
 // menelan sinyal DYNAMIC_SERVER_USAGE saat build dan sitemap jadi hanya rute statis.
 export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://duampanua.go.id';
+  const baseUrl = getSiteUrl();
 
   // Public static routes
   const staticRoutes = [

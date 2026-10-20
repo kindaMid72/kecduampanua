@@ -4,6 +4,7 @@
 // ikut terbawa dalam response headers sebelum redirect terjadi.
 import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
+import { getSiteUrl } from "@/lib/site-url";
 
 export async function POST(request: Request) {
   // VULN-03 fix: Validasi Origin header untuk mencegah CSRF.
@@ -11,8 +12,7 @@ export async function POST(request: Request) {
   // Origin yang kosong juga ditolak: form POST browser selalu membawa Origin,
   // jadi kosong berarti permintaan bukan dari halaman kita.
   const origin = request.headers.get("origin");
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const allowedOrigin = new URL(siteUrl).origin;
+  const allowedOrigin = getSiteUrl();
 
   if (!origin || origin !== allowedOrigin) {
     return new Response("Forbidden", { status: 403 });

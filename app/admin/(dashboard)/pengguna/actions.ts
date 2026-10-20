@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import { editPenggunaSchema } from "@/lib/validations/auth";
+import { getSiteUrl } from "@/lib/site-url";
 import crypto from "crypto";
 import { z } from "zod";
 
@@ -218,7 +219,7 @@ export async function invitePenggunaAction(formData: FormData) {
 
     // VULN-08 fix: Gunakan NEXT_PUBLIC_SITE_URL dari env — jangan pernah
     // percaya Origin header karena bisa dimanipulasi oleh pemanggil.
-    const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+    const origin = getSiteUrl();
     const directLink = `${origin}/admin/atur-kata-sandi?token=${rawToken}`;
 
     revalidatePath("/admin/pengguna");
@@ -486,7 +487,7 @@ export async function resetKataSandiAction(userId: string) {
 
     // VULN-08 fix: Gunakan NEXT_PUBLIC_SITE_URL dari env — jangan pernah
     // percaya Origin header karena bisa dimanipulasi oleh pemanggil.
-    const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+    const origin = getSiteUrl();
     const directLink = `${origin}/admin/atur-kata-sandi?token=${rawToken}`;
 
     return { success: true, action_link: directLink };
