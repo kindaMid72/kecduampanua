@@ -4,7 +4,8 @@ import { useTranslations } from "next-intl";
 import { ErrorState } from "@/components/ui/ErrorState";
 import { useEffect } from "react";
 
-export default function PublicError({
+// Menangkap error dari layout (termasuk Navbar/Footer), bukan hanya dari halaman publik.
+export default function LocaleError({
   error,
   reset,
 }: {
@@ -18,7 +19,7 @@ export default function PublicError({
   }, [error]);
 
   return (
-    <div className="container mx-auto py-12">
+    <div className="flex-1 flex flex-col items-center justify-center p-4">
       <ErrorState
         title={t("500Title")}
         message={t("500Desc")}

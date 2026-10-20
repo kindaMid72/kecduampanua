@@ -48,28 +48,23 @@ export default async function BeritaDetailPage({
 
   const tBerita = await getTranslations({ locale, namespace: "berita" });
 
-  let item = null;
+  const supabase = await createClient();
+  const { data: item, error } = await supabase
+    .from("berita")
+    .select(
+      "id, judul, judul_en, konten, konten_en, kategori, gambar_cover_url, created_at, slug"
+    )
+    .eq("slug", slug)
+    .eq("status", "published")
+    .limit(1)
+    .single();
 
-  try {
-    const supabase = await createClient();
-    const { data } = await supabase
-      .from("berita")
-      .select(
-        "id, judul, judul_en, konten, konten_en, kategori, gambar_cover_url, created_at, slug"
-      )
-      .eq("slug", slug)
-      .eq("status", "published")
-      .limit(1)
-      .single();
-
-    item = data;
-  } catch {
-    // Graceful
+  // PGRST116 = baris tidak ada (404 sungguhan). Error lain = masalah server/DB:
+  // biarkan jatuh ke error.tsx, jangan disamarkan sebagai 404 yang ter-cache.
+  if (error && error.code !== "PGRST116") {
+    throw new Error(`Gagal memuat berita "${slug}": ${error.message}`);
   }
-
-  if (!item) {
-    notFound();
-  }
+  if (!item) notFound();
 
   const judul = isEn && item.judul_en ? item.judul_en : item.judul;
   const konten = isEn && item.konten_en ? item.konten_en : item.konten;
