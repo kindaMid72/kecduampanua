@@ -14,7 +14,7 @@ const intlMiddleware = createMiddleware(routing);
  * tak terduga (module resolution, Supabase call, dll), request tetap lewat
  * tanpa crash — mencegah 500 MIDDLEWARE_INVOCATION_FAILED di Vercel.
  */
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   try {
     const { pathname } = request.nextUrl;
 
