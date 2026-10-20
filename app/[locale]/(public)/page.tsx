@@ -243,7 +243,7 @@ export default async function Beranda({
           latarKecamatan: tBeranda("latarKecamatan"),
           latarSambutan: tBeranda("latarSambutan"),
           pilihSlide: tBeranda("pilihSlide"),
-          slideNomor: tBeranda("slideNomor"),
+          slide: tBeranda("slide"),
           jedaSlide: tBeranda("jedaSlide"),
           lanjutSlide: tBeranda("lanjutSlide"),
           fotoPejabat: tBeranda("fotoPejabat"),

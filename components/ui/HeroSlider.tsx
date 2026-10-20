@@ -46,7 +46,7 @@ interface HeroSliderProps {
     latarKecamatan: string;
     latarSambutan: string;
     pilihSlide: string;
-    slideNomor: string; // berisi {nomor}
+    slide: string; // kata "Slide"; nomor ditambahkan di komponen
     jedaSlide: string;
     lanjutSlide: string;
     fotoPejabat: string;
@@ -280,7 +280,7 @@ export function HeroSlider({ slide1, slide2, labels }: HeroSliderProps) {
                 key={i}
                 role="tab"
                 aria-selected={activeSlide === i}
-                aria-label={labels.slideNomor.replace("{nomor}", String(i + 1))}
+                aria-label={`${labels.slide} ${i + 1}`}
                 onClick={() => { goTo(i); handlePause(); }}
                 className={[
                   "h-2 rounded-full transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary",
