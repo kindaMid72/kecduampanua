@@ -14,12 +14,13 @@ Dokumen lengkap ada di `docs/` — baca on-demand sesuai task, jangan diasumsika
 
 ```bash
 npm run dev
-npm run build     # jalankan sebelum PR besar
-npm run lint
+npm run build     # next build --webpack; jalankan sebelum PR besar
+npm run lint      # ESLint, harus 0 error
+npm run typecheck # tsc --noEmit
 npm run test       # Vitest, unit/component
 npm run test:e2e    # Playwright, termasuk cek viewport 360px & alur form
 ```
-Perintah di atas asumsi awal (project belum di-scaffold saat dokumen ini ditulis) — begitu `package.json` ada, verifikasi nama script-nya cocok, koreksi dokumen ini kalau beda.
+`test:e2e` butuh env Supabase (lihat di bawah) dan browser Playwright (`npx playwright install chromium`). Tanpa env, tes RLS ditandai skipped, bukan lolos.
 
 ## Environment Variables
 
@@ -27,8 +28,7 @@ Perintah di atas asumsi awal (project belum di-scaffold saat dokumen ini ditulis
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=      # server-only, jangan pernah expose ke client
-GOOGLE_TRANSLATE_API_KEY=       # server-only, untuk /api/translate
-NEXT_PUBLIC_SITE_URL=           # URL publik situs; di-inline saat build (CSRF logout, link undangan, sitemap)
+NEXT_PUBLIC_SITE_URL=           # URL publik situs; di-inline saat build (CSRF logout, link undangan, sitemap, robots). Wajib di produksi.
 SUPABASE_INTERNAL_URL=          # server-only, mis. http://kong:8000 (akses Supabase lewat jaringan Docker)
 REVALIDATE_SECRET=              # server-only, untuk POST /api/revalidate
 ```
@@ -72,3 +72,13 @@ Jangan lapor selesai kalau cuma "kelihatannya jadi". Tiap perubahan skema/RLS wa
 Sebelum mulai task: cek `docs/TASKS.md` untuk status terkini, cek `docs/DECISIONS.md` kalau ada keputusan yang relevan sudah pernah diambil. Setelah selesai: jalankan test terkait, centang item di `docs/TASKS.md`, update `docs/DATABASE_SCHEMA.md` kalau ada perubahan skema.
 
 Ambigu soal data faktual kecamatan atau kebijakan hosting/legal? Tanya user — jangan asumsikan.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

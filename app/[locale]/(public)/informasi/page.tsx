@@ -21,7 +21,6 @@ export async function generateMetadata({
   };
 }
 
-export const revalidate = false;
 
 type KategoriInfoMap = {
   pengumuman: "default";
@@ -121,7 +120,7 @@ export default async function InformasiPublikListPage({
                 className={[
                   "px-4 py-2 text-sm font-medium rounded-[var(--radius-button)] transition-colors min-h-[44px] inline-flex items-center",
                   isActive
-                    ? "bg-primary text-white"
+                    ? "bg-primary text-paper"
                     : "bg-surface/60 text-text/70 hover:bg-surface hover:text-text border border-surface",
                 ].join(" ")}
               >

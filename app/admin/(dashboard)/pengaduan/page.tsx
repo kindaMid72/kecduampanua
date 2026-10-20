@@ -49,9 +49,9 @@ export default async function PengaduanPage({ searchParams }: Props) {
   ).toString();
 
   const statusStyle: Record<string, string> = {
-    baru: "bg-red-100 text-red-700",
-    diproses: "bg-amber-100 text-amber-700",
-    selesai: "bg-green-100 text-green-700",
+    baru: "bg-danger/10 text-danger",
+    diproses: "bg-status-warning/10 text-status-warning-ink",
+    selesai: "bg-status-success/10 text-status-success-ink",
   };
   const statusLabel: Record<string, string> = {
     baru: "Baru",

@@ -223,6 +223,36 @@ describe("submitPengaduanAction", () => {
     expect(insertMock).not.toHaveBeenCalled();
   });
 
+  test("honeypot terisi walau field lain tidak valid -> tetap sukses palsu, tanpa pesan validasi", async () => {
+    const hasil = await submitPengaduanAction(form({ honeypot: "bot", nama_pelapor: "" }));
+    expect(hasil).toMatchObject({ success: true });
+    expect(insertMock).not.toHaveBeenCalled();
+  });
+
+  test("batas global terlampaui -> ditolak walau IP ini belum melewati batasnya", async () => {
+    rpcMock.mockImplementation(async (name: string, args: { client_ip: string }) =>
+      name === "check_rate_limit" && args.client_ip === "submit:global"
+        ? { data: false, error: null }
+        : rateLimitResult
+    );
+
+    const hasil = await submitPengaduanAction(form());
+    expect(hasil.error).toContain("terlalu banyak pengaduan masuk");
+    expect(insertMock).not.toHaveBeenCalled();
+  });
+
+  test("error insert dilog hanya kode dan pesan, tidak objek utuh (data pribadi)", async () => {
+    insertMock.mockResolvedValue({
+      error: { code: "42501", message: "rls detail", details: "Failing row contains (Budi Santoso, 0812...)" },
+    });
+
+    await submitPengaduanAction(form());
+
+    const args = vi.mocked(console.error).mock.calls.flat();
+    expect(args.some((a) => typeof a === "object" && a !== null)).toBe(false);
+    expect(JSON.stringify(args)).not.toContain("Failing row");
+  });
+
   test("validasi gagal -> tidak insert: tanpa persetujuan, atau deskripsi > 5000 karakter", async () => {
     expect(await submitPengaduanAction(form({ setuju_data_pribadi: "false" }))).toHaveProperty("error");
     expect(await submitPengaduanAction(form({ deskripsi: "x".repeat(5001) }))).toHaveProperty("error");

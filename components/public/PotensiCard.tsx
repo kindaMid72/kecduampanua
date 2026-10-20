@@ -86,14 +86,14 @@ export function PotensiCard({
             </div>
           )}
           <div className="absolute top-3 left-3">
-            <Badge variant={badgeColorMap[katId] || "default"} className="shadow-sm backdrop-blur-sm bg-white/90">
+            <Badge variant={badgeColorMap[katId] || "default"} className="shadow-sm backdrop-blur-sm bg-paper/90">
               {badgeLabel}
             </Badge>
           </div>
           {videoUrl && (
-            <div className={`absolute inset-0 bg-black/20 flex items-center justify-center transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-              <div className="bg-white/90 text-primary px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm backdrop-blur-sm flex items-center gap-1.5">
-                <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></div>
+            <div className={`absolute inset-0 bg-primary/20 flex items-center justify-center transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
+              <div className="bg-paper/90 text-primary px-3 py-1.5 rounded-full text-xs font-semibold shadow-sm backdrop-blur-sm flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-danger animate-pulse"></div>
                 Klik untuk putar dengan suara
               </div>
             </div>
@@ -117,13 +117,13 @@ export function PotensiCard({
 
       {/* Video Modal Overlay */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-primary/80 backdrop-blur-sm" onClick={() => setIsModalOpen(false)}>
           <div 
-            className="relative w-full max-w-4xl bg-black rounded-xl overflow-hidden shadow-2xl ring-1 ring-white/10"
+            className="relative w-full max-w-4xl bg-primary rounded-xl overflow-hidden shadow-2xl ring-1 ring-paper/10"
             onClick={e => e.stopPropagation()}
           >
             <button 
-              className="absolute top-4 right-4 z-10 p-2 bg-black/50 hover:bg-black text-white rounded-full transition-colors backdrop-blur-sm"
+              className="absolute top-4 right-4 z-10 p-2 bg-primary/50 hover:bg-primary text-paper rounded-full transition-colors backdrop-blur-sm"
               onClick={() => setIsModalOpen(false)}
             >
               <X size={20} />
@@ -134,7 +134,7 @@ export function PotensiCard({
                 poster={gambarUrl || undefined}
                 controls
                 autoPlay
-                className="w-full max-h-[80vh] object-contain bg-black"
+                className="w-full max-h-[80vh] object-contain bg-primary"
               />
             ) : gambarUrl ? (
               <div className="relative w-full h-[60vh]">
@@ -147,13 +147,13 @@ export function PotensiCard({
                 />
               </div>
             ) : (
-              <div className="w-full h-64 flex items-center justify-center text-white/50 bg-surface">
+              <div className="w-full h-64 flex items-center justify-center text-paper/50 bg-surface">
                 Tidak ada media yang tersedia
               </div>
             )}
-            <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-black/90 via-black/60 to-transparent pointer-events-none">
-              <h2 className="text-white font-display text-xl sm:text-2xl font-semibold mb-2">{judul}</h2>
-              <p className="text-white/80 text-sm line-clamp-2 max-w-3xl">{deskripsi}</p>
+            <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-primary/90 via-primary/60 to-transparent pointer-events-none">
+              <h2 className="text-paper font-display text-xl sm:text-2xl font-semibold mb-2">{judul}</h2>
+              <p className="text-paper/80 text-sm line-clamp-2 max-w-3xl">{deskripsi}</p>
             </div>
           </div>
         </div>

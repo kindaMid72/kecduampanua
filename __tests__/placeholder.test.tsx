@@ -7,10 +7,10 @@ import idMessages from "@/messages/id.json";
 vi.mock("next-intl/server", () => ({
   getTranslations: vi.fn(async ({ namespace }: { namespace?: string }) => {
     const nsObj = namespace
-      ? (idMessages as any)[namespace]
+      ? (idMessages as Record<string, Record<string, unknown>>)[namespace]
       : (idMessages as unknown as Record<string, string>);
     return (key: string, values?: Record<string, string>) => {
-      let text = nsObj?.[key] ?? key;
+      let text = String(nsObj?.[key] ?? key);
       if (values) {
         Object.entries(values).forEach(([k, v]) => {
           text = text.replace(new RegExp(`{${k}}`, "g"), v);

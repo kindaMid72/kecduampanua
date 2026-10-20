@@ -114,7 +114,23 @@ export async function cekStatusPengaduanAction(
   }
 }
 
+// Nomor tracking acak. Dipakai juga untuk balasan palsu ke bot agar tidak selalu sama.
+const generateTrackingId = () =>
+  `PND-${randomBytes(6).toString("hex").toUpperCase()}`;
+
+// Batas total seluruh pengirim, di luar batas per IP. Melindungi dari bot yang
+// berganti IP. Angka ini teknis (bukan fakta layanan) dan bisa disesuaikan.
+const BATAS_GLOBAL_PENGADUAN_PER_JAM = 50;
+
 export async function submitPengaduanAction(formData: FormData) {
+  // Honeypot dicek paling awal: jalur ini tidak menulis apa pun, jadi tidak perlu
+  // menghabiskan batas kiriman. Bot yang mengisinya menerima balasan sukses palsu
+  // dan tidak pernah tahu bahwa dia tertangkap.
+  const honeypot = formData.get("honeypot");
+  if (typeof honeypot === "string" && honeypot !== "") {
+    return { success: true, trackingId: generateTrackingId() };
+  }
+
   const key = await getRateLimitKey();
 
   if (key) {
@@ -127,24 +143,29 @@ export async function submitPengaduanAction(formData: FormData) {
     }
   }
 
+  const globalResult = await checkRateLimit(
+    "submit:global",
+    BATAS_GLOBAL_PENGADUAN_PER_JAM,
+    60,
+    false
+  );
+  if (!globalResult.allowed) {
+    return {
+      error: "Saat ini terlalu banyak pengaduan masuk. Silakan coba lagi nanti.",
+    };
+  }
+
   const raw = {
     nama_pelapor: formData.get("nama_pelapor"),
     kontak_pelapor: formData.get("kontak_pelapor"),
     kategori: formData.get("kategori"),
     deskripsi: formData.get("deskripsi"),
     setuju_data_pribadi: formData.get("setuju_data_pribadi") === "true",
-    honeypot: formData.get("honeypot") || "",
   };
 
   const parsed = pengaduanPublikSchema.safeParse(raw);
   if (!parsed.success) {
     return { error: parsed.error.issues[0].message };
-  }
-
-  // Honeypot check
-  if (parsed.data.honeypot !== "") {
-    // Silently return success to fool bots
-    return { success: true, trackingId: "PND-12345678" };
   }
 
   // Insert dari server dengan service role: anon TIDAK punya hak INSERT langsung
@@ -162,9 +183,6 @@ export async function submitPengaduanAction(formData: FormData) {
   // Tracking number acak (mis. PND-8A7B6C5D9E0F). Keunikan dijamin constraint
   // UNIQUE di database, bukan SELECT dulu. Kalau bentrok (kode 23505), ulangi
   // dengan nomor baru.
-  const generateTrackingId = () =>
-    `PND-${randomBytes(6).toString("hex").toUpperCase()}`;
-
   for (let attempt = 0; attempt < 5; attempt++) {
     const trackingId = generateTrackingId();
 
@@ -181,7 +199,9 @@ export async function submitPengaduanAction(formData: FormData) {
     if (!error) return { success: true, trackingId };
 
     if (error.code !== "23505") {
-      console.error(error);
+      // Jangan log objek error utuh: pesan Postgres bisa memuat "Failing row contains (...)"
+      // yang berisi nama, kontak, dan isi pengaduan (data pribadi, UU PDP).
+      console.error("[pengaduan] insert gagal:", error.code, error.message);
       return { error: "Gagal mengirim pengaduan. Silakan coba lagi nanti." };
     }
   }

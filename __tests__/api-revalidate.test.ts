@@ -20,8 +20,8 @@ beforeEach(() => {
 });
 
 describe("POST /api/revalidate", () => {
-  test("REVALIDATE_SECRET belum diset -> 500 (gagal tertutup)", async () => {
-    expect((await POST(req("Bearer apa-saja"))).status).toBe(500);
+  test("REVALIDATE_SECRET belum diset -> 401 generik (gagal tertutup, tidak membocorkan konfigurasi)", async () => {
+    expect((await POST(req("Bearer apa-saja"))).status).toBe(401);
     expect(revalidatePath).not.toHaveBeenCalled();
   });
 

@@ -56,7 +56,7 @@ export function PapanInformasiPanel({
     <div className="relative border-[1.5px] border-primary rounded-[var(--radius-card)] bg-surface/50 p-6">
       {/* Tag label mengambang pojok kiri atas */}
       <div className="absolute -top-3 left-4 bg-primary px-3 py-0.5">
-        <CategoryLabel label={lblPapan} className="text-white" />
+        <CategoryLabel label={lblPapan} className="text-paper" />
       </div>
 
       <div className="pt-2 space-y-5">
@@ -74,7 +74,7 @@ export function PapanInformasiPanel({
                   "inline-block h-2.5 w-2.5 rounded-full flex-shrink-0",
                   statusBuka
                     ? "bg-[color:var(--color-status-success)]"
-                    : "bg-red-600",
+                    : "bg-danger",
                 ].join(" ")}
               />
               <span className="text-sm font-medium text-text">
@@ -116,7 +116,7 @@ export function PapanInformasiPanel({
                 <a
                   key={item.href}
                   href={item.href}
-                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm rounded-[var(--radius-button)] border border-primary/30 text-primary hover:bg-primary hover:text-white transition-colors duration-150 min-h-[44px]"
+                  className="inline-flex items-center gap-1 px-3 py-1.5 text-sm rounded-[var(--radius-button)] border border-primary/30 text-primary hover:bg-primary hover:text-paper transition-colors duration-150 min-h-[44px]"
                 >
                   {item.label}
                 </a>

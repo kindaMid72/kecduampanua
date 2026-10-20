@@ -1,7 +1,7 @@
 import { NextIntlClientProvider, hasLocale } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { Inter, IBM_Plex_Mono } from "next/font/google";
+import { Inter, IBM_Plex_Mono, Fraunces } from "next/font/google";
 import { routing } from "@/lib/i18n/routing";
 import "@/app/globals.css";
 const inter = Inter({
@@ -15,6 +15,15 @@ const ibmPlexMono = IBM_Plex_Mono({
   weight: ["400", "500"],
   display: "swap",
   variable: "--font-mono",
+});
+
+// Fraunces hanya untuk H1/H2. Di-host sendiri lewat next/font: tidak ada permintaan
+// ke fonts.googleapis.com dari browser pengunjung (privasi, dan koneksi lambat).
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  display: "swap",
+  variable: "--font-fraunces",
 });
 
 export default async function LocaleLayout({
@@ -33,14 +42,7 @@ export default async function LocaleLayout({
   const messages = await getMessages();
 
   return (
-    <html lang={locale} className={`${inter.variable} ${ibmPlexMono.variable}`}>
-      <head>
-        {/* Fraunces — hanya untuk H1/H2, di-load via link, bukan next/font (lebih ringan) */}
-        <link
-          href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&display=swap"
-          rel="stylesheet"
-        />
-      </head>
+    <html lang={locale} className={`${inter.variable} ${ibmPlexMono.variable} ${fraunces.variable}`}>
       <body className="min-h-screen flex flex-col bg-background text-text font-body antialiased">
         <NextIntlClientProvider messages={messages}>
           {children}

@@ -19,7 +19,6 @@ export async function generateMetadata({
   };
 }
 
-export const revalidate = false;
 
 function Placeholder({ pesan }: { pesan: string }) {
   return <p className="text-sm text-text/50 italic py-2">{pesan}</p>;
@@ -187,7 +186,7 @@ export default async function StandarPelayananPage({
                         <ol className="space-y-2 pl-0" role="list">
                           {alur.split("\n").filter(Boolean).map((step: string, i: number) => (
                             <li key={i} className="flex items-start gap-3 text-sm text-text/80">
-                              <span className="flex-shrink-0 h-5 w-5 rounded-full bg-primary text-white text-xs flex items-center justify-center font-mono">
+                              <span className="flex-shrink-0 h-5 w-5 rounded-full bg-primary text-paper text-xs flex items-center justify-center font-mono">
                                 {i + 1}
                               </span>
                               {step.replace(/^\d+[\.\)]\s*/, "")}
@@ -215,7 +214,7 @@ export default async function StandarPelayananPage({
                           href={layanan.link_formulir_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-secondary text-secondary rounded-[var(--radius-button)] hover:bg-secondary hover:text-white transition-colors min-h-[44px]"
+                          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-secondary text-secondary rounded-[var(--radius-button)] hover:bg-secondary hover:text-paper transition-colors min-h-[44px]"
                         >
                           <Download size={14} aria-hidden="true" />
                           {tStandar("unduhFormulir")}
@@ -226,7 +225,7 @@ export default async function StandarPelayananPage({
                           href={layanan.dokumen_standar_pelayanan_url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-primary/30 text-primary rounded-[var(--radius-button)] hover:bg-primary hover:text-white transition-colors min-h-[44px]"
+                          className="inline-flex items-center gap-1.5 px-3 py-2 text-sm border border-primary/30 text-primary rounded-[var(--radius-button)] hover:bg-primary hover:text-paper transition-colors min-h-[44px]"
                         >
                           <Download size={14} aria-hidden="true" />
                           {tStandar("dokumenStandar")}

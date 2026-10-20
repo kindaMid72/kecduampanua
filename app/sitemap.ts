@@ -1,16 +1,19 @@
 import { MetadataRoute } from 'next';
 import { createClient } from '@/lib/supabase/server';
+import { getSiteUrl } from '@/lib/site-url';
+
+// Wajib dinamis: createClient memakai cookies(). Tanpa ini, try/catch di bawah
+// menelan sinyal DYNAMIC_SERVER_USAGE saat build dan sitemap jadi hanya rute statis.
+export const dynamic = 'force-dynamic';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_BASE_URL || 'https://duampanua.go.id';
-  const supabase = await createClient();
-  
+  const baseUrl = getSiteUrl();
+
   // Public static routes
   const staticRoutes = [
     '',
     '/profil',
     '/profil/ppid',
-    '/profil/data-statistik',
     '/informasi',
     '/berita',
     '/standar-pelayanan',
@@ -35,14 +38,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ]);
 
-  // Dynamic Berita
-  const { data: berita } = await supabase
-    .from('berita')
-    .select('slug, updated_at')
-    .eq('status', 'published');
+  // Rute dinamis bersifat tambahan: jika DB gagal, sitemap tetap berisi rute statis
+  // (sitemap tidak boleh 500 hanya karena Supabase sedang bermasalah).
+  try {
+    const supabase = await createClient();
 
-  if (berita) {
-    berita.forEach((b) => {
+    // Dynamic Berita
+    const { data: berita } = await supabase
+      .from('berita')
+      .select('slug, updated_at')
+      .eq('status', 'published');
+
+    berita?.forEach((b) => {
       routes.push({
         url: `${baseUrl}/id/berita/${b.slug}`,
         lastModified: new Date(b.updated_at),
@@ -56,16 +63,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.6,
       });
     });
-  }
 
-  // Dynamic Informasi Publik
-  const { data: informasi } = await supabase
-    .from('informasi_publik')
-    .select('slug, updated_at')
-    .eq('status', 'published');
+    // Dynamic Informasi Publik
+    const { data: informasi } = await supabase
+      .from('informasi_publik')
+      .select('slug, updated_at')
+      .eq('status', 'published');
 
-  if (informasi) {
-    informasi.forEach((info) => {
+    informasi?.forEach((info) => {
       routes.push({
         url: `${baseUrl}/id/informasi/${info.slug}`,
         lastModified: new Date(info.updated_at),
@@ -79,6 +84,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         priority: 0.6,
       });
     });
+  } catch (err) {
+    console.error('sitemap: gagal memuat rute dinamis', err);
   }
 
   return routes;

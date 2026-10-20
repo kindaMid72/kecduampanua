@@ -12,13 +12,13 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary text-white hover:bg-primary/90 focus-visible:ring-primary",
+    "bg-primary text-paper hover:bg-primary/90 focus-visible:ring-primary",
   secondary:
-    "bg-secondary text-white hover:bg-secondary/90 focus-visible:ring-secondary",
+    "bg-secondary text-paper hover:bg-secondary/90 focus-visible:ring-secondary",
   ghost:
     "bg-transparent text-primary hover:bg-primary/10 focus-visible:ring-primary",
   danger:
-    "bg-red-700 text-white hover:bg-red-800 focus-visible:ring-red-600",
+    "bg-danger text-paper hover:bg-danger/90 focus-visible:ring-danger",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
@@ -79,7 +79,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ) : null;
 
     if (asChild && isValidElement(children)) {
-      const child = children as React.ReactElement<{ className?: string; children?: React.ReactNode; ref?: React.Ref<any> }>;
+      const child = children as React.ReactElement<{ className?: string; children?: React.ReactNode; ref?: React.Ref<HTMLElement> }>;
       return cloneElement(child, {
         ref,
         className: [combinedClassName, child.props.className].filter(Boolean).join(" "),

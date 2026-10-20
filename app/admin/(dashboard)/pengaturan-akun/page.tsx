@@ -121,7 +121,7 @@ export default function PengaturanAkunPage() {
             </div>
           )}
           {profileError && (
-            <div className="p-3 mb-4 bg-red-50 text-red-700 text-xs rounded border border-red-200">
+            <div className="p-3 mb-4 bg-danger/10 text-danger text-xs rounded border border-danger/30">
               {profileError}
             </div>
           )}
@@ -188,7 +188,7 @@ export default function PengaturanAkunPage() {
             </div>
           )}
           {passwordError && (
-            <div className="p-3 mb-4 bg-red-50 text-red-700 text-xs rounded border border-red-200">
+            <div className="p-3 mb-4 bg-danger/10 text-danger text-xs rounded border border-danger/30">
               {passwordError}
             </div>
           )}
@@ -250,31 +250,31 @@ export default function PengaturanAkunPage() {
                 <p className="font-medium text-text/70 mb-1">Ketentuan kata sandi baru:</p>
                 <div className="flex items-center gap-1.5">
                   {hasMinLength ? (
-                    <Check size={14} className="text-green-600" />
+                    <Check size={14} className="text-status-success-ink" />
                   ) : (
                     <X size={14} className="text-text/40" />
                   )}
-                  <span className={hasMinLength ? "text-green-700 font-medium" : "text-text/60"}>
+                  <span className={hasMinLength ? "text-status-success-ink font-medium" : "text-text/60"}>
                     Minimal 8 karakter
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   {hasUppercase ? (
-                    <Check size={14} className="text-green-600" />
+                    <Check size={14} className="text-status-success-ink" />
                   ) : (
                     <X size={14} className="text-text/40" />
                   )}
-                  <span className={hasUppercase ? "text-green-700 font-medium" : "text-text/60"}>
+                  <span className={hasUppercase ? "text-status-success-ink font-medium" : "text-text/60"}>
                     Setidaknya 1 huruf kapital (A-Z)
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   {hasNumber ? (
-                    <Check size={14} className="text-green-600" />
+                    <Check size={14} className="text-status-success-ink" />
                   ) : (
                     <X size={14} className="text-text/40" />
                   )}
-                  <span className={hasNumber ? "text-green-700 font-medium" : "text-text/60"}>
+                  <span className={hasNumber ? "text-status-success-ink font-medium" : "text-text/60"}>
                     Setidaknya 1 angka (0-9)
                   </span>
                 </div>
@@ -298,7 +298,7 @@ export default function PengaturanAkunPage() {
               {konfirmasiSandi.length > 0 && (
                 <p
                   className={`text-[11px] mt-1 flex items-center gap-1 ${
-                    isMatch ? "text-green-600 font-medium" : "text-red-600"
+                    isMatch ? "text-status-success-ink font-medium" : "text-danger"
                   }`}
                 >
                   {isMatch ? <Check size={12} /> : <X size={12} />}

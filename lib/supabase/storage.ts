@@ -30,7 +30,7 @@ export function getStoragePathFromUrl(url: string, bucket: string = "uploads"): 
  * @param bucket Nama bucket (default: "uploads")
  */
 export async function deleteStorageFile(
-  supabase: SupabaseClient<any, "public", any>,
+  supabase: SupabaseClient,
   url: string | null | undefined,
   bucket: string = "uploads"
 ): Promise<void> {
@@ -46,8 +46,6 @@ export async function deleteStorageFile(
     const { error } = await supabase.storage.from(bucket).remove([path]);
     if (error) {
       console.error(`[deleteStorageFile] Gagal menghapus file [${path}] dari bucket [${bucket}]:`, error);
-    } else {
-      console.log(`[deleteStorageFile] Berhasil menghapus file: ${path}`);
     }
   } catch (error) {
     console.error("[deleteStorageFile] Error tak terduga saat menghapus file:", error);

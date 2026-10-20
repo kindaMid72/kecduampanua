@@ -51,7 +51,7 @@ export default function TambahDataStatistikPage() {
       <Card padding="md">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
           {error && (
-            <div className="p-3 bg-red-50 text-red-700 text-sm rounded border border-red-200">
+            <div className="p-3 bg-danger/10 text-danger text-sm rounded border border-danger/30">
               {error}
             </div>
           )}
@@ -60,34 +60,34 @@ export default function TambahDataStatistikPage() {
           <div className="space-y-4">
             <h2 className="text-lg font-semibold border-b border-surface pb-2">Informasi Dasar</h2>
             <div>
-              <label className="block text-sm font-medium mb-1.5">Nama Desa / Kelurahan <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium mb-1.5">Nama Desa / Kelurahan <span className="text-danger">*</span></label>
               <input
                 type="text"
                 {...register("nama_desa_kelurahan")}
                 className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
                 placeholder="Contoh: Desa Tatae"
               />
-              {errors.nama_desa_kelurahan && <p className="text-red-500 text-xs mt-1">{errors.nama_desa_kelurahan.message}</p>}
+              {errors.nama_desa_kelurahan && <p className="text-danger text-xs mt-1">{errors.nama_desa_kelurahan.message}</p>}
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium mb-1.5">Jumlah Penduduk (Total) <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-medium mb-1.5">Jumlah Penduduk (Total) <span className="text-danger">*</span></label>
                 <input
                   type="number"
                   {...register("jumlah_penduduk")}
                   className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
                   placeholder="Contoh: 1500"
                 />
-                {errors.jumlah_penduduk && <p className="text-red-500 text-xs mt-1">{errors.jumlah_penduduk.message}</p>}
+                {errors.jumlah_penduduk && <p className="text-danger text-xs mt-1">{errors.jumlah_penduduk.message}</p>}
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1.5">Tahun Data <span className="text-red-500">*</span></label>
+                <label className="block text-sm font-medium mb-1.5">Tahun Data <span className="text-danger">*</span></label>
                 <input
                   type="number"
                   {...register("tahun_data")}
                   className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
                 />
-                {errors.tahun_data && <p className="text-red-500 text-xs mt-1">{errors.tahun_data.message}</p>}
+                {errors.tahun_data && <p className="text-danger text-xs mt-1">{errors.tahun_data.message}</p>}
               </div>
             </div>
           </div>

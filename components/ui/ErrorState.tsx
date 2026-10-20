@@ -16,7 +16,7 @@ interface ErrorStateProps {
 export function ErrorState({ title, message, action, variant = "page" }: ErrorStateProps) {
   if (variant === "inline") {
     return (
-      <div className="flex items-center justify-between p-4 bg-[#BE7B3D]/10 text-[#BE7B3D] rounded-md border border-[#BE7B3D]/20">
+      <div className="flex items-center justify-between p-4 bg-accent/10 text-accent rounded-md border border-accent/20">
         <div className="flex items-center gap-3">
           <AlertCircle size={18} />
           <span className="text-sm font-medium">{message}</span>
@@ -24,7 +24,7 @@ export function ErrorState({ title, message, action, variant = "page" }: ErrorSt
         {action?.onClick && (
           <button
             onClick={action.onClick}
-            className="text-xs font-semibold underline hover:text-[#BE7B3D]/80 flex items-center gap-1"
+            className="text-xs font-semibold underline hover:opacity-80 flex items-center gap-1"
           >
             <RefreshCcw size={12} />
             {action.label}

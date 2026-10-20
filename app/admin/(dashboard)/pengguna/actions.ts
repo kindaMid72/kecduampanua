@@ -4,7 +4,25 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { revalidatePath } from "next/cache";
 import { editPenggunaSchema } from "@/lib/validations/auth";
+import { getSiteUrl } from "@/lib/site-url";
 import crypto from "crypto";
+import { z } from "zod";
+
+const uuidSchema = z.string().uuid();
+
+type ServerSupabase = Awaited<ReturnType<typeof createClient>>;
+
+// Pengelola yang sudah dinonaktifkan masih punya JWT sampai kedaluwarsa (ban GoTrue
+// hanya mencegah refresh), jadi status juga wajib dicek, bukan hanya role.
+async function cekPengelolaAktif(supabase: ServerSupabase, userId: string): Promise<boolean> {
+  const { data } = await supabase
+    .from("profiles")
+    .select("role, status")
+    .eq("id", userId)
+    .single();
+
+  return data?.role === "super_account" && data?.status === "aktif";
+}
 
 export interface PenggunaItem {
   id: string;
@@ -35,13 +53,7 @@ export async function getDaftarPenggunaAction(): Promise<{
     }
 
     // 1. Verifikasi peran caller
-    const { data: callerProfile, error: profileError } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (profileError || callerProfile?.role !== "super_account") {
+    if (!(await cekPengelolaAktif(supabase, user.id))) {
       return { error: "Hanya akun Pengelola (Super Account) yang dapat melihat daftar pengguna." };
     }
 
@@ -172,13 +184,7 @@ export async function invitePenggunaAction(formData: FormData) {
       return { error: "Anda belum login." };
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (profile?.role !== "super_account") {
+    if (!(await cekPengelolaAktif(supabase, user.id))) {
       return { error: "Hanya Pengelola yang dapat mengundang pengguna baru." };
     }
 
@@ -213,7 +219,7 @@ export async function invitePenggunaAction(formData: FormData) {
 
     // VULN-08 fix: Gunakan NEXT_PUBLIC_SITE_URL dari env — jangan pernah
     // percaya Origin header karena bisa dimanipulasi oleh pemanggil.
-    const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+    const origin = getSiteUrl();
     const directLink = `${origin}/admin/atur-kata-sandi?token=${rawToken}`;
 
     revalidatePath("/admin/pengguna");
@@ -233,6 +239,7 @@ export async function editPenggunaAction(
   userId: string,
   payload: { nama_lengkap: string; role: "super_account" | "staf" }
 ) {
+  if (!uuidSchema.safeParse(userId).success) return { error: "ID pengguna tidak valid." };
   try {
     const parsed = editPenggunaSchema.safeParse(payload);
     if (!parsed.success) {
@@ -246,13 +253,7 @@ export async function editPenggunaAction(
 
     if (!user) return { error: "Anda belum login." };
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (profile?.role !== "super_account") {
+    if (!(await cekPengelolaAktif(supabase, user.id))) {
       return { error: "Hanya Pengelola yang dapat mengubah data pengguna." };
     }
 
@@ -317,6 +318,7 @@ export async function editPenggunaAction(
  * Menghapus akun pengguna dari sistem (Supabase Auth & profiles)
  */
 export async function hapusPenggunaAction(userId: string) {
+  if (!uuidSchema.safeParse(userId).success) return { error: "ID pengguna tidak valid." };
   try {
     const supabase = await createClient();
     const {
@@ -330,13 +332,7 @@ export async function hapusPenggunaAction(userId: string) {
       return { error: "Anda tidak dapat menghapus akun Anda sendiri." };
     }
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (profile?.role !== "super_account") {
+    if (!(await cekPengelolaAktif(supabase, user.id))) {
       return { error: "Hanya Pengelola yang dapat menghapus pengguna." };
     }
 
@@ -367,7 +363,8 @@ export async function hapusPenggunaAction(userId: string) {
       await supabaseAdmin.from("potensi_daerah").update({ dibuat_oleh: null }).eq("dibuat_oleh", userId);
       await supabaseAdmin.from("dokumen_edaran").update({ diunggah_oleh: null }).eq("diunggah_oleh", userId);
       await supabaseAdmin.from("pengaduan").update({ ditangani_oleh: null }).eq("ditangani_oleh", userId);
-      await supabaseAdmin.from("user_invitations").delete().or(`user_id.eq.${userId},created_by.eq.${userId}`);
+      await supabaseAdmin.from("user_invitations").delete().eq("user_id", userId);
+      await supabaseAdmin.from("user_invitations").delete().eq("created_by", userId);
     } catch (err) {
       console.warn("Pembersihan defensif FK error (diabaikan jika cascade aktif):", err);
     }
@@ -396,6 +393,7 @@ export async function hapusPenggunaAction(userId: string) {
  * Reset kata sandi pengguna (bisa untuk staf lain maupun akun diri sendiri)
  */
 export async function resetKataSandiAction(userId: string) {
+  if (!uuidSchema.safeParse(userId).success) return { error: "ID pengguna tidak valid." };
   try {
     const supabase = await createClient();
     const {
@@ -404,13 +402,7 @@ export async function resetKataSandiAction(userId: string) {
 
     if (!user) return { error: "Anda belum login." };
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (profile?.role !== "super_account") {
+    if (!(await cekPengelolaAktif(supabase, user.id))) {
       return { error: "Hanya Pengelola yang dapat membuat tautan reset kata sandi." };
     }
 
@@ -495,7 +487,7 @@ export async function resetKataSandiAction(userId: string) {
 
     // VULN-08 fix: Gunakan NEXT_PUBLIC_SITE_URL dari env — jangan pernah
     // percaya Origin header karena bisa dimanipulasi oleh pemanggil.
-    const origin = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+    const origin = getSiteUrl();
     const directLink = `${origin}/admin/atur-kata-sandi?token=${rawToken}`;
 
     return { success: true, action_link: directLink };
@@ -510,6 +502,7 @@ export async function resetKataSandiAction(userId: string) {
  * Mengubah status pengguna (aktif/nonaktif)
  */
 export async function ubahStatusPenggunaAction(userId: string, newStatus: "aktif" | "nonaktif") {
+  if (!uuidSchema.safeParse(userId).success) return { error: "ID pengguna tidak valid." };
   try {
     const supabase = await createClient();
     const {
@@ -519,13 +512,7 @@ export async function ubahStatusPenggunaAction(userId: string, newStatus: "aktif
     if (!user) return { error: "Anda belum login." };
     if (user.id === userId) return { error: "Tidak dapat mengubah status diri sendiri." };
 
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-
-    if (profile?.role !== "super_account") {
+    if (!(await cekPengelolaAktif(supabase, user.id))) {
       return { error: "Hanya Pengelola yang dapat mengubah status pengguna." };
     }
 

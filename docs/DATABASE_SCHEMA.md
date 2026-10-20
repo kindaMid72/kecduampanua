@@ -118,7 +118,7 @@ create table layanan (
   syarat_dokumen_en text[],
   alur_proses text,
   alur_proses_en text,
-  alur_perlu_ditinjau boolean default true, -- badge "terjemahan otomatis, perlu ditinjau"
+  -- alur_perlu_ditinjau dihapus di migrasi 007b (DECISIONS #26); kolom ini tidak ada lagi.
   estimasi_waktu text,
   link_formulir_url text,
   dokumen_standar_pelayanan_url text, -- PDF resmi, opsional
@@ -199,15 +199,15 @@ alter table pengaduan enable row level security;
 -- Policy "Publik bisa insert" DICABUT di migrasi 014: anon tidak punya hak INSERT. Insert dilakukan
 -- server dengan service role setelah validasi + rate limit (DECISIONS #34).
 
-create policy "Publik bisa cek status via nomor tracking exact match"
-  on pengaduan for select
-  using (true); -- filter nomor_tracking dilakukan di query aplikasi (.eq('nomor_tracking', input)),
-                 -- BUKAN listing — pastikan API route TIDAK PERNAH expose endpoint list tanpa filter ini
+-- TIDAK ADA policy SELECT untuk anon/authenticated. Cek status warga lewat Server Action
+-- (kontak/pengaduan/actions.ts) yang memanggil RPC get_pengaduan_by_tracking dengan service role.
+-- RPC itu di-REVOKE dari anon dan authenticated (migrasi 013), dan hanya mengembalikan kolom
+-- publik untuk nomor_tracking yang cocok persis. Jangan menambah policy SELECT untuk publik di sini.
 
 create policy "Staf lihat & kelola semua" on pengaduan for all using (is_staf_aktif());
 ```
 
-**PENTING soal policy SELECT pengaduan:** karena Postgres RLS tidak bisa membatasi "hanya boleh query dengan WHERE tertentu", pembatasan sebenarnya ada di **application layer** — endpoint publik `/api/pengaduan/cek-status` WAJIB mewajibkan parameter `nomor_tracking` dan tidak pernah meng-expose route yang mengembalikan list. Alternatif lebih aman: buat RPC function khusus (`get_pengaduan_by_tracking(nomor text)`) yang jadi satu-satunya jalan publik mengakses tabel ini, dan revoke direct select publik. **Rekomendasi: pakai pendekatan RPC function ini saat implementasi, bukan direct table select**, supaya tidak ada risiko lupa filter di suatu tempat.
+**Keputusan yang berlaku:** akses publik ke `pengaduan` hanya lewat RPC `get_pengaduan_by_tracking(nomor text)` yang dipanggil dari server dengan service role (migrasi 013 + 014, DECISIONS #33–#34). Tidak ada route `/api/pengaduan/cek-status`; cek status adalah Server Action. Tidak ada jalur publik yang bisa melist tabel ini.
 
 ## 8. `profil_kecamatan` (+ PPID, ASN, Maklumat Pelayanan, Kontak Kantor)
 
@@ -274,7 +274,11 @@ create table data_statistik (
   jumlah_penduduk int,
   tahun_data int not null,
   updated_at timestamptz default now()
+  -- + ±21 kolom angka dari migrasi 010 (demografi, pendidikan, kesehatan, geografi, ekonomi).
+  -- Daftarnya ada di lib/types/statistik.ts (KOLOM_ANGKA_STATISTIK).
 );
+-- Kolom angka: default NULL sejak migrasi 015 (sebelumnya DEFAULT 0 dari 010).
+-- Kosong = belum diisi (ditampilkan "Belum diisi"); 0 = nol sungguhan.
 
 alter table data_statistik enable row level security;
 create policy "Publik lihat" on data_statistik for select using (true);
@@ -305,14 +309,14 @@ alter table user_invitations enable row level security;
 
 create policy "Super account bisa kelola user invitations"
   on user_invitations for all
-  using (exists (select 1 from profiles p where p.id = auth.uid() and p.role = 'super_account'));
+  using (is_super_account());  -- diganti dari exists(...) di migrasi 014 (wajib aktif)
 ```
 
 ## 11. Catatan Implementasi
 
-- Trigger `updated_at` otomatis via extension `moddatetime` di semua tabel yang punya kolom itu.
+- Trigger `updated_at` otomatis via extension `moddatetime` di tabel yang punya kolom `updated_at`. Tidak semua tabel punya: `layanan` dan `potensi_daerah` belum.
 - Generate `nomor_tracking`: `PND-` + 12 hex uppercase (`randomBytes(6)`); nomor lama 8 hex tetap valid; keunikan dijamin constraint `UNIQUE`, retry saat error `23505` (DECISIONS #29). Bukan SELECT dulu: `anon` tidak boleh membaca tabel `pengaduan`.
-- Job terjadwal (Supabase Edge Function + `pg_cron`) untuk set `diarsipkan_pada` otomatis 2 tahun setelah `status = 'selesai'` (DECISIONS #12) — bukan hapus permanen, cukup flag arsip.
+- **BELUM ADA:** job terjadwal (rencana: `pg_cron` atau skrip di repo infra) untuk set `diarsipkan_pada` otomatis 2 tahun setelah `status = 'selesai'` (DECISIONS #12). Tidak ada di migrasi maupun kode; kolom `diarsipkan_pada` masih diisi manual atau kosong.
 - Storage bucket policy diatur terpisah dari RLS tabel: bucket gambar publik boleh dibaca umum, upload hanya via signed request dari staf yang login.
 - **`profil_kecamatan` adalah single-row** — upsert, bukan insert biasa. Seed 1 baris kosong via `001_initial_schema.sql`, lalu staf mengisi via admin panel `/admin/profil`.
 - **Kolom kontak kantor** (`alamat`, `telepon`, `email`, `jam_operasional`, `koordinat_lat/lng`, `nama_kecamatan`) di `profil_kecamatan` dikelola via admin panel — **tidak pernah hardcode di kode**. Jika sudah menjalankan `001`, jalankan juga `002_profil_kontak.sql` untuk menambah kolom ini ke environment yang sudah ada.

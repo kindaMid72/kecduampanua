@@ -40,12 +40,15 @@ export function AdminTableToolbar({
   const searchParams = useSearchParams();
 
   const [localSearch, setLocalSearch] = useState(searchValue);
+  const [searchTersinkron, setSearchTersinkron] = useState(searchValue);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  // Sync saat searchValue berubah (navigasi balik/maju)
-  useEffect(() => {
+  // Sync saat searchValue berubah (navigasi balik/maju). Dilakukan saat render,
+  // bukan di effect, sesuai pola React untuk menyesuaikan state terhadap prop.
+  if (searchValue !== searchTersinkron) {
+    setSearchTersinkron(searchValue);
     setLocalSearch(searchValue);
-  }, [searchValue]);
+  }
 
   const updateParams = useCallback(
     (key: string, value: string) => {

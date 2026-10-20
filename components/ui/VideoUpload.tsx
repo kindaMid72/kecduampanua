@@ -64,7 +64,7 @@ export function VideoUpload({
         .getPublicUrl(data.path);
 
       onChange(publicUrl);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Upload error:", err);
       setError(pesanGalatUpload(err, "Gagal mengunggah video."));
     } finally {
@@ -86,7 +86,7 @@ export function VideoUpload({
             <button
               type="button"
               onClick={() => onChange("")}
-              className="bg-red-500 text-white p-2 rounded-full hover:bg-red-600 transition-colors shadow-md"
+              className="bg-danger text-paper p-2 rounded-full hover:bg-danger transition-colors shadow-md"
               title="Hapus video"
             >
               <X size={16} />
@@ -123,7 +123,7 @@ export function VideoUpload({
         </label>
       )}
       
-      {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
+      {error && <p className="text-danger text-xs mt-2">{error}</p>}
     </div>
   );
 }

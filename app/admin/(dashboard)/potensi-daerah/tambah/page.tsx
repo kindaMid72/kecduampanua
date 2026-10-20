@@ -59,57 +59,57 @@ export default function TambahPotensiPage() {
       <Card padding="md">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
           {error && (
-            <div className="p-3 bg-red-50 text-red-700 text-sm rounded border border-red-200">
+            <div className="p-3 bg-danger/10 text-danger text-sm rounded border border-danger/30">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium mb-1.5">Judul Potensi <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium mb-1.5">Judul Potensi <span className="text-danger">*</span></label>
             <input
               type="text"
               {...register("judul")}
               className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none"
               placeholder="Contoh: Kerajinan Rotan"
             />
-            {errors.judul && <p className="text-red-500 text-xs mt-1">{errors.judul.message}</p>}
+            {errors.judul && <p className="text-danger text-xs mt-1">{errors.judul.message}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1.5">Kategori <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium mb-1.5">Kategori <span className="text-danger">*</span></label>
               <select
                 {...register("kategori")}
-                className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none bg-white"
+                className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none bg-paper"
               >
                 <option value="ekonomi">Ekonomi</option>
                 <option value="wisata">Wisata</option>
                 <option value="pengolahan">Pengolahan</option>
               </select>
-              {errors.kategori && <p className="text-red-500 text-xs mt-1">{errors.kategori.message}</p>}
+              {errors.kategori && <p className="text-danger text-xs mt-1">{errors.kategori.message}</p>}
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1.5">Status <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium mb-1.5">Status <span className="text-danger">*</span></label>
               <select
                 {...register("status")}
-                className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none bg-white"
+                className="w-full h-11 px-3 border rounded focus:ring-2 focus:ring-primary outline-none bg-paper"
               >
                 <option value="published">Diterbitkan</option>
                 <option value="diarsipkan">Diarsipkan</option>
               </select>
-              {errors.status && <p className="text-red-500 text-xs mt-1">{errors.status.message}</p>}
+              {errors.status && <p className="text-danger text-xs mt-1">{errors.status.message}</p>}
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1.5">Deskripsi Singkat <span className="text-red-500">*</span></label>
+            <label className="block text-sm font-medium mb-1.5">Deskripsi Singkat <span className="text-danger">*</span></label>
             <textarea
               {...register("deskripsi")}
               rows={4}
               className="w-full p-3 border rounded focus:ring-2 focus:ring-primary outline-none resize-y"
               placeholder="Jelaskan potensi ini secara singkat..."
             ></textarea>
-            {errors.deskripsi && <p className="text-red-500 text-xs mt-1">{errors.deskripsi.message}</p>}
+            {errors.deskripsi && <p className="text-danger text-xs mt-1">{errors.deskripsi.message}</p>}
           </div>
 
           <div className="grid grid-cols-2 gap-4">
@@ -139,7 +139,7 @@ export default function TambahPotensiPage() {
               onChange={(url) => setValue("gambar_url", url, { shouldValidate: true })}
               folder="potensi"
             />
-            {errors.gambar_url && <p className="text-red-500 text-xs mt-1">{errors.gambar_url.message}</p>}
+            {errors.gambar_url && <p className="text-danger text-xs mt-1">{errors.gambar_url.message}</p>}
           </div>
 
           <div>
@@ -149,7 +149,7 @@ export default function TambahPotensiPage() {
               onChange={(url) => setValue("video_url", url, { shouldValidate: true })}
               folder="potensi_videos"
             />
-            {errors.video_url && <p className="text-red-500 text-xs mt-1">{errors.video_url.message}</p>}
+            {errors.video_url && <p className="text-danger text-xs mt-1">{errors.video_url.message}</p>}
           </div>
 
           {/* Section Bahasa Inggris */}

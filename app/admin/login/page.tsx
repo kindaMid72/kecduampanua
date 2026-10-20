@@ -72,9 +72,9 @@ function LoginForm() {
         {showSuccessBanner && (
           <div
             role="status"
-            className="px-4 py-3 rounded-[var(--radius-card)] bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm leading-relaxed"
+            className="px-4 py-3 rounded-[var(--radius-card)] bg-status-success/10 border border-status-success/30 text-status-success-ink text-sm leading-relaxed"
           >
-            <p className="font-semibold text-emerald-900 mb-0.5">Kata sandi berhasil disimpan!</p>
+            <p className="font-semibold text-status-success-ink mb-0.5">Kata sandi berhasil disimpan!</p>
             Silakan masuk menggunakan email dan kata sandi baru Anda.
           </div>
         )}
@@ -83,7 +83,7 @@ function LoginForm() {
         {displayError && (
           <div
             role="alert"
-            className="px-4 py-3 rounded-[var(--radius-card)] bg-red-50 border border-red-200 text-red-700 text-sm"
+            className="px-4 py-3 rounded-[var(--radius-card)] bg-danger/10 border border-danger/30 text-danger text-sm"
           >
             {displayError}
           </div>
@@ -105,18 +105,18 @@ function LoginForm() {
             aria-invalid={!!errors.email}
             className={[
               "w-full h-11 px-3 rounded-[var(--radius-button)] border text-sm",
-              "bg-white text-text placeholder:text-text/30",
+              "bg-paper text-text placeholder:text-text/30",
               "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1",
               "transition-colors",
               errors.email
-                ? "border-red-400"
+                ? "border-danger/60"
                 : "border-surface hover:border-text/30",
             ].join(" ")}
             placeholder="nama@email.com"
             {...register("email")}
           />
           {errors.email && (
-            <p id="email-error" role="alert" className="mt-1 text-xs text-red-600">
+            <p id="email-error" role="alert" className="mt-1 text-xs text-danger">
               {errors.email.message}
             </p>
           )}
@@ -139,11 +139,11 @@ function LoginForm() {
               aria-invalid={!!errors.password}
               className={[
                 "w-full h-11 px-3 pr-10 rounded-[var(--radius-button)] border text-sm",
-                "bg-white text-text placeholder:text-text/30",
+                "bg-paper text-text placeholder:text-text/30",
                 "focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-1",
                 "transition-colors",
                 errors.password
-                  ? "border-red-400"
+                  ? "border-danger/60"
                   : "border-surface hover:border-text/30",
               ].join(" ")}
               placeholder="••••••••"
@@ -159,7 +159,7 @@ function LoginForm() {
             </button>
           </div>
           {errors.password && (
-            <p id="password-error" role="alert" className="mt-1 text-xs text-red-600">
+            <p id="password-error" role="alert" className="mt-1 text-xs text-danger">
               {errors.password.message}
             </p>
           )}

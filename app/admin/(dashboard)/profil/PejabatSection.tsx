@@ -17,7 +17,7 @@ type Pejabat = {
 };
 
 export default function PejabatSection() {
-  const supabase = createClient();
+  const [supabase] = useState(() => createClient());
   const [pejabats, setPejabats] = useState<Pejabat[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -47,9 +47,26 @@ export default function PejabatSection() {
     setLoading(false);
   };
 
+  // Muat awal. State baru diubah setelah await, bukan sinkron di dalam effect.
   useEffect(() => {
-    fetchPejabat();
-  }, []);
+    let aktif = true;
+    supabase
+      .from("struktur_organisasi")
+      .select("*")
+      .order("urutan", { ascending: true })
+      .then(({ data, error }) => {
+        if (!aktif) return;
+        if (error) {
+          setError("Gagal memuat data pejabat.");
+        } else {
+          setPejabats(data || []);
+        }
+        setLoading(false);
+      });
+    return () => {
+      aktif = false;
+    };
+  }, [supabase]);
 
   const openForm = (pejabat?: Pejabat) => {
     if (pejabat) {
@@ -134,7 +151,7 @@ export default function PejabatSection() {
       </div>
 
       {error && (
-        <div className="p-3 bg-red-50 text-red-700 text-sm rounded border border-red-200">
+        <div className="p-3 bg-danger/10 text-danger text-sm rounded border border-danger/30">
           {error}
         </div>
       )}
@@ -214,7 +231,7 @@ export default function PejabatSection() {
                   <button type="button" onClick={() => openForm(pejabat)} className="p-2 text-text/50 hover:text-primary transition-colors" title="Ubah">
                     <Edit size={16} />
                   </button>
-                  <button type="button" onClick={() => handleDelete(pejabat.id)} className="p-2 text-text/50 hover:text-red-500 transition-colors" title="Hapus">
+                  <button type="button" onClick={() => handleDelete(pejabat.id)} className="p-2 text-text/50 hover:text-danger transition-colors" title="Hapus">
                     <Trash2 size={16} />
                   </button>
                 </div>

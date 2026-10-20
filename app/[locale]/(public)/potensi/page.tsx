@@ -20,7 +20,6 @@ export async function generateMetadata({
   };
 }
 
-export const revalidate = false;
 
 export default async function PotensiDaerahPage({
   params,
@@ -85,7 +84,7 @@ export default async function PotensiDaerahPage({
               href={`/${locale}/potensi${kat.id === "semua" ? "" : `?k=${kat.id}`}`}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
                 kategoriParam === kat.id
-                  ? "bg-primary text-white"
+                  ? "bg-primary text-paper"
                   : "bg-surface/50 text-text/60 hover:bg-surface hover:text-text"
               }`}
             >

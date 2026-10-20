@@ -79,13 +79,167 @@ export type SelesaikanAturKataSandiInput = {
   konfirmasi: string;
 };
 
+type InvitationRow = {
+  id: string;
+  email: string;
+  nama_lengkap: string;
+  role: string;
+  type: string;
+  user_id: string | null;
+};
+
+/**
+ * Cari akun auth berdasarkan email. listUsers() dipaginasi karena halaman default-nya
+ * hanya 50 pengguna; tanpa paginasi, akun di luar halaman pertama tidak ketemu.
+ */
+async function cariUserAuthByEmail(
+  supabaseAdmin: ReturnType<typeof createAdminClient>,
+  email: string
+): Promise<{ user: { id: string } | null; error: boolean }> {
+  const perPage = 200;
+  for (let page = 1; page <= 100; page++) {
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers({ page, perPage });
+    if (error) return { user: null, error: true };
+
+    const found = data.users.find((u) => u.email?.toLowerCase() === email.toLowerCase());
+    if (found) return { user: found, error: false };
+    if (data.users.length < perPage) break;
+  }
+  return { user: null, error: false };
+}
+
+async function ambilStatusProfil(
+  supabaseAdmin: ReturnType<typeof createAdminClient>,
+  userId: string
+): Promise<string | null> {
+  const { data } = await supabaseAdmin
+    .from("profiles")
+    .select("status")
+    .eq("id", userId)
+    .maybeSingle();
+
+  return data?.status ?? null;
+}
+
+/**
+ * Menerapkan kata sandi baru sesuai jenis tautan. Dipanggil hanya setelah token diklaim.
+ * Akun yang sudah nonaktif TIDAK boleh diaktifkan kembali lewat tautan; itu wewenang Pengelola
+ * (ubah status pengguna), bukan tautan sekali pakai.
+ */
+async function terapkanKataSandi(
+  supabaseAdmin: ReturnType<typeof createAdminClient>,
+  invite: InvitationRow,
+  password: string
+): Promise<{ error?: string }> {
+  if (invite.type === "invite") {
+    const existing = await cariUserAuthByEmail(supabaseAdmin, invite.email);
+    if (existing.error) {
+      return { error: "Gagal memeriksa akun pengguna. Silakan coba lagi." };
+    }
+
+    let targetUserId: string;
+
+    if (existing.user) {
+      targetUserId = existing.user.id;
+
+      if ((await ambilStatusProfil(supabaseAdmin, targetUserId)) === "nonaktif") {
+        return { error: "Akun ini sedang nonaktif. Hubungi Pengelola untuk mengaktifkannya kembali." };
+      }
+
+      const { error: updateAuthError } = await supabaseAdmin.auth.admin.updateUserById(targetUserId, {
+        password,
+        email_confirm: true,
+        user_metadata: {
+          nama_lengkap: invite.nama_lengkap,
+          role: invite.role,
+        },
+      });
+      if (updateAuthError) {
+        console.error("Gagal update user auth saat invite:", updateAuthError);
+        return { error: "Gagal memperbarui kata sandi akun. Silakan coba lagi." };
+      }
+    } else {
+      const { data: newUser, error: createAuthError } = await supabaseAdmin.auth.admin.createUser({
+        email: invite.email,
+        password,
+        email_confirm: true,
+        user_metadata: {
+          nama_lengkap: invite.nama_lengkap,
+          role: invite.role,
+        },
+      });
+
+      if (createAuthError || !newUser?.user) {
+        console.error("Gagal create user auth:", createAuthError);
+        return { error: "Gagal membuat akun staf. Silakan coba lagi." };
+      }
+      targetUserId = newUser.user.id;
+    }
+
+    const { error: profileError } = await supabaseAdmin.from("profiles").upsert(
+      {
+        id: targetUserId,
+        nama_lengkap: invite.nama_lengkap,
+        role: invite.role,
+        status: "aktif",
+        password_set: true,
+      },
+      { onConflict: "id" }
+    );
+    if (profileError) {
+      console.error("Gagal upsert profile:", profileError);
+      return { error: "Gagal memperbarui profil pengguna." };
+    }
+
+    return {};
+  }
+
+  if (invite.type === "reset_password") {
+    let targetUserId = invite.user_id;
+
+    if (!targetUserId) {
+      const existing = await cariUserAuthByEmail(supabaseAdmin, invite.email);
+      if (existing.error) {
+        return { error: "Gagal memeriksa akun pengguna. Silakan coba lagi." };
+      }
+      targetUserId = existing.user?.id ?? null;
+    }
+
+    if (!targetUserId) {
+      return { error: "Akun pengguna tidak ditemukan untuk reset kata sandi." };
+    }
+
+    if ((await ambilStatusProfil(supabaseAdmin, targetUserId)) === "nonaktif") {
+      return { error: "Akun ini sedang nonaktif. Hubungi Pengelola untuk mengaktifkannya kembali." };
+    }
+
+    const { error: resetAuthError } = await supabaseAdmin.auth.admin.updateUserById(targetUserId, {
+      password,
+      email_confirm: true,
+    });
+    if (resetAuthError) {
+      console.error("Gagal reset user password auth:", resetAuthError);
+      return { error: "Gagal memperbarui kata sandi. Silakan coba lagi." };
+    }
+
+    // Tidak menyentuh status: reset kata sandi tidak boleh mengaktifkan akun.
+    await supabaseAdmin
+      .from("profiles")
+      .update({ password_set: true })
+      .eq("id", targetUserId);
+
+    return {};
+  }
+
+  return { error: "Jenis tautan tidak dikenali." };
+}
+
 /**
  * Menyelesaikan proses set password:
  * 1. Validasi format & kecocokan kata sandi
- * 2. Cek token sekali pakai
- * 3. Buat / update user di Supabase Auth
- * 4. Upsert profiles (status: aktif, password_set: true)
- * 5. Hanguskan token (used_at = now())
+ * 2. Klaim token sekali pakai secara atomik (sebelum mengubah apa pun)
+ * 3. Terapkan kata sandi di Supabase Auth dan profiles
+ * 4. Jika langkah 3 gagal, klaim dilepas agar tautan bisa dipakai ulang
  */
 export async function selesaikanAturKataSandiAction(input: SelesaikanAturKataSandiInput) {
   const parsed = setPasswordSchema.safeParse({
@@ -105,7 +259,6 @@ export async function selesaikanAturKataSandiAction(input: SelesaikanAturKataSan
     const supabaseAdmin = createAdminClient();
     const tokenHash = crypto.createHash("sha256").update(input.token.trim()).digest("hex");
 
-    // Ambil data invitation
     const { data: invite, error: fetchError } = await supabaseAdmin
       .from("user_invitations")
       .select("id, email, nama_lengkap, role, type, expires_at, used_at, user_id")
@@ -120,123 +273,46 @@ export async function selesaikanAturKataSandiAction(input: SelesaikanAturKataSan
       return { error: "Tautan ini sudah pernah digunakan sebelumnya." };
     }
 
-    const now = new Date();
     const expiresAt = new Date(invite.expires_at);
-    if (expiresAt < now) {
+    if (expiresAt < new Date()) {
       return { error: "Tautan ini sudah kedaluwarsa. Silakan minta tautan baru." };
     }
 
-    let targetUserId = invite.user_id;
-
-    if (invite.type === "invite") {
-      // 1. Cek apakah akun auth sudah pernah dibuat
-      // Note: VULN-10 mitigation (menggunakan getUserByEmail) dikembalikan ke listUsers()
-      // karena API Supabase JS versi ini tidak menyediakan method getUserByEmail.
-      const { data: userListData } = await supabaseAdmin.auth.admin.listUsers();
-      const existingUser = userListData?.users?.find(
-        (u) => u.email?.toLowerCase() === invite.email.toLowerCase()
-      );
-
-      if (existingUser) {
-        targetUserId = existingUser.id;
-        const { error: updateAuthError } = await supabaseAdmin.auth.admin.updateUserById(
-          existingUser.id,
-          {
-            password: parsed.data.password,
-            email_confirm: true,
-            user_metadata: {
-              nama_lengkap: invite.nama_lengkap,
-              role: invite.role,
-            },
-          }
-        );
-        if (updateAuthError) {
-          console.error("Gagal update user auth saat invite:", updateAuthError);
-          return { error: "Gagal memperbarui kata sandi akun. Silakan coba lagi." };
-        }
-      } else {
-        // Buat user baru di auth.users
-        const { data: newUser, error: createAuthError } = await supabaseAdmin.auth.admin.createUser({
-          email: invite.email,
-          password: parsed.data.password,
-          email_confirm: true,
-          user_metadata: {
-            nama_lengkap: invite.nama_lengkap,
-            role: invite.role,
-          },
-        });
-
-        if (createAuthError || !newUser?.user) {
-          console.error("Gagal create user auth:", createAuthError);
-          return { error: "Gagal membuat akun staf. Silakan coba lagi." };
-        }
-        targetUserId = newUser.user.id;
-      }
-
-      // 2. Upsert ke tabel profiles
-      const { error: profileError } = await supabaseAdmin.from("profiles").upsert(
-        {
-          id: targetUserId,
-          nama_lengkap: invite.nama_lengkap,
-          role: invite.role,
-          status: "aktif",
-          password_set: true,
-        },
-        { onConflict: "id" }
-      );
-
-      if (profileError) {
-        console.error("Gagal upsert profile:", profileError);
-        return { error: "Gagal memperbarui profil pengguna." };
-      }
-    } else if (invite.type === "reset_password") {
-      if (!targetUserId) {
-        // Fallback cari user id by email jika user_id di invite null
-        // Note: listUsers() dipakai sebagai fallback karena getUserByEmail tidak tersedia.
-        const { data: userListData } = await supabaseAdmin.auth.admin.listUsers();
-        const existingUser = userListData?.users?.find(
-          (u) => u.email?.toLowerCase() === invite.email.toLowerCase()
-        );
-        targetUserId = existingUser?.id;
-      }
-
-      if (!targetUserId) {
-        return { error: "Akun pengguna tidak ditemukan untuk reset kata sandi." };
-      }
-
-      // Update password di Supabase Auth
-      const { error: resetAuthError } = await supabaseAdmin.auth.admin.updateUserById(targetUserId, {
-        password: parsed.data.password,
-        email_confirm: true,
-      });
-
-      if (resetAuthError) {
-        console.error("Gagal reset user password auth:", resetAuthError);
-        return { error: "Gagal memperbarui kata sandi. Silakan coba lagi." };
-      }
-
-      // Update status di profiles
-      await supabaseAdmin
-        .from("profiles")
-        .update({
-          password_set: true,
-          status: "aktif",
-        })
-        .eq("id", targetUserId);
-    }
-
-    // 3. Tandai token sebagai sudah terpakai (one-time use)
-    const { error: tokenUpdateError } = await supabaseAdmin
+    // Klaim atomik: hanya satu permintaan yang berhasil mengubah used_at dari null.
+    // Dua submit paralel dengan token yang sama tidak bisa sama-sama lolos.
+    const { data: klaim } = await supabaseAdmin
       .from("user_invitations")
       .update({ used_at: new Date().toISOString() })
-      .eq("id", invite.id);
+      .eq("id", invite.id)
+      .is("used_at", null)
+      .select("id")
+      .maybeSingle();
 
-    if (tokenUpdateError) {
-      console.error("Gagal menandai token sebagai terpakai:", tokenUpdateError);
+    if (!klaim) {
+      return { error: "Tautan ini sudah pernah digunakan sebelumnya." };
     }
 
-    revalidatePath("/admin/pengguna");
-    return { success: true };
+    let berhasil = false;
+    try {
+      const hasil = await terapkanKataSandi(supabaseAdmin, invite, parsed.data.password);
+      if (hasil.error) {
+        return { error: hasil.error };
+      }
+
+      berhasil = true;
+      revalidatePath("/admin/pengguna");
+      return { success: true };
+    } finally {
+      if (!berhasil) {
+        const { error: releaseError } = await supabaseAdmin
+          .from("user_invitations")
+          .update({ used_at: null })
+          .eq("id", invite.id);
+        if (releaseError) {
+          console.error("Gagal melepas klaim token setelah kegagalan:", releaseError);
+        }
+      }
+    }
   } catch (err) {
     console.error("Error selesaikanAturKataSandiAction:", err);
     return { error: "Terjadi kesalahan pada server. Silakan coba beberapa saat lagi." };

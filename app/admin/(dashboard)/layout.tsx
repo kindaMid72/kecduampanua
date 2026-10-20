@@ -10,7 +10,7 @@ interface AdminLayoutProps {
 }
 
 const navItems = [
-  { label: "Dashboard", href: "/admin/dashboard", icon: LayoutDashboard },
+  { label: "Ringkasan", href: "/admin/dashboard", icon: LayoutDashboard },
   { label: "Informasi Publik", href: "/admin/informasi-publik", icon: BookOpen },
   { label: "Berita", href: "/admin/berita", icon: Newspaper },
   { label: "Standar Pelayanan", href: "/admin/standar-pelayanan", icon: FileText },
@@ -52,10 +52,10 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
       {/* Top bar mobile */}
-      <header className="bg-primary text-white lg:hidden">
+      <header className="bg-primary text-paper lg:hidden">
         <div className="flex items-center justify-between px-4 h-14">
           <span className="font-display font-semibold text-sm">Panel Admin</span>
-          <span className="text-xs text-white/60 font-mono">{profile.nama_lengkap}</span>
+          <span className="text-xs text-paper/60 font-mono">{profile.nama_lengkap}</span>
         </div>
         <SectionDivider />
         {/* Mobile nav horizontal scroll */}
@@ -67,7 +67,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 text-xs text-white/70 hover:text-white hover:bg-white/10 rounded transition-colors min-h-[36px]"
+                    className="inline-flex items-center gap-1.5 px-3 py-2 text-xs text-paper/70 hover:text-paper hover:bg-paper/10 rounded transition-colors min-h-[36px]"
                   >
                     <Icon size={14} aria-hidden="true" />
                     {item.label}
@@ -82,11 +82,11 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
       <div className="flex flex-1">
         {/* Sidebar desktop */}
         <aside
-          className="hidden lg:flex flex-col w-64 bg-primary text-white flex-shrink-0 sticky top-0 h-screen"
+          className="hidden lg:flex flex-col w-64 bg-primary text-paper flex-shrink-0 sticky top-0 h-screen"
           aria-label="Navigasi admin"
         >
           {/* Logo/Brand */}
-          <div className="px-5 py-6 border-b border-white/10 flex items-center gap-3">
+          <div className="px-5 py-6 border-b border-paper/10 flex items-center gap-3">
             <div className="relative h-10 w-8 flex-shrink-0">
               <Image
                 src="/logo-kab-pinrang.webp"
@@ -100,10 +100,10 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
               <p className="font-display font-semibold text-sm leading-tight">
                 Panel Admin
               </p>
-              <p className="text-xs text-white/50 font-mono mt-0.5 leading-tight">
+              <p className="text-xs text-paper/50 font-mono mt-0.5 leading-tight">
                 Kecamatan Duampanua
               </p>
-              <p className="text-[10px] text-white/40 font-mono mt-0.5 leading-tight">
+              <p className="text-[10px] text-paper/40 font-mono mt-0.5 leading-tight">
                 Kab. Pinrang
               </p>
             </div>
@@ -118,7 +118,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
                   <li key={item.href}>
                     <Link
                       href={item.href}
-                      className="flex items-center gap-3 px-3 py-2.5 text-sm text-white/70 hover:text-white hover:bg-secondary/80 rounded-[var(--radius-button)] transition-colors min-h-[44px]"
+                      className="flex items-center gap-3 px-3 py-2.5 text-sm text-paper/70 hover:text-paper hover:bg-secondary/80 rounded-[var(--radius-button)] transition-colors min-h-[44px]"
                     >
                       <Icon size={16} aria-hidden="true" />
                       {item.label}
@@ -130,26 +130,26 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
           </nav>
 
           {/* User info + logout */}
-          <div className="px-3 py-4 border-t border-white/10 mt-auto">
+          <div className="px-3 py-4 border-t border-paper/10 mt-auto">
             <Link
               href="/admin/pengaturan-akun"
-              className="block px-3 py-2 mb-2 rounded-[var(--radius-button)] hover:bg-white/10 transition-colors"
+              className="block px-3 py-2 mb-2 rounded-[var(--radius-button)] hover:bg-paper/10 transition-colors"
               title="Buka Pengaturan Akun"
             >
-              <p className="text-xs text-white/40 font-mono uppercase tracking-wide">
+              <p className="text-xs text-paper/40 font-mono uppercase tracking-wide">
                 Masuk sebagai
               </p>
-              <p className="text-sm text-white font-medium truncate">
+              <p className="text-sm text-paper font-medium truncate">
                 {profile.nama_lengkap}
               </p>
-              <p className="text-xs text-white/40 font-mono">
+              <p className="text-xs text-paper/40 font-mono">
                 {isSuperAccount ? "Pengelola" : "Staf"}
               </p>
             </Link>
             <form action="/api/auth/signout" method="POST">
               <button
                 type="submit"
-                className="flex items-center gap-2 w-full px-3 py-2.5 text-sm text-white/60 hover:text-white hover:bg-white/10 rounded-[var(--radius-button)] transition-colors min-h-[44px]"
+                className="flex items-center gap-2 w-full px-3 py-2.5 text-sm text-paper/60 hover:text-paper hover:bg-paper/10 rounded-[var(--radius-button)] transition-colors min-h-[44px]"
               >
                 <LogOut size={16} aria-hidden="true" />
                 Keluar

@@ -59,7 +59,7 @@ export function FileUpload({
         .getPublicUrl(data.path);
 
       onChange(publicUrl);
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Upload error:", err);
       setError(pesanGalatUpload(err, "Gagal mengunggah dokumen."));
     } finally {
@@ -102,7 +102,7 @@ export function FileUpload({
           <button
             type="button"
             onClick={() => onChange("")}
-            className="text-text/40 hover:text-red-500 p-2 transition-colors flex-shrink-0"
+            className="text-text/40 hover:text-danger p-2 transition-colors flex-shrink-0"
             title="Hapus dokumen"
           >
             <X size={20} />
@@ -137,7 +137,7 @@ export function FileUpload({
         </label>
       )}
       
-      {error && <p className="text-red-500 text-xs mt-2">{error}</p>}
+      {error && <p className="text-danger text-xs mt-2">{error}</p>}
     </div>
   );
 }

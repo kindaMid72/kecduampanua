@@ -20,7 +20,6 @@ export async function generateMetadata({
   };
 }
 
-export const revalidate = false;
 
 function InfoRow({
   icon: Icon,
@@ -155,7 +154,7 @@ export default async function KontakPage({
               </p>
               <Link 
                 href={`/${locale}/kontak/pengaduan`}
-                className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-primary text-white rounded-[var(--radius-button)] text-sm font-medium hover:bg-primary-hover transition-colors"
+                className="inline-flex items-center justify-center w-full px-4 py-2.5 bg-primary text-paper rounded-[var(--radius-button)] text-sm font-medium hover:bg-primary-hover transition-colors"
               >
                 {tKontak("buatLaporan")}
               </Link>

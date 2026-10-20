@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import Image from "next/image";
-import { ChevronLeft, ChevronRight, Quote } from "lucide-react";
+import { ChevronLeft, ChevronRight, Pause, Play, Quote } from "lucide-react";
 import { PapanInformasiPanel } from "./PapanInformasiPanel";
 import { CategoryLabel } from "./CategoryLabel";
 
@@ -42,6 +42,14 @@ interface HeroSliderProps {
   labels: {
     slideSebelumnya: string;
     slideBerikutnya: string;
+    sorotan: string;
+    latarKecamatan: string;
+    latarSambutan: string;
+    pilihSlide: string;
+    slide: string; // kata "Slide"; nomor ditambahkan di komponen
+    jedaSlide: string;
+    lanjutSlide: string;
+    fotoPejabat: string;
   };
 }
 
@@ -53,12 +61,14 @@ const SLIDE_DURATION = 6000; // 6 detik
  * - Slide 2 (opsional): Latar hero-web-duampanua-2.webp + Foto & sambutan pejabat utama
  *
  * Slide 2 hanya muncul jika prop `slide2` tidak null (dikontrol server, bukan client).
- * Auto-advance setiap 6 detik, pause saat hover/focus.
+ * Auto-advance setiap 6 detik. Berhenti saat kursor/fokus di slider, saat tombol jeda
+ * ditekan, dan tidak berjalan sama sekali bila pengguna meminta gerak dikurangi.
  */
 export function HeroSlider({ slide1, slide2, labels }: HeroSliderProps) {
   const totalSlides = slide2 ? 2 : 1;
   const [activeSlide, setActiveSlide] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
+  const [isPaused, setIsPaused] = useState(false); // sementara: kursor atau fokus di slider
+  const [jedaManual, setJedaManual] = useState(false); // pilihan pengguna lewat tombol jeda
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const goTo = useCallback(
@@ -83,11 +93,12 @@ export function HeroSlider({ slide1, slide2, labels }: HeroSliderProps) {
   }, []);
 
   useEffect(() => {
-    if (!isPaused) {
+    const kurangiGerak = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!isPaused && !jedaManual && !kurangiGerak) {
       startTimer();
     }
     return clearTimer;
-  }, [isPaused, startTimer, clearTimer]);
+  }, [isPaused, jedaManual, startTimer, clearTimer]);
 
   const handlePause = () => {
     setIsPaused(true);
@@ -100,7 +111,7 @@ export function HeroSlider({ slide1, slide2, labels }: HeroSliderProps) {
 
   return (
     <section
-      aria-label="Hero"
+      aria-label={labels.sorotan}
       className="relative overflow-hidden min-h-[calc(100vh-5rem)] w-full flex items-center"
       onMouseEnter={handlePause}
       onMouseLeave={handleResume}
@@ -121,7 +132,7 @@ export function HeroSlider({ slide1, slide2, labels }: HeroSliderProps) {
         <div className="absolute inset-0 -z-10">
           <Image
             src="/hero-web-duampanua.webp"
-            alt="Latar Kecamatan Duampanua"
+            alt={labels.latarKecamatan}
             fill
             priority
             className="object-cover object-center"
@@ -165,7 +176,7 @@ export function HeroSlider({ slide1, slide2, labels }: HeroSliderProps) {
           <div className="absolute inset-0 -z-10">
             <Image
               src="/hero-web-duampanua-2.webp"
-              alt="Latar Sambutan"
+              alt={labels.latarSambutan}
               fill
               priority={false}
               className="object-cover object-center"
@@ -183,7 +194,7 @@ export function HeroSlider({ slide1, slide2, labels }: HeroSliderProps) {
                   <div className="relative w-28 h-28 sm:w-36 sm:h-36 rounded-full overflow-hidden border-4 border-primary/30 shadow-xl ring-4 ring-background/30">
                     <Image
                       src={slide2.fotoPejabatUrl}
-                      alt={slide2.namaPejabat ?? "Foto Pejabat"}
+                      alt={slide2.namaPejabat ?? labels.fotoPejabat}
                       fill
                       unoptimized
                       className="object-cover object-top"
@@ -261,7 +272,7 @@ export function HeroSlider({ slide1, slide2, labels }: HeroSliderProps) {
           {/* Dot indikator */}
           <div
             role="tablist"
-            aria-label="Pilih slide"
+            aria-label={labels.pilihSlide}
             className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2"
           >
             {Array.from({ length: totalSlides }).map((_, i) => (
@@ -269,7 +280,7 @@ export function HeroSlider({ slide1, slide2, labels }: HeroSliderProps) {
                 key={i}
                 role="tab"
                 aria-selected={activeSlide === i}
-                aria-label={`Slide ${i + 1}`}
+                aria-label={`${labels.slide} ${i + 1}`}
                 onClick={() => { goTo(i); handlePause(); }}
                 className={[
                   "h-2 rounded-full transition-all duration-300 focus-visible:ring-2 focus-visible:ring-primary",
@@ -281,8 +292,23 @@ export function HeroSlider({ slide1, slide2, labels }: HeroSliderProps) {
             ))}
           </div>
 
-          {/* Progress bar auto-advance (hanya kalau tidak paused) */}
-          {!isPaused && (
+          {/* Tombol jeda: pilihan pengguna, terpisah dari jeda saat kursor di slider */}
+          <button
+            type="button"
+            onClick={() => setJedaManual((v) => !v)}
+            aria-pressed={jedaManual}
+            aria-label={jedaManual ? labels.lanjutSlide : labels.jedaSlide}
+            className="absolute bottom-3 right-3 z-20 w-8 h-8 rounded-full bg-background/70 hover:bg-background/90 border border-primary/20 flex items-center justify-center shadow-sm transition-colors focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            {jedaManual ? (
+              <Play size={14} className="text-primary" aria-hidden="true" />
+            ) : (
+              <Pause size={14} className="text-primary" aria-hidden="true" />
+            )}
+          </button>
+
+          {/* Progress bar auto-advance (hanya saat berputar) */}
+          {!isPaused && !jedaManual && (
             <div className="absolute bottom-0 left-0 right-0 h-[2px] z-20 bg-primary/10">
               <div
                 key={`progress-${activeSlide}`}
