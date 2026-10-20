@@ -20,7 +20,7 @@ test.describe('Viewport 360px (Mobile)', () => {
     await expect(page.getByRole('navigation', { name: 'Navigasi mobile' })).toBeVisible();
 
     // Cek dropdown menu (contoh: Profil)
-    await page.getByText('Profil').click();
+    await page.getByRole('navigation', { name: 'Navigasi mobile' }).getByText('Profil', { exact: true }).click();
     await expect(page.getByRole('link', { name: 'Sejarah & Visi-Misi' })).toBeVisible();
   });
 

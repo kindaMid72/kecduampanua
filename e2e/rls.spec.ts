@@ -9,8 +9,8 @@ test.describe("Row Level Security (RLS) Tests", () => {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "http://127.0.0.1:54321";
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
     
-    // Lewati jika env tidak tersedia
-    if (!supabaseUrl || !supabaseKey) return;
+    // Tampil sebagai "skipped" di laporan jika env tidak ada, bukan lolos diam-diam.
+    test.skip(!supabaseKey, "env NEXT_PUBLIC_SUPABASE_ANON_KEY tidak tersedia");
 
     const response = await request.get(`${supabaseUrl}/rest/v1/informasi_publik?select=*`, {
       headers: {
