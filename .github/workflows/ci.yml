@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Lint, typecheck, test, build
+    runs-on: ubuntu-latest
+    env:
+      # Nilai dummy: build tidak memanggil Supabase. Yang penting: NEXT_PUBLIC_SITE_URL
+      # wajib ada karena robots.ts dievaluasi saat build (lib/site-url.ts).
+      NEXT_PUBLIC_SUPABASE_URL: https://example.supabase.co
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ci-anon-key-dummy
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit & component tests
+        run: npm test
+
+      - name: Audit dependensi produksi
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Build
+        run: npm run build
+
+  e2e:
+    name: Playwright (perlu env Supabase)
+    # Opt-in: aktifkan dengan variabel repo E2E_ENABLED=true dan secrets Supabase.
+    # Tanpa itu, job ini tidak jalan. Tes RLS butuh instance Supabase yang bisa dites,
+    # JANGAN produksi (lihat komentar di e2e/rls.spec.ts).
+    if: vars.E2E_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    needs: check
+    env:
+      NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.E2E_SUPABASE_URL }}
+      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.E2E_SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.E2E_SUPABASE_SERVICE_ROLE_KEY }}
+      NEXT_PUBLIC_SITE_URL: http://localhost:3000
+      CI: true
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - run: npx playwright install --with-deps chromium
+
+      - name: Playwright
+        run: npm run test:e2e
