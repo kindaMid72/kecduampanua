@@ -173,3 +173,28 @@ Disetujui user ("langsung edit"). Diuji pada Postgres Supabase sungguhan (`supab
 - **#33.6 Storage SELECT:** policy `"Publik bisa lihat file"` diganti SELECT untuk staf aktif saja (013). Bucket tetap publik: URL `/object/public/...` tidak butuh policy. Terbukti: anon melihat 0 objek, staf aktif upload dengan `RETURNING` berhasil.
 Belum dikerjakan: `DISABLE_SIGNUP=true` di GoTrue (konfigurasi infra), audit objek lama di bucket terhadap whitelist (`select name, metadata->>'mimetype' from storage.objects ...`), review ulang `rls-reviewer` atas 014 (WAJIB sebelum commit/terapkan).
 
+**#35 — Token warna untuk galat, teks status, dan kertas (Fase 4)**
+Konteks: ~290 kelas Tailwind bawaan (`text-red-500`, `bg-white`, `text-green-700`, dll.) tersebar di app dan components, melanggar aturan #6 (tidak ada warna di luar token). Tidak ada token untuk galat.
+Keputusan: tambah `danger` (#B3261E, 5.7:1 di background), `paper` (#FFFFFF), dan varian gelap untuk teks status (`status-*-ink`, semuanya ≥5.4:1, lolos AA sebagai teks). Warna status dasar tetap untuk latar dan garis. Pemetaan dilakukan massal; tint 50/100 dipetakan ke token dengan opasitas.
+Alasan teks status: `status-warning` (#BE7B3D) hanya 3.0:1 di atas background, tidak lolos AA untuk teks. Token dasar tetap dipakai untuk non-teks.
+
+**#36 — HeroSlider: tetap auto-play, dengan jeda dan reduced-motion (Fase 4)**
+Konteks: `design/tokens.json` melarang "auto-playing carousel", tetapi user memilih mempertahankan auto-play dan menjaga tampilan tetap bersih.
+Keputusan: auto-play 6 detik dipertahankan. Tombol jeda kecil di pojok kanan bawah (`aria-pressed`), terpisah dari jeda saat kursor/fokus. Tidak berjalan sama sekali bila `prefers-reduced-motion`. Catatan: `animate-pulse` di PotensiCard sudah dibatasi oleh aturan global reduced-motion di `globals.css`.
+Perlu dicatat: aturan "auto-playing carousel" di tokens.json sekarang dilanggar secara sadar; jika ingin dipatuhi penuh, hapus auto-play dan biarkan hanya navigasi manual.
+
+**#37 — Pengaduan: honeypot lebih awal, batas kiriman global (Fase 2–3)**
+Keputusan: honeypot dicek di awal action (sebelum batas per IP), tanpa `max(0)` di zod, dan balasan palsu memakai nomor acak. Ditambah batas global `submit:global` 50 per jam di `rate_limits` (tanpa skema baru). Tanpa CAPTCHA atau layanan pihak ketiga (UU PDP, koneksi lambat). Angka 50 adalah default teknis dan bisa disesuaikan user.
+Konsekuensi: bot yang mengisi honeypot tidak lagi menghabiskan kuota per IP.
+
+**#38 — Statistik kosong = NULL; form admin menyimpan kosong sebagai NULL (migrasi 015)**
+Konteks: migrasi 010 memberi `DEFAULT 0` pada kolom angka, dan form admin mengubah kosong menjadi 0, sehingga data belum diisi tampil sebagai "0" atau "-" di halaman publik.
+Keputusan: default NULL (migrasi 015, hanya baris baru), skema admin `angkaOpsional` (kosong → null), dan tampilan "Belum diisi". Baris lama yang sudah berisi 0 tidak diubah otomatis, karena 0 bisa berarti nol sungguhan; staf perlu memeriksanya.
+
+**#39 — Hardening lanjutan: proxy, site URL, dan fonts (Fase 2–3)**
+- `middleware.ts` → `proxy.ts` (konvensi Next 16; perilaku sama, dicek: `/admin` redirect tanpa sesi).
+- `getSiteUrl()` menggantikan fallback ke domain produksi. Di produksi, `NEXT_PUBLIC_SITE_URL` kosong membuat error jelas, karena `robots.ts` dievaluasi saat build.
+- Fraunces di-host lewat `next/font`, bukan Google Fonts: pengunjung tidak lagi mengirim IP ke Google (UU PDP) dan halaman admin ikut mendapat font H1/H2.
+- `export const revalidate = false` dihapus dari halaman publik: halaman membaca cookie, jadi ekspor itu tidak berpengaruh dan menyesatkan.
+- `/api/translate` dihapus (lihat #26). Tidak ada pemanggil dan hanya memeriksa login.
+

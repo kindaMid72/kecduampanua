@@ -45,7 +45,7 @@ Update file ini setiap menyelesaikan item (centang `[x]`). Ini pengganti "ingata
 
 *Prasyarat: Fase 1 kriteria selesai terpenuhi — terutama auth & pola auto-translate sudah terbukti jalan di modul Informasi Publik, karena modul-modul Fase 2 mengikuti pola yang sama.*
 
-- [x] Halaman Data Statistik
+- [x] Data Statistik (section `#statistik` di `/profil`, bukan halaman terpisah)
 - [x] Halaman & admin Potensi Daerah (tab filter kategori)
 - [x] Halaman & admin Berita (artikel editorial & liputan kegiatan kecamatan)
 - [x] Halaman & admin Edaran Dokumen (deskripsi wajib sebelum unduh)
@@ -53,9 +53,9 @@ Update file ini setiap menyelesaikan item (centang `[x]`). Ini pengganti "ingata
 - [x] Halaman Cek Status Pengaduan (via RPC function, bukan direct select — lihat `.claude/skills/rls-review/SKILL.md`)
 - [x] Dashboard admin Pengaduan (ubah status, catatan tindak lanjut)
 - [x] Banner SP4N-LAPOR! di halaman Pengaduan & Kontak
-- [x] Job terjadwal arsip otomatis data pengaduan (2 tahun setelah selesai)
+- [ ] Job terjadwal arsip otomatis data pengaduan (2 tahun setelah selesai) — **belum ada**, lihat DATABASE_SCHEMA §11
 - [x] **Bilingual hibrida** — field `_en` opsional di form admin (Informasi Publik, Standar Pelayanan, Profil); tidak ada dependency API berbayar; halaman `/en/` fallback ke teks Indonesia otomatis (DECISIONS #10)
-- [x] SEO: sitemap, robots.txt, hreflang, metadata per halaman
+- [ ] SEO: sitemap, robots.txt, metadata per halaman ✓; **hreflang belum** (tidak ada `alternates` di metadata)
 
 *Kriteria selesai: warga bisa submit pengaduan & cek status mandiri; RLS pengaduan lolos uji akses `anon` (tidak bisa listing data orang lain); semua modul Fase 1+2 punya versi `/en/` yang render (auto-translate atau fallback).*
 
@@ -83,3 +83,35 @@ Update file ini setiap menyelesaikan item (centang `[x]`). Ini pengganti "ingata
 - [x] **Error pages & Loading states** — Halaman 404, 500, dan skeleton loading untuk seluruh area publik (bilingual) dan admin panel.
 
 *Kriteria selesai: ini fase terakhir — "selesai" berarti live di domain resmi dan staf sudah pegang kendali penuh tanpa developer.*
+
+## Hardening & audit (branch `chore/hardening-and-error-pages`)
+
+Selesai di kode (diuji Vitest + Playwright, lihat DECISIONS #35–#38):
+- [x] Next.js 16.3.8, `npm audit --omit=dev` bersih; migrasi `007` ganda jadi `007a`/`007b`
+- [x] Halaman 404 (root, per locale, catch-all `/en/...`), `global-error`, error boundary di `[locale]`
+- [x] Detail berita/informasi: error DB tidak lagi jadi 404 palsu
+- [x] Sitemap tanpa rute 404; tidak 500 saat DB gagal
+- [x] Reset/undangan tidak mengaktifkan akun nonaktif; token sekali pakai dikunci atomik; `listUsers` dipaginasi
+- [x] Aksi pengguna mensyaratkan Pengelola yang aktif; `userId` divalidasi UUID
+- [x] `/api/translate` dihapus; `/api/revalidate` tidak membocorkan konfigurasi; signout menolak Origin kosong
+- [x] Pengaduan: honeypot dicek lebih awal, batas kiriman global, log tanpa data pribadi
+- [x] Fraunces di-host sendiri (tanpa Google Fonts)
+- [x] Lint 0 error, `npm run typecheck`, `middleware.ts` → `proxy.ts`
+- [x] Validasi zod untuk profil dan pejabat; `getSiteUrl()` tanpa fallback domain produksi
+- [x] Token warna `danger`/`paper`/teks status; skip link; label dan galat form pengaduan terhubung
+- [x] HeroSlider: tombol jeda; tidak auto-play bila reduced-motion
+- [x] Statistik: kosong = "Belum diisi", bukan 0 (migrasi 015 — **perlu diterapkan di DB**)
+- [x] E2E: semua halaman publik di 360px (ID & EN), 404, validasi pengaduan, skip link
+
+Belum dikerjakan / perlu keputusan:
+- [ ] Terapkan migrasi 013, 014, dan 015 ke database produksi (oleh pemilik DB, sebagai `supabase_admin`)
+- [ ] Jam buka di beranda masih hardcode Senin–Jumat 08–16 WITA; perlu format data `jam_operasional` yang jelas dari user
+- [ ] Audit log (aksi hapus/ubah peran/status/pengaduan) — butuh tabel baru + review RLS
+- [ ] Job arsip pengaduan 2 tahun (lihat di atas)
+- [ ] CSP dengan nonce; cookie sesi `maxAge` (kebijakan lama login staf)
+- [ ] Validasi magic bytes upload; batas `max()` pada field konten panjang
+- [ ] Zod + react-hook-form di form pengguna, pengaturan akun, dan profil (saat ini state manual)
+- [ ] try/catch di action CRUD lain (berita, informasi, edaran, potensi, standar, statistik)
+- [ ] Tipe Supabase yang digenerate (`supabase gen types`)
+- [ ] Hapus `nginx.conf` usang di root repo (tertunda) dan rujukan ke repo infra
+

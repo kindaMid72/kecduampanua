@@ -11,7 +11,7 @@ Next.js (App Router, TS) + Tailwind + Supabase (Postgres, Auth, Storage; self-ho
 1. Admin panel sesederhana mungkin — setiap field/menu diuji dari sudut pandang staf awam teknis (lihat skill `admin-ux-check`).
 2. RLS di level database untuk semua tabel, bukan cuma kontrol di UI.
 3. Halaman publik render placeholder yang jelas untuk data kosong, tidak pernah crash/kosong tanpa keterangan.
-4. Public-facing pages SSG/ISR, di-revalidate on-demand saat staf publish (bukan time-based).
+4. Halaman publik **dinamis** (dirender per request karena membaca cookie Supabase), sehingga data selalu terbaru tanpa cache. Revalidate on-demand (`revalidatePath`) dipanggil dari aksi admin; `export const revalidate` tidak dipakai (tidak berpengaruh saat halaman membaca cookie).
 
 ## 3. Struktur Proyek
 
@@ -65,7 +65,7 @@ Next.js (App Router, TS) + Tailwind + Supabase (Postgres, Auth, Storage; self-ho
 
 - Login: Supabase Auth email+password. Tidak ada self-registration.
 - Role di tabel `profiles`: `super_account` | `staf`, plus `status`: `aktif`/`nonaktif`.
-- Middleware (`middleware.ts`) proteksi semua route `/admin/*`, redirect ke login jika belum sesi.
+- Proxy (`proxy.ts`, konvensi Next 16; dulu `middleware.ts`) memproteksi semua route `/admin/*`, redirect ke login jika belum sesi. Routing locale untuk route publik juga ditangani di sini.
 - Menu "Kelola Pengguna" hanya render untuk role `super_account` — tapi proteksi **juga** di RLS, bukan cuma disembunyikan di UI.
 
 **Alur invite** (hanya oleh `super_account`):
@@ -114,7 +114,7 @@ Rencana saat ini: **self-hosted di satu VPS** — container web (repo ini) dan s
 
 ## 8. Storage & Performa Gambar
 
-Client-side compress (`browser-image-compression`, target ~400KB, max 1600px) sebelum upload ke bucket Supabase Storage (`informasi-images`, `berita-images`, `struktur-organisasi`, `potensi-daerah-images`). `next/image` untuk semua render.
+Client-side compress (`browser-image-compression`, target ~400KB, max 1600px) sebelum upload ke bucket Supabase Storage (bagian ini rencana awal; kenyataannya satu bucket `uploads`, lihat migrasi 009). `next/image` untuk semua render.
 
 ## 9. Anti-Spam Pengaduan
 
