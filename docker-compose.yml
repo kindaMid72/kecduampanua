@@ -26,7 +26,6 @@ services:
     environment:
       # Secret runtime — hanya ada di server, tidak pernah masuk image/bundle.
       SUPABASE_SERVICE_ROLE_KEY: ${SUPABASE_SERVICE_ROLE_KEY}
-      GOOGLE_TRANSLATE_API_KEY: ${GOOGLE_TRANSLATE_API_KEY:-}
       REVALIDATE_SECRET: ${REVALIDATE_SECRET:-}
       # Akses Supabase dari sisi server lewat jaringan internal (tanpa memutar
       # lewat internet). Kosongkan untuk memakai NEXT_PUBLIC_SUPABASE_URL.

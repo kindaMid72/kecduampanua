@@ -8,11 +8,13 @@ import { NextResponse } from "next/server";
 export async function POST(request: Request) {
   // VULN-03 fix: Validasi Origin header untuk mencegah CSRF.
   // Request dari domain lain (misal halaman attacker) akan ditolak 403.
+  // Origin yang kosong juga ditolak: form POST browser selalu membawa Origin,
+  // jadi kosong berarti permintaan bukan dari halaman kita.
   const origin = request.headers.get("origin");
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const allowedOrigin = new URL(siteUrl).origin;
 
-  if (origin && origin !== allowedOrigin) {
+  if (!origin || origin !== allowedOrigin) {
     return new Response("Forbidden", { status: 403 });
   }
 

@@ -39,7 +39,7 @@ Config referensi: `duampanua-infra/edge/nginx.conf`.
 Lihat `.env.example`. Dua golongan yang sering salah dipahami:
 
 - **Build-time** (`NEXT_PUBLIC_*`): di-inline Next.js ke bundle saat `npm run build`. Diberikan sebagai `build.args` di compose. **Mengubahnya berarti build ulang image** (`docker compose build`), mengubah `.env` lalu `up -d` saja tidak cukup.
-- **Runtime** (secret): `SUPABASE_SERVICE_ROLE_KEY`, `GOOGLE_TRANSLATE_API_KEY`, `REVALIDATE_SECRET`, `SUPABASE_INTERNAL_URL`. Hanya ada di environment container, tidak masuk image.
+- **Runtime** (secret): `SUPABASE_SERVICE_ROLE_KEY`, `REVALIDATE_SECRET`, `SUPABASE_INTERNAL_URL`. Hanya ada di environment container, tidak masuk image.
 
 `NEXT_PUBLIC_SITE_URL` dipakai untuk: pengecekan Origin logout (CSRF), URL redirect logout, link undangan/reset password, sitemap, robots. Salah isi = logout 403 atau link undangan salah domain.
 

@@ -27,7 +27,6 @@ Perintah di atas asumsi awal (project belum di-scaffold saat dokumen ini ditulis
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=      # server-only, jangan pernah expose ke client
-GOOGLE_TRANSLATE_API_KEY=       # server-only, untuk /api/translate
 NEXT_PUBLIC_SITE_URL=           # URL publik situs; di-inline saat build (CSRF logout, link undangan, sitemap)
 SUPABASE_INTERNAL_URL=          # server-only, mis. http://kong:8000 (akses Supabase lewat jaringan Docker)
 REVALIDATE_SECRET=              # server-only, untuk POST /api/revalidate
