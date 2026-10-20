@@ -8,7 +8,9 @@ export const pengaduanPublikSchema = z.object({
   setuju_data_pribadi: z.boolean().refine((val) => val === true, {
     message: "Anda harus menyetujui kebijakan privasi",
   }),
-  honeypot: z.string().max(0, "Invalid form submission").optional(), // Honeypot field
+  // Honeypot: diisi bot, bukan manusia. Dicek di action sebelum validasi lain
+  // (jangan diberi max(0) di sini: pesan error akan memberi tahu bot bahwa dia tertangkap).
+  honeypot: z.string().optional(),
 });
 
 export type PengaduanPublikInput = z.input<typeof pengaduanPublikSchema>;
