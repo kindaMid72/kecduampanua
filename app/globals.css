@@ -25,7 +25,7 @@
   --radius-badge: 4px;
 
   /* === Font Family === */
-  --font-display: "Fraunces", serif;
+  --font-display: var(--font-fraunces, "Fraunces"), serif;
   --font-body: "Inter", sans-serif;
   --font-mono: "IBM Plex Mono", monospace;
 }

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, IBM_Plex_Mono } from "next/font/google";
+import { Inter, IBM_Plex_Mono, Fraunces } from "next/font/google";
 import "@/app/globals.css";
 
 const inter = Inter({
@@ -13,6 +13,13 @@ const ibmPlexMono = IBM_Plex_Mono({
   weight: ["400", "500"],
   display: "swap",
   variable: "--font-mono",
+});
+
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  display: "swap",
+  variable: "--font-fraunces",
 });
 
 export const metadata: Metadata = {
@@ -29,7 +36,7 @@ export default function AdminRootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="id" className={`${inter.variable} ${ibmPlexMono.variable}`}>
+    <html lang="id" className={`${inter.variable} ${ibmPlexMono.variable} ${fraunces.variable}`}>
       <body className="min-h-screen flex flex-col bg-background text-text font-body antialiased">
         {children}
       </body>
